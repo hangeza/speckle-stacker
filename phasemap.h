@@ -1,10 +1,9 @@
 #pragma once
 
 template <typename T>
-class Array<T,2>;
+class Array<T, 2>;
 
-struct PhaseMapElement
-{
+struct PhaseMapElement {
     PhaseMapElement() = default;
     PhaseMapElement(bool a_flag);
     PhaseMapElement(bool a_flag, double a_consistency);
@@ -15,4 +14,4 @@ struct PhaseMapElement
     double consistency { 0. };
 };
 
-typedef Array<PhaseMapElement,2> PhaseMap;
+typedef Array<PhaseMapElement, 2> PhaseMap;

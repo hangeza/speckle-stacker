@@ -32,8 +32,6 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/videoio.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasemap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.cpp"
-    #"${CMAKE_CURRENT_SOURCE_DIR}/bispectrum.cpp"
-    #"${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp"
 )
 
 set(HEADER_FILES
