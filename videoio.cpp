@@ -54,7 +54,7 @@ Mat& FrameExtractor::extract_next_frame()
     return m_frame;
 }
 
-Array<double, 2> Mat2ArrayD(cv::Mat& mat, color_channel channel)
+Array<double, 2> Mat2ArrayD(cv::Mat& mat, color_channel_t channel)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);
@@ -80,7 +80,7 @@ Array<double, 2> Mat2ArrayD(cv::Mat& mat, color_channel channel)
     return arr;
 }
 
-Array<std::complex<double>, 2> Mat2ArrayC(cv::Mat& mat, color_channel channel)
+Array<std::complex<double>, 2> Mat2ArrayC(cv::Mat& mat, color_channel_t channel)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);

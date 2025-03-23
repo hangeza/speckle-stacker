@@ -8,10 +8,12 @@
 #include "multidimarray.h"
 #include "phasemap.h"
 
-enum class color_channel : std::uint8_t {
-    b = 0,
-    g = 1,
-    r = 2
+enum color_channel_t : std::uint8_t {
+    black   = 0b0000'0000,
+    blue    = 0b0000'0001,
+    green   = 0b0000'0010,
+    red     = 0b0000'0100,
+    white   = blue | green | red
 };
 
 template <typename T>
@@ -56,7 +58,7 @@ private:
 
 void save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
-Array<T, 2> Mat2Array(cv::Mat& mat, color_channel channel = color_channel::r);
+Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array<T, 2>& arr,
     U (*converter)(const T&) = std::abs<U>,
@@ -66,7 +68,7 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
 // implementation part
 
 template <typename T>
-Array<T, 2> Mat2Array(cv::Mat& mat, color_channel channel)
+Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);

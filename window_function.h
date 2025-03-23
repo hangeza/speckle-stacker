@@ -3,42 +3,43 @@
 template <typename T>
 class Array<T, 2>;
 
-template <typename T, std::size_t window_aperture>
+template <typename T>
 class WindowFunction : public Array<T, 2> {
 public:
     WindowFunction() { }
-    WindowFunction(std::size_t a_xsize, std::size_t a_ysize)
-        : Array<T, 2>(a_xsize, a_ysize)
+    WindowFunction(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture)
+        : Array<T, 2>(a_xsize, a_ysize), m_aperture(window_aperture)
     {
     }
     ~WindowFunction() { }
 
 protected:
+    std::size_t m_aperture {};
 };
 
-template <typename T, std::size_t window_aperture>
-class GeneralHamming : public WindowFunction<T, window_aperture> {
+template <typename T>
+class GeneralHamming : public WindowFunction<T> {
 public:
-    GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, double a_alpha);
+    GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture, double a_alpha);
 
 protected:
     double m_alpha {};
 };
 
-template <typename T, std::size_t window_aperture>
-class Hann : public GeneralHamming<T, window_aperture> {
+template <typename T>
+class Hann : public GeneralHamming<T> {
 public:
-    Hann(std::size_t a_xsize, std::size_t a_ysize)
-        : GeneralHamming<T, window_aperture>(a_xsize, a_ysize, 0.5)
+    Hann(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture)
+        : GeneralHamming<T>(a_xsize, a_ysize, window_aperture, 0.5)
     {
     }
 };
 
-template <typename T, std::size_t window_aperture>
-class Hamming : public GeneralHamming<T, window_aperture> {
+template <typename T>
+class Hamming : public GeneralHamming<T> {
 public:
-    Hamming(std::size_t a_xsize, std::size_t a_ysize)
-        : GeneralHamming<T, window_aperture>(a_xsize, a_ysize, 0.54)
+    Hamming(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture)
+        : GeneralHamming<T>(a_xsize, a_ysize, window_aperture, 0.54)
     {
     }
 };
@@ -56,9 +57,9 @@ public:
 // implementation part
 // ********************
 
-template <typename T, std::size_t window_aperture>
-GeneralHamming<T, window_aperture>::GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, double a_alpha)
-    : WindowFunction<T, window_aperture>(a_xsize, a_ysize)
+template <typename T>
+GeneralHamming<T>::GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture, double a_alpha)
+    : WindowFunction<T>(a_xsize, a_ysize, window_aperture)
     , m_alpha(a_alpha)
 {
     static constexpr double twopi { M_PI * 2 };

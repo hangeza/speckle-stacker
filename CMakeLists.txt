@@ -32,6 +32,7 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/videoio.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasemap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/log.cpp"
 )
 
 set(HEADER_FILES
@@ -41,6 +42,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/phasemap.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/window_function.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/log.h"
 )
 
 # tell cmake to build our executable
