@@ -25,13 +25,12 @@ enum Level : std::uint8_t
  * @brief The system class
  * Initialisation and logging system configuration
  */
-class __attribute__((visibility("default"))) system {
+class system {
 public:
     /**
      * @brief
      * @param l Maximum Log level to show
      */
-
     static void setup(
         Level                    l,
         std::function<void(int)> callback = [](int c) { exit(c); },
@@ -39,7 +38,7 @@ public:
 
     system(Level l, std::function<void(int)> cb, std::ostream& str);
 
-    [[nodiscard]] static auto level() -> Level;
+    [[nodiscard]] static auto level() -> Level&;
     [[nodiscard]] static auto stream() -> std::ostream&;
     static void               callback(int exit_code);
 
@@ -52,7 +51,7 @@ private:
 };
 
 template <Level L>
-class __attribute__((visibility("default"))) logger {
+class logger {
 public:
     template <typename T>
     auto operator<<(T content) -> logger<L>& {

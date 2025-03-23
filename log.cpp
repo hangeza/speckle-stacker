@@ -18,7 +18,7 @@ void system::setup(Level l, std::function<void(int)> callback, std::ostream& str
     s_singleton = std::make_unique<system>(l, std::move(callback), str);
 }
 
-auto system::level() -> Level {
+auto system::level() -> Level& {
     if (s_singleton == nullptr) {
         throw std::runtime_error("Logging system not initialised");
     }
