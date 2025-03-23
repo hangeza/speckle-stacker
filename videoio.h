@@ -49,13 +49,6 @@ private:
     std::size_t m_frameindex { 0 };
 };
 
-//Array<double,2> Mat2ArrayD(cv::Mat& mat, color_channel channel = color_channel::r);
-//Array<std::complex<double>,2> Mat2ArrayC(cv::Mat& mat, color_channel channel = color_channel::r);
-//cv::Mat ArrayD2Mat(const Array<double,2>& arr, int datatype = CV_8U);
-// cv::Mat ArrayC2Mat(const Array<std::complex<double>,2>& arr,
-//                    double (*converter)(const std::complex<double>&) = std::abs<double>,
-//                    int datatype = CV_8U);
-
 void save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
 Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
@@ -64,6 +57,7 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
     U (*converter)(const T&) = std::abs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
+
 
 // implementation part
 
@@ -117,7 +111,7 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
         rows = 1;
     }
     */
-    std::cout << "save image: channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
+//    std::cout << "save image: channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
     for (int i = 0; i < rows; i++) {
         if (bytesperchannel == 1) {
             std::uint8_t* Mi = mat.ptr<std::uint8_t>(i);
