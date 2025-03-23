@@ -35,10 +35,11 @@
 typedef std::complex<double> complex_t;
 typedef std::complex<float> bispec_complex_t;
 
-using namespace std;
+using namespace smip;
 
 void Usage(const char* progname)
 {
+    using namespace std;
     cout<<"Speckle Masking Image Processing v1.0"<<endl;
     cout<<"2002-2012, 2025 HG Zaunick <hg.zaunick@gmx.de>"<<endl;
     cout<<endl;
@@ -71,13 +72,13 @@ int main(int argc, char* argv[])
 {
     const char* progname = argv[0];
 
-    smip::log::system::setup(
-        smip::log::Level::Info,
+    log::system::setup(
+        log::Level::Info,
         [](int c) { exit(c); },
         std::cerr);
 
-    smip::log::info() << "Speckle Masking Image Processing";
-    smip::log::info() << "v1.0 (c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
+    log::info() << "Speckle Masking Image Processing";
+    log::info() << "v1.0 (c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
 
     std::size_t max_frames { 400 };
     std::size_t ref_frame { 0 };
@@ -126,23 +127,23 @@ int main(int argc, char* argv[])
         std::istringstream istr;
         switch (ch) {
             case 'v':
-                smip::log::debug() << "verbose";
+                log::debug() << "verbose";
                 verbose++;
                 break;
             case 'n':
-                smip::log::debug() << "number of frames: " << optarg;
+                log::debug() << "number of frames: " << optarg;
                 max_frames = strtoul(optarg,NULL,10);
                 break;
             case 'r':
-                smip::log::debug() << "reference frame: " << optarg;
+                log::debug() << "reference frame: " << optarg;
                 ref_frame = strtoul(optarg,NULL,10);
                 break;
             case 'p':
-                smip::log::debug() << "radius of reconstructed phase disc: " << optarg;
+                log::debug() << "radius of reconstructed phase disc: " << optarg;
                 reco_radius = strtoul(optarg,NULL,10);
                 break;
             case 'b':
-                smip::log::debug() << "bispectrum size (dims 3 & 4): " << optarg;
+                log::debug() << "bispectrum size (dims 3 & 4): " << optarg;
                 bispectrum_depth = strtoul(optarg,NULL,10);
                 break;
             case 'k':
@@ -193,7 +194,7 @@ int main(int argc, char* argv[])
                                 break;
                         }
                     }
-                    smip::log::debug() << "color channel(s) : (r,g,b) = (" << (color_channel & color_channel_t::red) / color_channel_t::red
+                    log::debug() << "color channel(s) : (r,g,b) = (" << (color_channel & color_channel_t::red) / color_channel_t::red
                     << "," <<(color_channel & color_channel_t::green) / color_channel_t::green
                     << "," << (color_channel & color_channel_t::blue) / color_channel_t::blue << ")";
                 }
@@ -215,88 +216,89 @@ int main(int argc, char* argv[])
     Bispectrum<bispec_complex_t> bispectrum;
     Array<complex_t, 2> phases;
     FrameExtractor fe(filename);
-    smip::log::info() << "opening video file " << filename;
+    log::info() << "opening video file " << filename;
     if (!fe.is_valid()) {
-        smip::log::critical(-1) << "file open error: " << fe.filename();
-        //exit(-1);
+        log::critical(-1) << "file open error: " << fe.filename();
+//         exit(-1);
     }
     const std::size_t nframes { std::min(fe.nframes(), max_frames) };
-    smip::log::notice() << "opened video file: " << fe.nframes() << " frames";
-    smip::log::notice() << "using " << nframes << "/" << fe.nframes() << " frames";
-    smip::log::info() << "reading first (reference) frame";
+    log::notice() << "opened video file: " << fe.nframes() << " frames";
+    log::notice() << "using " << nframes << "/" << fe.nframes() << " frames";
+    log::notice() << "creating sum, power spectra and accumulating bispectrum of all frames"; 
+    log::info() << "reading first (reference) frame";
     indata = Mat2Array<complex_t>(fe.extract_next_frame());
-    smip::log::debug() << "frame data:";
-    if (smip::log::system::level() >= smip::log::Level::Debug) indata.print();
+    log::debug() << "frame data:";
+    if (log::system::level() >= log::Level::Debug) indata.print();
 
-    smip::log::debug() << "creating bispectrum with size [" << indata.cols() << " " << indata.rows() << " " << bispectrum_depth << " " << bispectrum_depth << "]";
+    log::debug() << "creating bispectrum with size [" << indata.cols() << " " << indata.rows() << " " << bispectrum_depth << " " << bispectrum_depth << "]";
     bispectrum = Bispectrum<bispec_complex_t>({ indata.cols(), indata.rows(), bispectrum_depth, bispectrum_depth });
-    if (smip::log::system::level() >= smip::log::Level::Debug) bispectrum.print();
+    if (log::system::level() >= log::Level::Debug) bispectrum.print();
     fftw_plan forward_plan = fftw_plan_dft_2d(indata.cols(), indata.rows(),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         FFTW_FORWARD, FFTW_ESTIMATE);
-    smip::log::info() << "adding frame to sum image";
+    log::info() << "adding frame to sum image";
     sumarray = indata;
-    smip::log::info() << "executing fft";
+    log::info() << "executing fft";
     fftw_execute(forward_plan);
-    smip::log::info() << "accumulating fft to mean bispectrum";
+    log::info() << "accumulating fft to mean bispectrum";
     bispectrum.accumulate_from_fft(indata);
     std::transform(indata.begin(), indata.end(), indata.begin(),
         [](const complex_t& val) {
             return complex_t { std::norm(val), 0. };
         });
-    smip::log::info() << "adding power spectrum to mean power spectrum";
+    log::info() << "adding power spectrum to mean power spectrum";
     powerspec = indata;
 
     while (fe.current_frame() < nframes) {
-        smip::log::info() << "reading frame " << fe.current_frame() + 1 << "/" << nframes;
+        log::info() << "reading frame " << fe.current_frame() + 1 << "/" << nframes;
         indata = Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
-        smip::log::info() << "adding frame to sum image";
+        log::info() << "adding frame to sum image";
         sumarray += indata;
-        smip::log::info() << "executing fft";
+        log::info() << "executing fft";
         fftw_execute(forward_plan);
         //std::cout<<"fftw result = "<<forward_plan<<std::endl;
-        smip::log::info() << "accumulating fft to mean bispectrum";
+        log::info() << "accumulating fft to mean bispectrum";
         bispectrum.accumulate_from_fft(indata);
-        smip::log::info() << "creating power spectrum from fft";
+        log::info() << "creating power spectrum from fft";
         std::transform(indata.begin(), indata.end(), indata.begin(),
             [](const complex_t& val) {
                 return complex_t { std::norm(val), 0. };
             });
-        smip::log::info() << "adding power spectrum to mean power spectrum";
+        log::info() << "adding power spectrum to mean power spectrum";
         powerspec += indata;
     }
     sumarray /= 1.0 * nframes;
-    smip::log::info() << "normalizing bispectrum";
+    log::info() << "normalizing bispectrum";
     powerspec /= complex_t(nframes * powerspec.NrElements(), 0.);
-    smip::log::info() << "normalizing power spectrum";
+    log::info() << "normalizing power spectrum";
     bispectrum /= bispec_complex_t(nframes, 0.);
-    smip::log::notice() << "writing bispectrum to file 'bispectrum.dat'";
+    log::notice() << "writing bispectrum to file 'bispectrum.dat'";
     bispectrum.write_to_file("bispectrum.dat");
     fftw_destroy_plan(forward_plan);
 
-    smip::log::notice() << "reconstructing fourier phases from bispectrum";
+    log::notice() << "reconstructing fourier phases from bispectrum";
     PhaseMap pm;
     phases = reconstruct_phases<complex_t, bispec_complex_t>(bispectrum, indata.cols(), indata.rows(), reco_radius, &pm);
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "sumarray:";
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "sumarray:";
         sumarray.print();
-        smip::log::debug() << "power spectrum:";
+        log::debug() << "power spectrum:";
         powerspec.print();
-        smip::log::info() << "phases:";
+        log::info() << "phases:";
         phases.print();
     }
-    smip::log::notice() << "applying window function to phase map";
+    log::notice() << "applying window function to phase map";
     Hann<complex_t> window_f(powerspec.rows(), powerspec.cols(), 2 * reco_radius);
     phases *= window_f;
     Array<complex_t, 2> result_image(powerspec.rows(), powerspec.cols());
-    smip::log::info() << "calculating sqrt of power spectrum";
+    log::info() << "calculating sqrt of power spectrum";
     std::transform(powerspec.begin(), powerspec.end(), result_image.begin(),
         [](const complex_t& val) {
             return complex_t { std::sqrt(val.real()), 0. };
         });
-    smip::log::notice() << "combining powerspectrum with phases";
+    log::notice() << "combining powerspectrum with phases";
     result_image *= phases;
 
     fftw_plan reverse_plan = fftw_plan_dft_2d(result_image.cols(), result_image.rows(),
@@ -304,11 +306,11 @@ int main(int argc, char* argv[])
         reinterpret_cast<fftw_complex*>(result_image.data().get()),
         FFTW_BACKWARD, FFTW_ESTIMATE);
 
-    smip::log::notice() << "fft back transform of combined spectrum";
+    log::notice() << "fft back transform of combined spectrum";
     fftw_execute(reverse_plan);
 
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "reconstructed image:";
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "reconstructed image:";
         result_image.print();
     }
     fftw_destroy_plan(reverse_plan);
@@ -317,22 +319,22 @@ int main(int argc, char* argv[])
         return (std::abs(a) < std::abs(b));
     };
     auto minmax = std::minmax_element(sumarray.begin(), sumarray.end(), abscomp);
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "sum image: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "sum image: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
     minmax = std::minmax_element(powerspec.begin(), powerspec.end(), abscomp);
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "power spectrum: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "power spectrum: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
     auto normfact { std::abs(*(minmax.second)) / 1000. };
     powerspec /= complex_t { normfact, 0. };
     minmax = std::minmax_element(phases.begin(), phases.end(), abscomp);
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "phases: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "phases: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
     minmax = std::minmax_element(result_image.begin(), result_image.end(), abscomp);
-    if (smip::log::system::level() >= smip::log::Level::Debug) {
-        smip::log::debug() << "reconstructed image: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
+    if (log::system::level() >= log::Level::Debug) {
+        log::debug() << "reconstructed image: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
     normfact = { std::abs(*(minmax.second)) };
     result_image /= complex_t { normfact, 0. };
@@ -346,14 +348,14 @@ int main(int argc, char* argv[])
     cv::namedWindow("Display Reco Image", cv::WINDOW_AUTOSIZE);
     cv::imshow("Display Sum Image", Array2Mat(sumarray, std::abs<double>, CV_8UC3, false));
     cv::imshow("Display FFT Image", Array2Mat(powerspec, std::abs<double>, CV_8UC3));
-    cv::imshow("Display Phases Image", Array2Mat(phases, smip::complex_phase<double>, CV_8UC3));
-    cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double>(pm, smip::get_phase_consistency, CV_8UC3));
+    cv::imshow("Display Phases Image", Array2Mat(phases, complex_phase<double>, CV_8UC3));
+    cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_8UC3));
     cv::imshow("Display Reco Image", Array2Mat(result_image, std::abs<double>, CV_8UC3));
     save_frame(Array2Mat(sumarray, std::abs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
     save_frame(Array2Mat(sumarray, std::abs<double>, CV_16U, false), "sum_image.png");
-    save_frame(Array2Mat(phases, smip::complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
-    save_frame(Array2Mat(phases, smip::complex_phase<double>, CV_16U), "phases.png");
-    save_frame(Array2Mat<PhaseMapElement, double>(pm, smip::get_phase_consistency, CV_16UC3), "phasecons.png");
+    save_frame(Array2Mat(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
+    save_frame(Array2Mat(phases, complex_phase<double>, CV_16U), "phases.png");
+    save_frame(Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_16UC3), "phasecons.png");
     save_frame(Array2Mat(powerspec, std::abs<double>, CV_16UC3), "powerspec_falsecolor.png");
     save_frame(Array2Mat(powerspec, std::abs<double>, CV_16U), "powerspec.png");
     save_frame(Array2Mat(result_image, std::abs<double>, CV_16UC3), "reco_image_falsecolor.png");
