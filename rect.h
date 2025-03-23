@@ -7,12 +7,30 @@ struct Rect {
     Point<T> topleft {};
     Point<T> bottomright {};
     Rect() = default;
+    //Rect(const Rect&) = default;
+    //Rect(Rect&&) = default;
     Rect(const Point<T>& a, const Point<T>& b);
     Rect(Point<T> a_center, T a_width, T a_height);
     auto width() const -> T;
     auto height() const -> T;
     auto area() const -> T;
     auto center() const -> Point<T>;
+    void set_size(const Point<T>& sizes);
+    Rect<T>& operator+=(const Point<T>& other);
+    Rect<T>& operator-=(const Point<T>& other);
+    // friends defined inside class body are inline and are hidden from non-ADL lookup
+    friend Rect<T> operator+(Rect<T> lhs, const Point<T>& rhs)
+    {
+        // passing lhs by value helps optimize chained a+b+c
+        // otherwise, both parameters may be const references
+        lhs += rhs; // reuse compound assignment
+        return lhs; // return the result by value (uses move constructor)
+    }
+    friend Rect<T> operator-(Rect<T> lhs, const Point<T>& rhs)
+    {
+        lhs -= rhs; // reuse compound assignment
+        return lhs; // return the result by value (uses move constructor)
+    }
 };
 
 
@@ -42,26 +60,50 @@ Rect<T>::Rect(Point<T> a_center, T a_width, T a_height)
 
 template <typename T>
 auto Rect<T>::width() const -> T 
-{ 
+{
     return static_cast<T>(std::abs(static_cast<double>(bottomright.x) - topleft.x));
 }
 
 template <typename T>
 auto Rect<T>::height() const -> T 
-{ 
+{
     return static_cast<double>(std::abs(static_cast<double>(bottomright.y) - topleft.y));
 }
 
 template <typename T>
 auto Rect<T>::area() const -> T 
-{ 
+{
     return width() * height(); 
 }
 
 template <typename T>
 auto Rect<T>::center() const -> Point<T> 
-{ 
+{
     return topleft + Point<T>{ width()/2, height()/2}; 
+}
+
+template <typename T>
+void Rect<T>::set_size(const Point<T>& sizes)
+{
+    bottomright = topleft + sizes;
+}
+
+// compound assignment (does not need to be a member,
+// but often is, to modify the private members)
+template <typename T>
+Rect<T>& Rect<T>::operator+=(const Point<T>& other)
+{
+    topleft += other;
+    bottomright += other;
+    return *this; // return the result by reference
+}
+
+template <typename T>
+Rect<T>& Rect<T>::operator-=(const Point<T>& other)
+{
+    topleft -= other;
+    bottomright -= other;
+    return *this; // return the result by reference
 }
 
 template <typename T>
