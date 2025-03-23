@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
     Rect<std::size_t> crop_rect {};
     int swSpeckleMasking { 1 };
     int swCalcSum { 1 };
+    int swShowVersion { 0 };
     std::size_t verbose { 0 };
     
 
@@ -101,6 +102,7 @@ int main(int argc, char* argv[])
                 //{"brief",   no_argument,       &verbose_flag, 0},
                 // These options don't set a flag.
                 //  We distinguish them by their indices.
+                {"verbose", no_argument,       0, 'v'},
                 {"bdepth",  required_argument, 0, 'b'},
                 {"recoradius",  required_argument, 0, 'p'},
                 {"refframe",  required_argument, 0, 'r'},
@@ -108,9 +110,8 @@ int main(int argc, char* argv[])
                 {"channel",  required_argument, 0, 'c'},
                 {"croppos",  required_argument, 0, 'k'},
                 {"cropsize",  required_argument, 0, 's'},
-                {"verbose", no_argument,       0, 'v'},
                 {"help", no_argument,       0, 'h'},
-                {"version", no_argument,       0},
+                {"version", no_argument,     &swShowVersion,  1},
                 {"no-calcsum", no_argument,       &swCalcSum, 0},
                 {"calcsum", no_argument,       &swCalcSum, 1},
                 {"no-specklemasking", no_argument,       &swSpeckleMasking, 0},
@@ -205,6 +206,20 @@ int main(int argc, char* argv[])
         }
     }
    
+    if (swShowVersion) {
+//         log::info() << "v1.0";
+        exit(0);
+    };
+
+    switch (verbose) {
+        case 0: break;
+        case 1:
+            log::system::level() = log::Level::Info;
+            break;
+        case 2:
+        default:
+            log::system::level() = log::Level::Debug;
+    }
     argc -= optind;
     argv += optind;
 
