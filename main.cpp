@@ -85,7 +85,6 @@ int main(int argc, char* argv[])
     std::size_t bispectrum_depth { 15 };
     std::size_t reco_radius = bispectrum_depth * 2;
     std::uint8_t color_channel { color_channel_t::white };
-    Point<std::size_t> crop_pos {};
     Rect<std::size_t> crop_rect {};
     int swSpeckleMasking { 1 };
     int swCalcSum { 1 };
@@ -148,28 +147,26 @@ int main(int argc, char* argv[])
                 bispectrum_depth = strtoul(optarg,NULL,10);
                 break;
             case 'k':
-                stdstr=std::string(optarg);
-                istr.str(stdstr);
+                istr.str(std::string(optarg));
                 int _a,_b;
                 _a=_b=-1;
                 char _c;
                 istr>>_a>>_c>>_b;
                 if (_a<=0) break;
                 if (_b<=0) _b=_a;
-                crop_pos = { _a, _b };
-                smip::log::debug() << "crop box offset (l:t): " << crop_pos;
+                crop_rect += { _a, _b };
+                log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
                 break;
             case 's':
-                stdstr=std::string(optarg);
-                istr.str(stdstr);
+                istr.str(std::string(optarg));
                 int a,b;
                 a =-1; b=-1;
                 char c;
                 istr>>a>>c>>b;
                 if (a<=0) break;
                 if (b<=0) b=a;
-                crop_rect = { {0,0}, {a, b} };
-                smip::log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
+                crop_rect.set_size( {a, b} );
+                log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
                 break;
             case 'c':
                 //cout<<"color channel : "<<optarg<<endl;
