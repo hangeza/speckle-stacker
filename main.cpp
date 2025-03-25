@@ -266,7 +266,10 @@ int main(int argc, char* argv[])
 
     while (fe.current_frame() < nframes) {
         log::info() << "reading frame " << fe.current_frame() + 1 << "/" << nframes;
-        indata = Mat2Array<complex_t>(fe.extract_next_frame());
+        // the following two lines circumvent the move operation
+        // which would alter indata's storage address
+        indata = complex_t{};
+        indata += Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         log::info() << "adding frame to sum image";
         sumarray += indata;
