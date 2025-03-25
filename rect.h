@@ -1,6 +1,8 @@
 #pragma once
 #include <cmath>
+#include <limits>
 #include "point.h"
+#include <type_traits>
 
 template <typename T>
 struct Rect {
@@ -12,7 +14,11 @@ struct Rect {
     Rect(const Point<T>& a, const Point<T>& b);
     Rect(Point<T> a_center, T a_width, T a_height);
     auto width() const -> T;
+    template<typename U=T, std::enable_if_t<!std::is_integral<U>::value, int> = 0>
+        auto width() const -> T;
     auto height() const -> T;
+    template<typename U=T, std::enable_if_t<!std::is_integral<U>::value, int> = 0>
+        auto height() const -> T;
     auto area() const -> T;
     auto center() const -> Point<T>;
     void set_size(const Point<T>& sizes);
@@ -47,7 +53,7 @@ Rect(Point<T> a, Point<T> b) -> Rect<T>;
 
 template <typename T>
 Rect<T>::Rect(const Point<T>& a, const Point<T>& b)
-    : topleft{a}, bottomright{b} 
+    : topleft{a}, bottomright{b}
 {
 }
 
@@ -58,28 +64,46 @@ Rect<T>::Rect(Point<T> a_center, T a_width, T a_height)
 {
 }
 
-template <typename T>
-auto Rect<T>::width() const -> T 
+template<typename T>
+template<typename U, std::enable_if_t<!std::is_integral<U>::value, int> >
+auto Rect<T>::width() const -> T
 {
-    return static_cast<T>(std::abs(static_cast<double>(bottomright.x) - topleft.x));
+    return static_cast<T>(std::abs(bottomright.x - topleft.x) + std::numeric_limits<T>::epsilon());
+}
+
+template<typename T>
+auto Rect<T>::width() const -> T
+{
+    auto maxval { std::max(bottomright.x, topleft.x) };
+    auto minval { std::min(bottomright.x, topleft.x) };
+    return static_cast<T>(maxval - minval + T(1));
+}
+
+template<typename T>
+template<typename U, std::enable_if_t<!std::is_integral<U>::value, int> >
+auto Rect<T>::height() const -> T
+{
+    return static_cast<T>(std::abs(bottomright.y - topleft.y) + std::numeric_limits<T>::epsilon());
 }
 
 template <typename T>
-auto Rect<T>::height() const -> T 
+auto Rect<T>::height() const -> T
 {
-    return static_cast<double>(std::abs(static_cast<double>(bottomright.y) - topleft.y));
+    auto maxval { std::max(bottomright.y, topleft.y) };
+    auto minval { std::min(bottomright.y, topleft.y) };
+    return static_cast<T>(maxval - minval + T(1));
 }
 
 template <typename T>
-auto Rect<T>::area() const -> T 
+auto Rect<T>::area() const -> T
 {
-    return width() * height(); 
+    return width() * height();
 }
 
 template <typename T>
-auto Rect<T>::center() const -> Point<T> 
+auto Rect<T>::center() const -> Point<T>
 {
-    return topleft + Point<T>{ width()/2, height()/2}; 
+    return topleft + Point<T>{ width()/2, height()/2};
 }
 
 template <typename T>
