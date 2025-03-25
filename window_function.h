@@ -10,7 +10,8 @@ class WindowFunction : public Array2<T> {
 public:
     WindowFunction() { }
     WindowFunction(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture)
-        : Array2<T>(a_xsize, a_ysize), m_aperture(window_aperture)
+        : Array2<T>(a_xsize, a_ysize)
+        , m_aperture(window_aperture)
     {
     }
     ~WindowFunction() { }

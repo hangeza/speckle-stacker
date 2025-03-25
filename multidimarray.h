@@ -93,11 +93,11 @@ public:
      */
     Array();
     Array(const extends& a_extends,
-          const T& = T {});
+        const T& = T {});
     Array(const extends& a_extends,
-          const strides& a_strides,
-          T* a_mem,
-          std::size_t a_size);
+        const strides& a_strides,
+        T* a_mem,
+        std::size_t a_size);
     /*! Copy Constructor \n
      *  make deep copy of \e src
      */
@@ -243,14 +243,14 @@ public:
     */
     Array();
     Array(const extends& a_extends,
-          const T& init = T {});
+        const T& init = T {});
     Array(std::size_t nrows, std::size_t ncols,
-          const T& init = T {});
+        const T& init = T {});
     Array(const extends& a_extends,
-          const strides& a_strides,
-          std::shared_ptr<T> a_mem,
-          std::size_t a_offs,
-          std::size_t a_size);
+        const strides& a_strides,
+        std::shared_ptr<T> a_mem,
+        std::size_t a_offs,
+        std::size_t a_size);
     /*! copy constructor \n
     *  make deep copy of \e src
     */
@@ -355,17 +355,17 @@ public:
    */
     Array();
     Array(const extends& a_extends,
-          const T& init = T {});
+        const T& init = T {});
     Array(const extends& a_extends,
-          const strides& a_strides,
-          std::shared_ptr<T> a_mem,
-          std::size_t a_offs,
-          std::size_t a_size);
+        const strides& a_strides,
+        std::shared_ptr<T> a_mem,
+        std::size_t a_offs,
+        std::size_t a_size);
     Array(const extends& a_extends,
-          const strides& a_strides,
-          const std::shared_ptr<const T>& a_mem,
-          std::size_t a_offs,
-          std::size_t a_size);
+        const strides& a_strides,
+        const std::shared_ptr<const T>& a_mem,
+        std::size_t a_offs,
+        std::size_t a_size);
     /*! copy constructor \n
     *  make deep copy of \e src
     */
@@ -506,7 +506,6 @@ inline std::ostream& operator<<(std::ostream& o, Array<T, 2>& v)
 // Member definitions / implementation part
 // *************************************************
 
-
 /*
  * class Array
  */
@@ -524,7 +523,7 @@ Array<T, NrDims>::Array(const extends& a_extends, const T& init)
                         a_extends.end(),
                         1,
                         std::multiplies<int>()),
-                        init)
+        init)
 {
     assert((a_extends.size() == NrDims));
     _extends = a_extends;
@@ -534,9 +533,9 @@ Array<T, NrDims>::Array(const extends& a_extends, const T& init)
 
 template <typename T, std::size_t NrDims>
 Array<T, NrDims>::Array(const extends& a_extends,
-                        const strides& a_strides,
-                        T* a_mem,
-                        size_t a_size)
+    const strides& a_strides,
+    T* a_mem,
+    size_t a_size)
 {
     assert((a_extends.size() == NrDims));
     _extends = a_extends;
@@ -693,7 +692,6 @@ void Array<T, NrDims>::print() const
     std::cout << "size of Array: " << sizeof(T) * this->size() << " bytes" << std::endl;
 }
 
-
 /*
  * class Array<T,2>
  */
@@ -780,11 +778,10 @@ Array<T, 2>::Array(std::initializer_list<std::initializer_list<T>> l)
     _strides = { 1, _extends[0] };
 }
 
-
 template <typename T>
 Array<T, 2>& Array<T, 2>::operator=(const Array<T, 2>& src)
 {
-    std::cout<<"Array<T,2>& Array<T,2>::operator=(const Array&)\n";
+    std::cout << "Array<T,2>& Array<T,2>::operator=(const Array&)\n";
     // assert(!src._isReference);
     if (this == &src)
         return *this;
@@ -900,7 +897,7 @@ Array<T, 2>& Array<T, 2>::operator/=(const T& x)
 }
 
 template <typename T>
-Array<T,1> Array<T,2>::operator[](int in)
+Array<T, 1> Array<T, 2>::operator[](int in)
 {
     extends ext = _extends;
     strides str = _strides;
@@ -917,12 +914,12 @@ Array<T,1> Array<T,2>::operator[](int in)
         Array_base<T>::data(),
         offs,
         _size);
-    std::cout<<"Array<T,1> Array<T,2>::operator[](int)\n";
+    std::cout << "Array<T,1> Array<T,2>::operator[](int)\n";
     return _x;
 }
 template <typename T>
 
-Array<T,1> Array<T,2>::operator[](int in) const
+Array<T, 1> Array<T, 2>::operator[](int in) const
 {
     extends ext = _extends;
     strides str = _strides;
@@ -936,10 +933,10 @@ Array<T,1> Array<T,2>::operator[](int in) const
 
     const Array<T, 1> _x(ext,
         DimVector<int, 1>(str),
-        std::const_pointer_cast<const T>(_mem)/*Array_base<T>::data()*/,
+        std::const_pointer_cast<const T>(_mem) /*Array_base<T>::data()*/,
         offs,
         _size);
-    std::cout<<"Array<T,1> Array<T,2>::operator[](int) const\n";
+    std::cout << "Array<T,1> Array<T,2>::operator[](int) const\n";
     return _x;
 }
 
@@ -1121,7 +1118,7 @@ Array<T, 1>::Array(const extends& a_extends,
     const T& init)
     : Array_base<T>(a_extends[0], init)
 {
-    std::cout<<"Array<T,1>::Array(const extends&,const T&)\n";
+    std::cout << "Array<T,1>::Array(const extends&,const T&)\n";
     assert((a_extends.size() == 1));
     _extends = a_extends;
     _strides = { 1 };
@@ -1138,7 +1135,7 @@ Array<T, 1>::Array(const extends& a_extends,
     , _strides(a_strides)
     , _offset(a_offs)
 {
-    std::cout<<"Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<T>, std::size_t, std::size_t)\n";
+    std::cout << "Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<T>, std::size_t, std::size_t)\n";
     assert((a_extends.size() == 1));
     assert((a_strides.size() == 1));
     //      _mem=a_mem;
@@ -1157,7 +1154,7 @@ Array<T, 1>::Array(const extends& a_extends,
     , _strides(a_strides)
     , _offset(a_offs)
 {
-    std::cout<<"Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<const T>, std::size_t, std::size_t)\n";
+    std::cout << "Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<const T>, std::size_t, std::size_t)\n";
     assert((a_extends.size() == 1));
     assert((a_strides.size() == 1));
     //      _mem=a_mem;
@@ -1170,11 +1167,11 @@ Array<T, 1>::Array(const Array& src)
     : Array_base<T>(src.NrElements())
     , _extends(src._extends)
 {
-    std::cout<<"Array<T,1>::Array(const Array<T,1>&)";
+    std::cout << "Array<T,1>::Array(const Array<T,1>&)";
     //assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
     _strides = { 1 };
-//     _isReference = false;
+    //     _isReference = false;
     std::copy(src.begin(), src.end(), T_base::begin());
 }
 
@@ -1190,22 +1187,21 @@ Array<T, 1>::Array(std::initializer_list<T> l)
     _strides = { 1 };
 }
 
-
 template <typename T>
-Array<T,1>& Array<T,1>::operator=(const Array<T,1> &src)
+Array<T, 1>& Array<T, 1>::operator=(const Array<T, 1>& src)
 {
-    std::cout<<"Array<T,1>& Array<T,1>::operator=(const Array<T,1>&)\n";
-    _extends=src.size();
+    std::cout << "Array<T,1>& Array<T,1>::operator=(const Array<T,1>&)\n";
+    _extends = src.size();
     if (_isReference) {
-        _mem=nullptr;
-        _isReference=false;
+        _mem = nullptr;
+        _isReference = false;
     }
     src.print();
     assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
     _strides = { 1 };
     _offset = 0;
-    std::copy(src.begin(),src.end(), Array_base<T>::begin());
+    std::copy(src.begin(), src.end(), Array_base<T>::begin());
     return *this;
 }
 

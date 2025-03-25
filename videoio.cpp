@@ -13,7 +13,6 @@ namespace smip {
 double get_phase_consistency(const PhaseMapElement& pme) { return pme.consistency; }
 //double complex_phase(const std::complex<double>& a) { return (std::arg(a)+M_PI)/(M_PI*2); }
 
-
 FrameExtractor::FrameExtractor(const std::string& filename)
     : m_filename(filename)
 {

@@ -26,11 +26,9 @@ struct RGB {
 template <typename T>
 RGB<T> mapToColor(double value);
 
-
 double get_phase_consistency(const PhaseMapElement& pme);
 template <typename T>
 T complex_phase(const std::complex<T>& a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
-
 
 class FrameExtractor {
 public:
@@ -59,7 +57,6 @@ cv::Mat Array2Mat(const Array2<T>& arr,
     U (*converter)(const T&) = std::abs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
-
 
 // implementation part
 
@@ -113,7 +110,7 @@ cv::Mat Array2Mat(const Array2<T>& arr,
         rows = 1;
     }
     */
-//    std::cout << "save image: channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
+    //    std::cout << "save image: channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
     for (int i = 0; i < rows; i++) {
         if (bytesperchannel == 1) {
             std::uint8_t* Mi = mat.ptr<std::uint8_t>(i);

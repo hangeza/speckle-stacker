@@ -24,12 +24,11 @@ struct Point {
     }
 };
 
-
 //********************
 // deduction guides
 //********************
 template <typename T>
-Point(T a, T b)->Point<T>;
+Point(T a, T b) -> Point<T>;
 
 //********************
 // implementation part
@@ -39,7 +38,7 @@ Point(T a, T b)->Point<T>;
 // but often is, to modify the private members)
 template <typename T>
 Point<T>& Point<T>::operator+=(const Point<T>& other)
-{    
+{
     x += other.x;
     y += other.y;
     return *this; // return the result by reference
@@ -47,7 +46,7 @@ Point<T>& Point<T>::operator+=(const Point<T>& other)
 
 template <typename T>
 Point<T>& Point<T>::operator-=(const Point<T>& other)
-{    
+{
     x -= other.x;
     y -= other.y;
     return *this; // return the result by reference

@@ -43,7 +43,7 @@ public:
     ~Array_base();
 
     Array_base<T>& operator=(Array_base<T>&& other);
-    
+
     iterator begin() { return _mem.get(); }
     const_iterator begin() const { return data().get(); }
     iterator end() { return _mem.get() + _size; }
@@ -53,7 +53,8 @@ public:
     std::shared_ptr<const T> data() const { return std::const_pointer_cast<const T>(_mem); }
 
     reference operator[](std::size_t i) { return _mem.get()[i]; }
-    const_reference operator[](std::size_t i) const { 
+    const_reference operator[](std::size_t i) const
+    {
         return std::const_pointer_cast<const T>(_mem).get()[i];
     }
     reference at(std::size_t i)
@@ -93,7 +94,6 @@ protected:
     std::shared_ptr<T> _mem { nullptr, [](T* p) { delete[] p; } };
 };
 
-
 // *************************************************
 // Member definitions / implementation part
 // *************************************************
@@ -105,7 +105,7 @@ template <typename T>
 Array_base<T>::Array_base(const Array_base& src)
     : _size(src._size)
 {
-//     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
+    //     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
     if (!_size)
         return;
 
@@ -130,7 +130,7 @@ template <typename T>
 Array_base<T>::Array_base(std::size_t a_size)
     : _size(a_size)
 {
-//     std::cout<<"Array_base<T>::Array_base(std::size_t)\n";
+    //     std::cout<<"Array_base<T>::Array_base(std::size_t)\n";
     if (!_size)
         return;
     auto temp = std::make_unique<T[]>(_size);
@@ -144,7 +144,7 @@ template <typename T>
 Array_base<T>::Array_base(std::size_t a_size, const T& def)
     : _size(a_size)
 {
-//     std::cout<<"Array_base<T>::Array_base(std::size_t, const T&)\n";
+    //     std::cout<<"Array_base<T>::Array_base(std::size_t, const T&)\n";
     if (!_size)
         return;
     auto temp = std::make_unique<T[]>(_size);
@@ -171,9 +171,9 @@ Array_base<T>::~Array_base()
 }
 
 template <typename T>
-Array_base<T>& Array_base<T>::operator=(Array_base<T>&& other) {
-    if (this != &other) 
-    {
+Array_base<T>& Array_base<T>::operator=(Array_base<T>&& other)
+{
+    if (this != &other) {
         _size = other._size;
         _isReference = other._isReference;
         _mem = std::move(other._mem);

@@ -1,7 +1,7 @@
 #pragma once
 //#include "multidimarray.h"
-#include "phasemap.h"
 #include "array2.h"
+#include "phasemap.h"
 
 namespace smip {
 

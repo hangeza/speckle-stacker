@@ -21,17 +21,16 @@
 #include "opencv2/videoio.hpp"
 #include <opencv2/core/mat.hpp>
 
+#include "array2.h"
 #include "bispectrum.h"
+#include "log.h"
 #include "multidimarray.h"
 #include "phasemap.h"
 #include "phasereco.h"
-#include "videoio.h"
-#include "window_function.h"
-#include "log.h"
 #include "point.h"
 #include "rect.h"
-#include "array2.h"
-
+#include "videoio.h"
+#include "window_function.h"
 
 typedef std::complex<double> complex_t;
 typedef std::complex<float> bispec_complex_t;
@@ -91,162 +90,173 @@ int main(int argc, char* argv[])
     int swCalcSum { 1 };
     int swShowVersion { 0 };
     std::size_t verbose { 0 };
-    
 
     // evaluate command line options
     for (char ch {}; ch != -1;) {
-        static struct option long_options[] =
-            {
-                // These options set a flag.
-                //{"verbose", no_argument,       &verbose_flag, 1},
-                //{"brief",   no_argument,       &verbose_flag, 0},
-                // These options don't set a flag.
-                //  We distinguish them by their indices.
-                {"verbose", no_argument,       0, 'v'},
-                {"bdepth",  required_argument, 0, 'b'},
-                {"recoradius",  required_argument, 0, 'p'},
-                {"refframe",  required_argument, 0, 'r'},
-                {"nrframes",    required_argument, 0, 'n'},
-                {"channel",  required_argument, 0, 'c'},
-                {"croppos",  required_argument, 0, 'k'},
-                {"cropsize",  required_argument, 0, 's'},
-                {"help", no_argument,       0, 'h'},
-                {"version", no_argument,     &swShowVersion,  1},
-                {"no-calcsum", no_argument,       &swCalcSum, 0},
-                {"calcsum", no_argument,       &swCalcSum, 1},
-                {"no-specklemasking", no_argument,       &swSpeckleMasking, 0},
-                {"specklemasking", no_argument,       &swSpeckleMasking, 1},
-                {0, 0, 0, 0}
-            };
+        static struct option long_options[] = {
+            // These options set a flag.
+            //{"verbose", no_argument,       &verbose_flag, 1},
+            //{"brief",   no_argument,       &verbose_flag, 0},
+            // These options don't set a flag.
+            //  We distinguish them by their indices.
+            { "verbose", no_argument, 0, 'v' },
+            { "bdepth", required_argument, 0, 'b' },
+            { "recoradius", required_argument, 0, 'p' },
+            { "refframe", required_argument, 0, 'r' },
+            { "nrframes", required_argument, 0, 'n' },
+            { "channel", required_argument, 0, 'c' },
+            { "croppos", required_argument, 0, 'k' },
+            { "cropsize", required_argument, 0, 's' },
+            { "help", no_argument, 0, 'h' },
+            { "version", no_argument, &swShowVersion, 1 },
+            { "no-calcsum", no_argument, &swCalcSum, 0 },
+            { "calcsum", no_argument, &swCalcSum, 1 },
+            { "no-specklemasking", no_argument, &swSpeckleMasking, 0 },
+            { "specklemasking", no_argument, &swSpeckleMasking, 1 },
+            { 0, 0, 0, 0 }
+        };
         // getopt_long stores the option index here.
         int option_index { 0 };
-     
-        ch = getopt_long (argc, argv, "vn:r:p:b:c:h?k:s:",
-                            long_options, &option_index); 
-     
+
+        ch = getopt_long(argc, argv, "vn:r:p:b:c:h?k:s:",
+            long_options, &option_index);
+
         std::string stdstr;
         std::istringstream istr;
         switch (ch) {
-            case 'v':
-                log::debug() << "verbose";
-                verbose++;
+        case 'v':
+            log::debug() << "verbose";
+            verbose++;
+            break;
+        case 'n':
+            log::debug() << "number of frames: " << optarg;
+            max_frames = strtoul(optarg, NULL, 10);
+            break;
+        case 'r':
+            log::debug() << "reference frame: " << optarg;
+            ref_frame = strtoul(optarg, NULL, 10);
+            break;
+        case 'p':
+            log::debug() << "radius of reconstructed phase disc: " << optarg;
+            reco_radius = strtoul(optarg, NULL, 10);
+            break;
+        case 'b':
+            log::debug() << "bispectrum size (dims 3 & 4): " << optarg;
+            bispectrum_depth = strtoul(optarg, NULL, 10);
+            break;
+        case 'k':
+            istr.str(std::string(optarg));
+            int _a, _b;
+            _a = _b = -1;
+            char _c;
+            istr >> _a >> _c >> _b;
+            if (_a <= 0)
                 break;
-            case 'n':
-                log::debug() << "number of frames: " << optarg;
-                max_frames = strtoul(optarg,NULL,10);
+            if (_b <= 0)
+                _b = _a;
+            crop_rect += { _a, _b };
+            log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
+            break;
+        case 's':
+            istr.str(std::string(optarg));
+            int a, b;
+            a = -1;
+            b = -1;
+            char c;
+            istr >> a >> c >> b;
+            if (a <= 0)
                 break;
-            case 'r':
-                log::debug() << "reference frame: " << optarg;
-                ref_frame = strtoul(optarg,NULL,10);
-                break;
-            case 'p':
-                log::debug() << "radius of reconstructed phase disc: " << optarg;
-                reco_radius = strtoul(optarg,NULL,10);
-                break;
-            case 'b':
-                log::debug() << "bispectrum size (dims 3 & 4): " << optarg;
-                bispectrum_depth = strtoul(optarg,NULL,10);
-                break;
-            case 'k':
-                istr.str(std::string(optarg));
-                int _a,_b;
-                _a=_b=-1;
-                char _c;
-                istr>>_a>>_c>>_b;
-                if (_a<=0) break;
-                if (_b<=0) _b=_a;
-                crop_rect += { _a, _b };
-                log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
-                break;
-            case 's':
-                istr.str(std::string(optarg));
-                int a,b;
-                a =-1; b=-1;
-                char c;
-                istr>>a>>c>>b;
-                if (a<=0) break;
-                if (b<=0) b=a;
-                crop_rect.set_size( {a, b} );
-                log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
-                break;
-            case 'c':
-                //cout<<"color channel : "<<optarg<<endl;
-                if (optarg!="") {
-                    stdstr=std::string(optarg);
-                    //std::string str(optarg);
-                    for (int i=0; i<stdstr.size(); ++i)
-                    {
-                        switch (stdstr[i]) {
-                            case 'r':
-                                color_channel = color_channel_t::red;
-                                break;
-                            case 'g':
-                                color_channel = color_channel_t::green;
-                                break;
-                            case 'b':
-                                color_channel = color_channel_t::blue;
-                                break;
-                            case 'i':
-                                color_channel = color_channel_t::white;
-                                break;
-                            default:
-                                break;
-                        }
+            if (b <= 0)
+                b = a;
+            crop_rect.set_size({ a, b });
+            log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
+            break;
+        case 'c':
+            //cout<<"color channel : "<<optarg<<endl;
+            if (optarg != "") {
+                stdstr = std::string(optarg);
+                //std::string str(optarg);
+                for (int i = 0; i < stdstr.size(); ++i) {
+                    switch (stdstr[i]) {
+                    case 'r':
+                        color_channel = color_channel_t::red;
+                        break;
+                    case 'g':
+                        color_channel = color_channel_t::green;
+                        break;
+                    case 'b':
+                        color_channel = color_channel_t::blue;
+                        break;
+                    case 'i':
+                        color_channel = color_channel_t::white;
+                        break;
+                    default:
+                        break;
                     }
-                    log::debug() << "color channel(s) : (r,g,b) = (" << (color_channel & color_channel_t::red) / color_channel_t::red
-                    << "," <<(color_channel & color_channel_t::green) / color_channel_t::green
-                    << "," << (color_channel & color_channel_t::blue) / color_channel_t::blue << ")";
                 }
-                break;
-            case 'h':
-            case '?':  Usage(progname); exit(0);
-            default: break;
+                log::debug() << "color channel(s) : (r,g,b) = (" << (color_channel & color_channel_t::red) / color_channel_t::red
+                             << "," << (color_channel & color_channel_t::green) / color_channel_t::green
+                             << "," << (color_channel & color_channel_t::blue) / color_channel_t::blue << ")";
+            }
+            break;
+        case 'h':
+        case '?':
+            Usage(progname);
+            exit(0);
+        default:
+            break;
         }
     }
-   
+
     if (swShowVersion) {
-//         log::info() << "v1.0";
+        //         log::info() << "v1.0";
         exit(0);
     };
 
     switch (verbose) {
-        case 0: break;
-        case 1:
-            log::system::level() = log::Level::Info;
-            break;
-        case 2:
-        default:
-            log::system::level() = log::Level::Debug;
+    case 0:
+        break;
+    case 1:
+        log::system::level() = log::Level::Info;
+        break;
+    case 2:
+    default:
+        log::system::level() = log::Level::Debug;
     }
     argc -= optind;
     argv += optind;
 
-    if (argc!=1) { Usage(progname); exit(0);}
+    if (argc != 1) {
+        Usage(progname);
+        exit(0);
+    }
     std::string filename(*argv);
-    
+
     Array2<complex_t> sumarray, powerspec;
     Array2<complex_t> indata;
     Bispectrum<bispec_complex_t> bispectrum;
     Array2<complex_t> phases;
 
-    FrameExtractor fe(filename);    
+    FrameExtractor fe(filename);
     log::info() << "opening video file " << filename;
     if (!fe.is_valid()) {
         log::critical(-1) << "file open error: " << fe.filename();
-//         exit(-1);
+        //         exit(-1);
     }
     const std::size_t nframes { std::min(fe.nframes(), max_frames) };
     log::info() << "opened video file: " << fe.nframes() << " frames";
     log::notice() << "using " << nframes << "/" << fe.nframes() << " frames";
-    log::info() << "creating sum, power spectra and accumulating bispectrum of all frames"; 
+    log::info() << "creating sum, power spectra and accumulating bispectrum of all frames";
     log::info() << "reading first (reference) frame";
     indata = Mat2Array<complex_t>(fe.extract_next_frame());
     log::debug() << "frame data:";
-    if (log::system::level() >= log::Level::Debug) indata.print();
+    if (log::system::level() >= log::Level::Debug)
+        indata.print();
 
     log::debug() << "creating bispectrum with size [" << indata.ncols() << " " << indata.nrows() << " " << bispectrum_depth << " " << bispectrum_depth << "]";
     bispectrum = Bispectrum<bispec_complex_t>({ indata.ncols(), indata.nrows(), bispectrum_depth, bispectrum_depth });
-    if (log::system::level() >= log::Level::Debug) bispectrum.print();
+    if (log::system::level() >= log::Level::Debug)
+        bispectrum.print();
     fftw_plan forward_plan = fftw_plan_dft_2d(indata.nrows(), indata.ncols(),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
@@ -268,7 +278,7 @@ int main(int argc, char* argv[])
         log::info() << "reading frame " << fe.current_frame() + 1 << "/" << nframes;
         // the following two lines circumvent the move operation
         // which would alter indata's storage address
-        indata = complex_t{};
+        indata = complex_t {};
         indata += Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         log::info() << "adding frame to sum image";

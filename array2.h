@@ -1,39 +1,38 @@
 #pragma once
+#include <climits>
 #include <complex>
+#include <cstring>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
-#include <climits>
-#include <cstring>
 
 #include "array_base.h"
-#include "rect.h"
 #include "dimvector.h"
+#include "rect.h"
 
-namespace smip{
+namespace smip {
 
 // template <typename T>
 // class Array2<T>;
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
-
 //! Container class for 2d arrays
 /*!
  * ...
 */
 template <typename T>
-class Array2 : public Array_base<T>
-{
+class Array2 : public Array_base<T> {
     using Array_base<T>::_mem;
     using Array_base<T>::_size;
     struct Proxy;
+
 public:
     typedef DimVector<std::size_t, 2> extends;
     typedef DimVector<int, 2> s_indices;
     typedef DimVector<std::size_t, 2> u_indices;
-    
+
     Array2() = default;
     // Copy constructor
     Array2(const Array2<T>& src);
@@ -43,10 +42,10 @@ public:
     Array2(std::size_t xsize, std::size_t ysize, const T& init);
     Array2(const extends& a_extends);
     Array2(const extends& a_extends, const T& init);
-    Array2(std::initializer_list<std::initializer_list<T>> l);    
+    Array2(std::initializer_list<std::initializer_list<T>> l);
     ~Array2() = default;
-    
-    Array2<T>& operator=(const Array2<T> &x);
+
+    Array2<T>& operator=(const Array2<T>& x);
     // Move assignment operator
     Array2<T>& operator=(Array2<T>&& other) noexcept;
     Array2<T>& operator=(const T& val);
@@ -87,16 +86,14 @@ public:
     s_indices max_sindices() const { return { -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1, -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1 }; }
 
     void print() const;
-    
-//     friend Array2<T> operator+<>(const Array2<T> &x,const Array2<T> &y);
-    
+
+    //     friend Array2<T> operator+<>(const Array2<T> &x,const Array2<T> &y);
+
 private:
     std::size_t stride() const { return m_xsize; }
     std::size_t m_xsize {};
     std::size_t m_ysize {};
 };
-
-
 
 // *************************************************
 // Member definitions / implementation part
@@ -104,24 +101,26 @@ private:
 
 template <typename T>
 Array2<T>::Array2(const Array2<T>& src)
-    : Array_base<T>(src), m_xsize(src.m_xsize), m_ysize(src.m_ysize)
-{}
+    : Array_base<T>(src)
+    , m_xsize(src.m_xsize)
+    , m_ysize(src.m_ysize)
+{
+}
 
 template <typename T>
 Array2<T>::Array2(Array2<T>&& other) noexcept
-    : Array_base<T>(std::move(other)),
-    m_xsize(other.m_xsize), m_ysize(other.m_ysize)
+    : Array_base<T>(std::move(other))
+    , m_xsize(other.m_xsize)
+    , m_ysize(other.m_ysize)
 {
     other.m_xsize = 0;
     other.m_ysize = 0;
 }
 
-
 template <typename T>
-Array2<T>& Array2<T>::operator=(Array2<T>&& other) noexcept 
+Array2<T>& Array2<T>::operator=(Array2<T>&& other) noexcept
 {
-    if (this != &other) 
-    {
+    if (this != &other) {
         Array_base<T>::operator=(std::move(other));
         m_xsize = other.m_xsize;
         m_ysize = other.m_ysize;
@@ -133,13 +132,19 @@ Array2<T>& Array2<T>::operator=(Array2<T>&& other) noexcept
 
 template <typename T>
 Array2<T>::Array2(std::size_t xsize, std::size_t ysize)
-    : Array_base<T>(xsize*ysize), m_xsize(xsize), m_ysize(ysize)
-{}
+    : Array_base<T>(xsize * ysize)
+    , m_xsize(xsize)
+    , m_ysize(ysize)
+{
+}
 
 template <typename T>
 Array2<T>::Array2(std::size_t xsize, std::size_t ysize, const T& init)
-    : Array_base<T>(xsize*ysize, init), m_xsize(xsize), m_ysize(ysize)
-{}
+    : Array_base<T>(xsize * ysize, init)
+    , m_xsize(xsize)
+    , m_ysize(ysize)
+{
+}
 
 template <typename T>
 Array2<T>::Array2(const extends& a_extends)
@@ -163,7 +168,8 @@ template <typename T>
 Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
 {
     const std::size_t rows { l.size() };
-    if (rows == 0) return;
+    if (rows == 0)
+        return;
     const std::size_t cols { l.begin()->size() };
     assert(this->resize(cols * rows));
     auto memit = Array_base<T>::begin();
@@ -172,13 +178,14 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
         std::copy(row->begin(), row->end(), memit);
         memit += cols;
     }
-    m_xsize = cols; m_ysize = rows;
+    m_xsize = cols;
+    m_ysize = rows;
 }
 
 template <typename T>
 const T* Array2<T>::operator[](int row) const
 {
-    std::size_t urow { (row<0)?m_xsize + row:row };
+    std::size_t urow { (row < 0) ? m_xsize + row : row };
     if (urow >= nrows()) {
         throw std::out_of_range("Row index out of bounds");
     }
@@ -188,7 +195,7 @@ const T* Array2<T>::operator[](int row) const
 template <typename T>
 T* Array2<T>::operator[](int row)
 {
-    std::size_t urow { (row<0)?m_xsize + row:row };
+    std::size_t urow { (row < 0) ? m_xsize + row : row };
     if (urow >= nrows()) {
         throw std::out_of_range("Row index out of bounds");
     }
@@ -196,13 +203,13 @@ T* Array2<T>::operator[](int row)
 }
 
 template <typename T>
-T& Array2<T>::operator()(std::size_t col, std::size_t row) 
+T& Array2<T>::operator()(std::size_t col, std::size_t row)
 {
     return this->data().get()[row * stride() + col];
 }
 
 template <typename T>
-const T& Array2<T>::operator()(std::size_t col, std::size_t row) const 
+const T& Array2<T>::operator()(std::size_t col, std::size_t row) const
 {
     return this->data().get()[row * stride() + col];
 }
@@ -210,7 +217,7 @@ const T& Array2<T>::operator()(std::size_t col, std::size_t row) const
 template <typename T>
 const T& Array2<T>::at(s_indices indices) const
 {
-//     std::cout<<"const T& Array2<T>::at(s_indices indices) const\n";
+    //     std::cout<<"const T& Array2<T>::at(s_indices indices) const\n";
     if (indices[0] < 0)
         indices[0] += xsize();
     if (indices[1] < 0)
@@ -220,35 +227,35 @@ const T& Array2<T>::at(s_indices indices) const
         std::cout << "indices: [" << indices[0] << "," << indices[1] << "]\n";
         assert(addr < this->size());
     }
-//     std::cout<<"indices="<<indices[0]<<" "<<indices[1]<<" addr="<<addr<<" v="<<Array_base<T>::operator[](addr)<<"\n";
+    //     std::cout<<"indices="<<indices[0]<<" "<<indices[1]<<" addr="<<addr<<" v="<<Array_base<T>::operator[](addr)<<"\n";
     return Array_base<T>::operator[](addr);
 }
 
 template <typename T>
 T& Array2<T>::at(s_indices indices)
 {
-//     std::cout<<"T& Array2<T>::at(s_indices indices)\n";
+    //     std::cout<<"T& Array2<T>::at(s_indices indices)\n";
     if (indices[0] < 0)
         indices[0] += xsize();
     if (indices[1] < 0)
         indices[1] += ysize();
     std::size_t addr { static_cast<std::size_t>(indices[0]) + static_cast<std::size_t>(indices[1]) * stride() };
-//     std::cout<<"indices="<<indices[0]<<" "<<indices[1]<<" addr="<<addr<<" v="<<Array_base<T>::operator[](addr)<<"\n";
+    //     std::cout<<"indices="<<indices[0]<<" "<<indices[1]<<" addr="<<addr<<" v="<<Array_base<T>::operator[](addr)<<"\n";
     assert(addr < this->size());
     return Array_base<T>::operator[](addr);
 }
 
 template <typename T>
-Array2<T>& Array2<T>::operator=(const Array2<T> &src)
+Array2<T>& Array2<T>::operator=(const Array2<T>& src)
 {
-    if (this == &src) return *this;
+    if (this == &src)
+        return *this;
     m_xsize = src.m_xsize;
     m_ysize = src.m_ysize;
-    if (this->size() != src.size())
-    {
+    if (this->size() != src.size()) {
         assert(this->resize(src.size()));
     }
-    std::copy(src.begin(),src.end(),this->begin());
+    std::copy(src.begin(), src.end(), this->begin());
     return *this;
 }
 
@@ -302,40 +309,42 @@ Array2<T>& Array2<T>::operator/=(const Array2<T>& x)
 template <typename T>
 Array2<T>& Array2<T>::operator+=(const T& x)
 {
-    std::for_each(this->begin(), this->end(), [&x](T& a){ a += x;});
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a += x; });
     return *this;
 }
 
 template <typename T>
 Array2<T>& Array2<T>::operator-=(const T& x)
 {
-    std::for_each(this->begin(), this->end(), [&x](T& a){ a -= x;});
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a -= x; });
     return *this;
 }
 
 template <typename T>
 Array2<T>& Array2<T>::operator*=(const T& x)
 {
-    std::for_each(this->begin(), this->end(), [&x](T& a){ a *= x;});
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a *= x; });
     return *this;
 }
 
 template <typename T>
 Array2<T>& Array2<T>::operator/=(const T& x)
 {
-    std::for_each(this->begin(), this->end(), [&x](T& a){ a /= x;});
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a /= x; });
     return *this;
 }
 
 // Unary plus operator (identity, returns the matrix as-is)
 template <typename T>
-Array2<T> Array2<T>::operator+() const {
-    return *this;  // Simply return the matrix as-is
+Array2<T> Array2<T>::operator+() const
+{
+    return *this; // Simply return the matrix as-is
 }
 
 // Unary minus operator (negates all elements of the matrix)
 template <typename T>
-Array2<T> Array2<T>::operator-() const {
+Array2<T> Array2<T>::operator-() const
+{
     Array2<T> result(ncols(), nrows());
     auto result_it = result.begin();
     for (auto it = this->begin(); it != this->end(); ++it, ++result_it) {
@@ -368,11 +377,11 @@ template <typename T>
 Array2<T> Array2<T>::get_subarray(const Rect<std::size_t>& rect)
 {
     Array2<T> subarr(rect.width(), rect.height());
-    assert( rect.bottomright.x < xsize() );
-    assert( rect.bottomright.y < ysize() );
-    for (std::size_t y { 0 }; y < rect.height();y++) {
-        for (std::size_t x { 0 }; x < rect.width();x++) {
-            subarr[y][x] = Array_base<T>::data()[(y+rect.topleft.y)*stride() + rect.topleft.x + x];
+    assert(rect.bottomright.x < xsize());
+    assert(rect.bottomright.y < ysize());
+    for (std::size_t y { 0 }; y < rect.height(); y++) {
+        for (std::size_t x { 0 }; x < rect.width(); x++) {
+            subarr[y][x] = Array_base<T>::data()[(y + rect.topleft.y) * stride() + rect.topleft.x + x];
         }
     }
     return subarr;
@@ -395,14 +404,12 @@ void Array2<T>::print() const
     std::cout << "size of array: " << sizeof(T) * this->size() << " bytes" << std::endl;
 }
 
-
-
 // *************************************************
 // non-member definitions
 // *************************************************
 
 template <typename T>
-Array2<T> operator+(const Array2<T> &x,const Array2<T> &y)
+Array2<T> operator+(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z *= y;
@@ -436,6 +443,5 @@ std::ostream& operator<<(std::ostream& o, Array2<T>& v)
     //   std::copy(v.begin(),v.end(),std::ostream_iterator<Array<T,1> >(o," "));
     return o;
 }
-
 
 } // namespace smip
