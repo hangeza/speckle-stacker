@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "multidimarray.h"
+#include "array2.h"
 #include "phasemap.h"
 
 namespace smip {

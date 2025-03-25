@@ -3,14 +3,14 @@
 namespace smip {
 
 template <typename T>
-class Array<T, 2>;
+class Array2;
 
 template <typename T>
-class WindowFunction : public Array<T, 2> {
+class WindowFunction : public Array2<T> {
 public:
     WindowFunction() { }
     WindowFunction(std::size_t a_xsize, std::size_t a_ysize, std::size_t window_aperture)
-        : Array<T, 2>(a_xsize, a_ysize), m_aperture(window_aperture)
+        : Array2<T>(a_xsize, a_ysize), m_aperture(window_aperture)
     {
     }
     ~WindowFunction() { }
@@ -47,10 +47,10 @@ public:
 };
 
 template <typename T, std::size_t xsize, std::size_t ysize>
-class GeneralWindowFunction : public Array<T, 2> {
+class GeneralWindowFunction : public Array2<T> {
 public:
     GeneralWindowFunction()
-        : Array<T, 2>(xsize, ysize)
+        : Array2<T>(xsize, ysize)
     {
     }
 };

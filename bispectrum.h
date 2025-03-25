@@ -13,7 +13,7 @@
 #include <valarray>
 #include <vector>
 
-#include "multidimarray.h"
+#include "array2.h"
 
 //typedef std::complex<double> complex_t;
 
@@ -88,7 +88,7 @@ public:
     */
     indexvector calc_indices(std::size_t addr) const;
     template <typename U>
-    void accumulate_from_fft(const Array<U, 2>& fft);
+    void accumulate_from_fft(const Array2<U>& fft);
 
 public:
     std::size_t size() const { return base_size(); };
@@ -280,7 +280,7 @@ std::size_t Bispectrum<T>::calc_offset(indexvector indices) const
 
 template <typename T>
 template <typename U>
-void Bispectrum<T>::accumulate_from_fft(const Array<U, 2>& fft)
+void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
 {
     const int min1 = std::max(fft.min_sindices()[0], min_indices()[0]);
     const int min2 = std::max(fft.min_sindices()[1], min_indices()[1]);

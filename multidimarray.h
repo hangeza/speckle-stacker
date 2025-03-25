@@ -80,7 +80,6 @@ protected:
     using T_base::_size;
 
 public:
-    typedef DimVector<int, NrDims> bases;
     typedef DimVector<std::size_t, NrDims> extends;
     typedef DimVector<int, NrDims> strides;
     typedef DimVector<int, NrDims> s_indices;
@@ -94,13 +93,11 @@ public:
      */
     Array();
     Array(const extends& a_extends,
-        const bases& a_bases = bases(),
-        const T& = T {});
+          const T& = T {});
     Array(const extends& a_extends,
-        const bases& a_bases,
-        const strides& a_strides,
-        T* a_mem,
-        std::size_t a_size);
+          const strides& a_strides,
+          T* a_mem,
+          std::size_t a_size);
     /*! Copy Constructor \n
      *  make deep copy of \e src
      */
@@ -177,7 +174,6 @@ public:
     /*! get number of Elements in array (subarray) (  != size() ) */
     std::size_t NrElements() const;
     inline const strides& GetStrides() const { return _strides; }
-    inline const bases& GetBases() const { return _bases; }
     inline const extends& GetExtends() const { return _extends; }
     inline std::size_t offset() const { return _offset; }
     s_indices min_sindices() const;
@@ -209,7 +205,6 @@ public:
 
 protected:
     extends _extends;
-    bases _bases;
     strides _strides;
     std::size_t _offset { 0UL };
 };
@@ -233,7 +228,6 @@ protected:
     using Array_base<T>::_isReference;
 
 public:
-    typedef DimVector<int, 2> bases;
     typedef DimVector<std::size_t, 2> extends;
     typedef DimVector<int, 2> strides;
     typedef DimVector<int, 2> s_indices;
@@ -249,17 +243,14 @@ public:
     */
     Array();
     Array(const extends& a_extends,
-        const bases& a_bases = bases(),
-        const T& init = T {});
+          const T& init = T {});
     Array(std::size_t nrows, std::size_t ncols,
-        const bases& a_bases = bases(),
-        const T& init = T {});
+          const T& init = T {});
     Array(const extends& a_extends,
-        const bases& a_bases,
-        const strides& a_strides,
-        std::shared_ptr<T> a_mem,
-        std::size_t a_offs,
-        std::size_t a_size);
+          const strides& a_strides,
+          std::shared_ptr<T> a_mem,
+          std::size_t a_offs,
+          std::size_t a_size);
     /*! copy constructor \n
     *  make deep copy of \e src
     */
@@ -288,10 +279,12 @@ public:
      * a transposed matrix)
      */
     Array<T, 2>& operator=(const Array<T, 2>& src);
+    // copy assignment (copy-and-swap idiom)
+    //Array<T, 2>& operator=(Array<T, 2> src);
     /*! operator=(const T&)
      * Assignment to the entire array (subarray) from \e val
      */
-    const Array<T, 2>& operator=(const T& val);
+    Array<T, 2>& operator=(const T& val);
     Array<T, 2>& operator+=(const Array<T, 2>& x);
     Array<T, 2>& operator-=(const Array<T, 2>& x);
     Array<T, 2>& operator*=(const Array<T, 2>& x);
@@ -299,6 +292,7 @@ public:
     Array<T, 2>& operator*=(const T& x);
     Array<T, 2>& operator/=(const T& x);
     Array<T, 1> operator[](int in);
+    Array<T, 1> operator[](int in) const;
     //! todo: implement selection of ROI
     Array<T, 2> operator[](Range r);
 
@@ -309,7 +303,6 @@ public:
     s_indices min_sindices() const { return { -static_cast<int>(cols()) / 2, -static_cast<int>(rows()) / 2 }; }
     s_indices max_sindices() const { return { -static_cast<int>(cols()) / 2 + static_cast<int>(cols()) - 1, -static_cast<int>(rows()) / 2 + static_cast<int>(rows()) - 1 }; }
     inline strides GetStrides() const { return _strides; }
-    inline bases GetBases() const { return _bases; }
     inline extends GetExtends() const { return _extends; }
     inline std::size_t offset() const { return _offset; }
     /*! returns number of rows */
@@ -334,7 +327,6 @@ public:
     /* protected members */
 protected:
     extends _extends;
-    bases _bases;
     strides _strides;
     std::size_t _offset { 0UL };
 };
@@ -351,7 +343,6 @@ protected:
     using Array_base<T>::_isReference;
 
 public:
-    typedef DimVector<int, 1> bases;
     typedef DimVector<std::size_t, 1> extends;
     typedef DimVector<int, 1> strides;
     typedef DimVector<int, 1> indices;
@@ -364,14 +355,17 @@ public:
    */
     Array();
     Array(const extends& a_extends,
-        const bases& a_bases = bases(),
-        const T& init = T {});
+          const T& init = T {});
     Array(const extends& a_extends,
-        const bases& a_bases,
-        const strides& a_strides,
-        std::shared_ptr<T> a_mem,
-        std::size_t a_offs,
-        std::size_t a_size);
+          const strides& a_strides,
+          std::shared_ptr<T> a_mem,
+          std::size_t a_offs,
+          std::size_t a_size);
+    Array(const extends& a_extends,
+          const strides& a_strides,
+          const std::shared_ptr<const T>& a_mem,
+          std::size_t a_offs,
+          std::size_t a_size);
     /*! copy constructor \n
     *  make deep copy of \e src
     */
@@ -394,11 +388,11 @@ public:
 
     /* Operators */
 
-    //       Array<T,1>& operator=(const Array<T,1> &src) const;
+    //Array<T,1>& operator=(const Array<T,1> &src) const;
     /*! General Assignment \n
         *\return deep copy of \e x
         */
-    Array<T, 1>& operator=(const Array<T, 1>& x);
+    Array<T, 1>& operator=(const Array<T, 1>& src);
     /*! General Assignment \n
         *\return deep copy of \e x
         */
@@ -436,13 +430,11 @@ public:
             return false;
         _extends.front() = new_size;
         _strides.front() = 1;
-        _bases.front() = 0;
         _offset = 0UL;
         return true;
     }
 
     inline strides GetStrides() const { return _strides; }
-    inline bases GetBases() const { return _bases; }
     inline extends GetExtends() const { return _extends; }
     inline std::size_t offset() const { return _offset; }
 
@@ -476,7 +468,6 @@ public:
 
 protected:
     extends _extends;
-    bases _bases;
     strides _strides;
     std::size_t _offset { 0UL };
 };
@@ -515,78 +506,6 @@ inline std::ostream& operator<<(std::ostream& o, Array<T, 2>& v)
 // Member definitions / implementation part
 // *************************************************
 
-/*
- * class Array_base
- */
-template <typename T>
-Array_base<T>::Array_base(const Array_base& src)
-    : _size(src._size)
-{
-    //    std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
-    if (!_size)
-        return;
-
-    auto temp = std::make_unique<T[]>(_size);
-    //std::shared_ptr<T> buf(nullptr, [](T* p) { delete[] p; });
-    _mem.reset(temp.release());
-    //_mem=new T[_size];
-    std::copy(src.begin(), src.end(), this->begin());
-}
-
-template <typename T>
-Array_base<T>::Array_base(std::size_t a_size)
-    : _size(a_size)
-{
-    if (!_size)
-        return;
-    auto temp = std::make_unique<T[]>(_size);
-    _mem.reset(temp.release());
-    //_mem=new T[_size];
-    //for (std::size_t i=0;i<_size;i++) _mem.get()[i] = T(def);
-    //    std::cout<<"Array_base<T>::Array_base(size_t)\n";
-}
-
-template <typename T>
-Array_base<T>::Array_base(std::size_t a_size, const T& def)
-    : _size(a_size)
-{
-    if (!_size)
-        return;
-    auto temp = std::make_unique<T[]>(_size);
-    _mem.reset(temp.release());
-    //_mem=new T[_size];
-    for (std::size_t i = 0; i < _size; i++)
-        _mem.get()[i] = T(def);
-    //    std::cout<<"Array_base<T>::Array_base(size_t, const T&)\n";
-}
-
-template <typename T>
-Array_base<T>::Array_base(std::shared_ptr<T> data, std::size_t a_size)
-    : _size(a_size)
-    , _mem(data)
-{
-}
-
-template <typename T>
-Array_base<T>::~Array_base()
-{
-    //     std::cout<<"Array_base<T>::~Array_base()\n";
-    //     std::cout<<" size="<<_size<<" addr="<<_mem<<" ref="<<_isReference<<"\n";
-    if (!_isReference && _size) {
-        _mem.reset();
-        //delete[] _mem;
-        //_mem=nullptr;
-    }
-}
-
-template <typename T>
-void Array_base<T>::set_at(std::shared_ptr<T> data, size_t a_size)
-{
-    //if (!_isReference && size) delete[] _mem;
-    _size = a_size;
-    _mem = data;
-    _isReference = true;
-}
 
 /*
  * class Array
@@ -596,43 +515,31 @@ Array<T, NrDims>::Array()
     : Array_base<T>()
 {
     _extends.fill(NrDims, 0);
-    _bases.fill(0);
     _strides.fill(0);
 }
 
 template <typename T, std::size_t NrDims>
-Array<T, NrDims>::Array(const extends& a_extends,
-    const bases& a_bases, const T& init)
+Array<T, NrDims>::Array(const extends& a_extends, const T& init)
     : Array_base<T>(_size = std::accumulate(a_extends.begin(),
                         a_extends.end(),
                         1,
                         std::multiplies<int>()),
-        init)
+                        init)
 {
     assert((a_extends.size() == NrDims));
     _extends = a_extends;
-
-    if (a_bases.empty())
-        _bases.fill(0);
-    else {
-        _bases = a_bases;
-        assert((a_bases.size() == NrDims));
-    }
     _strides.fill(0);
     CalcStrides();
 }
 
 template <typename T, std::size_t NrDims>
 Array<T, NrDims>::Array(const extends& a_extends,
-    const bases& a_bases,
-    const strides& a_strides,
-    T* a_mem,
-    size_t a_size)
+                        const strides& a_strides,
+                        T* a_mem,
+                        size_t a_size)
 {
     assert((a_extends.size() == NrDims));
     _extends = a_extends;
-    assert((a_bases.size() == NrDims));
-    _bases = a_bases;
     assert((a_strides.size() == NrDims));
     _strides = a_strides;
     _mem = a_mem;
@@ -644,7 +551,6 @@ template <typename T, std::size_t NrDims>
 Array<T, NrDims>::Array(const Array& src)
     : Array_base<T>(src)
     , _extends { src._extends }
-    , _bases { src._bases }
 {
     CalcStrides();
 }
@@ -671,14 +577,12 @@ const Array<T, NrDims>& Array<T, NrDims>::operator=(const Array<T, NrDims>& src)
     if (_isReference) {
         assert(this->NrElements() == src.NrElements());
         _extends = src._extends;
-        _bases = src._bases;
     } else {
         if (_size != src.NrElements()) {
             assert(this->resize(src.NrElements()));
             _isReference = false;
         }
         _extends = src._extends;
-        _bases = src._bases;
 
         CalcStrides();
     }
@@ -709,17 +613,14 @@ Array<T, NrDims - 1> Array<T, NrDims>::operator[](int in) const
 {
 
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.pop_front();
-    bas.pop_front();
     str.pop_front();
 
     int offs = _strides[0] * in;
 
     Array<T, NrDims - 1> _x(ext,
-        DimVector<int, NrDims - 1>(bas),
         DimVector<int, NrDims - 1>(str),
         _mem + offs,
         _size - offs);
@@ -730,22 +631,16 @@ Array<T, NrDims - 1> Array<T, NrDims>::operator[](int in) const
 template <typename T, std::size_t NrDims>
 Array<T, NrDims> Array<T, NrDims>::operator[](Range r)
 {
-
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.push_back(ext.front());
     ext.pop_front();
 
-    bas.push_back(bas.front());
-    bas.pop_front();
-
     str.push_back(str.front());
     str.pop_front();
 
     Array<T, NrDims> _x(ext,
-        DimVector<int, NrDims>(bas),
         DimVector<int, NrDims>(str),
         _mem,
         _size);
@@ -791,9 +686,6 @@ void Array<T, NrDims>::print() const
     std::cout << "Extends: " << std::endl;
     for (int i = 0; i < NrDims; i++)
         std::cout << "   Dim" << i + 1 << ": " << _extends[i] << std::endl;
-    std::cout << "Bases: " << std::endl;
-    for (int i = 0; i < NrDims; i++)
-        std::cout << "   Dim" << i + 1 << ": " << _bases[i] << std::endl;
     std::cout << "Strides: " << std::endl;
     for (int i = 0; i < NrDims; i++)
         std::cout << "   Dim" << i + 1 << ": " << _strides[i] << std::endl;
@@ -801,76 +693,6 @@ void Array<T, NrDims>::print() const
     std::cout << "size of Array: " << sizeof(T) * this->size() << " bytes" << std::endl;
 }
 
-/*
- * class DimVector
- */
-template <typename T, std::size_t NrDims>
-DimVector<T, NrDims>::DimVector(T i0, ...)
-    : std::deque<T>()
-{
-    va_list ap;
-    va_start(ap, i0);
-    this->push_back(i0);
-    int in;
-    //   std::cout<<"i0="<<i0<<std::endl;
-    for (std::size_t i = 1; i < NrDims; ++i) {
-        in = va_arg(ap, int);
-        //      std::cout<<"i"<<i<<"="<<in<<std::endl;
-        this->push_back(in);
-    }
-    va_end(ap);
-}
-
-template <typename T, std::size_t NrDims>
-template <std::size_t otherDim>
-DimVector<T, NrDims>::DimVector(const DimVector<T, otherDim>& x)
-    : std::deque<T>(NrDims, T {})
-{
-    std::copy(x.begin(), x.begin() + std::min(x.size(), this->size()), this->begin());
-}
-
-template <typename T, std::size_t NrDims>
-DimVector<T, NrDims>& DimVector<T, NrDims>::operator()(T i0, ...)
-{
-    this->clear();
-    va_list ap;
-    va_start(ap, i0);
-    this->push_back(i0);
-    int in;
-    //   std::cout<<"i0="<<i0<<std::endl;
-    for (int i = 1; i < NrDims; ++i) {
-        in = va_arg(ap, const int);
-        //      std::cout<<"i"<<i<<"="<<in<<std::endl;
-        this->push_back(in);
-    }
-    va_end(ap);
-    return *this;
-}
-
-template <typename T, std::size_t NrDims>
-DimVector<T, 1>& DimVector<T, NrDims>::operator=(T i0)
-{
-    DimVector<T, 1>* _x = (DimVector<T, 1>*)(this);
-    _x->clear();
-    _x->push_back(i0);
-    //      std::cout<<"added index0="<<(*this)[0]<<std::endl;
-    return *_x;
-}
-
-template <typename T, std::size_t NrDims>
-DimVector<T, NrDims + 1>&DimVector<T, NrDims>::operator,(T in)
-{
-    DimVector<T, NrDims + 1>* _x = (DimVector<T, NrDims + 1>*)(this);
-    _x->push_back(in);
-    //      std::cout<<"added index"<<this->size()-1<<"="<<(*this)[this->size()-1]<<std::endl;
-    return *_x;
-}
-
-template <typename T, std::size_t NrDims>
-void DimVector<T, NrDims>::fill(T value)
-{
-    this->assign(NrDims, value);
-}
 
 /*
  * class Array<T,2>
@@ -880,68 +702,45 @@ Array<T, 2>::Array()
     : Array_base<T>()
 {
     _extends.fill(0);
-    _bases.fill(0);
     _strides.fill(0);
     //     std::cout<<"Array<T,2>::Array()\n";
 }
 
 template <typename T>
-Array<T, 2>::Array(const extends& a_extends,
-    const bases& a_bases,
-    const T& init)
+Array<T, 2>::Array(const extends& a_extends, const T& init)
     : Array_base<T>(a_extends[0] * a_extends[1], init)
 {
     //     std::cout<<"Array<T,2>::Array(const extends&, const bases&, const T&)\n";
     assert((a_extends.size() == 2));
     _extends = a_extends;
-
-    if (a_bases.empty())
-        _bases.fill(0);
-    else {
-        assert((a_bases.size() == 2));
-        _bases = a_bases;
-    }
     _strides = { 1, _extends[0] };
 }
 
 template <typename T>
-Array<T, 2>::Array(std::size_t nrows, std::size_t ncols,
-    const bases& a_bases,
-    const T& init)
+Array<T, 2>::Array(std::size_t nrows, std::size_t ncols, const T& init)
     : Array_base<T>(nrows * ncols, init)
 {
     //     std::cout<<"Array<T,2>::Array(size_t, size_t, const bases&, const T&)\n";
 
     _extends = { ncols, nrows };
     _isReference = false;
-
-    if (a_bases.empty())
-        _bases.fill(0);
-    else {
-        assert((a_bases.size() == 2));
-        _bases = a_bases;
-    }
     _strides = { 1, _extends[0] };
 }
 
 template <typename T>
 Array<T, 2>::Array(const extends& a_extends,
-    const bases& a_bases,
     const strides& a_strides,
     std::shared_ptr<T> a_mem,
     std::size_t a_offs,
     std::size_t a_size)
     : Array_base<T>(a_mem, a_size)
     , _extends(a_extends)
-    , _bases(a_bases)
     , _strides(a_strides)
     , _offset(a_offs)
 {
     //     std::cout<<"Array<T,2>::Array(const extends&, const bases&, T*, size_t)\n";
     assert((a_extends.size() == 2));
     //_extends=a_extends;
-    assert((a_bases.size() == 2));
-    //_bases=a_bases;
     assert((a_strides.size() == 2));
     //_strides=a_strides;
     //_mem=a_mem;
@@ -953,7 +752,7 @@ template <typename T>
 Array<T, 2>::Array(const Array& src)
     : Array_base<T>(src)
     , _extends(src._extends)
-    , _bases(src._bases)
+    , _offset(src._offset)
 {
     //     std::cout<<"Array<T,2>::Array(const Array&)\n";
     //assert(this->resize(src.NrElements()));
@@ -977,42 +776,54 @@ Array<T, 2>::Array(std::initializer_list<std::initializer_list<T>> l)
         std::copy(row->begin(), row->end(), memit);
         memit += cols;
     }
-    _bases = { 0, 0 };
     _extends = { cols, rows };
     _strides = { 1, _extends[0] };
 }
 
+
 template <typename T>
 Array<T, 2>& Array<T, 2>::operator=(const Array<T, 2>& src)
 {
-    //     std::cout<<"Array<T,2>::operator=(const Array&)\n";
+    std::cout<<"Array<T,2>& Array<T,2>::operator=(const Array&)\n";
     // assert(!src._isReference);
     if (this == &src)
         return *this;
     if (_isReference) {
-        assert(this->NrElements() == src.NrElements());
-        _extends = src._extends;
-        _bases = src._bases;
-    } else {
-        if (_size != src.NrElements()) {
-            //             std::cout<<"resizing array...\n";
-            assert(this->resize(src.NrElements()));
-            _isReference = false;
-        }
-        _extends = src._extends;
-        _bases = src._bases;
-
-        _strides = { 1, _extends[0] };
+        _mem = nullptr;
+        _size = 0;
+        _isReference = false;
     }
-
+    if (_size != src.NrElements()) {
+        //std::cout<<"resizing array...\n";
+        assert(this->resize(src.NrElements()));
+        //_isReference = false;
+    }
+    _extends = src._extends;
+    _strides = { 1, _extends[0] };
+    _offset = 0UL;
     //     std::cout<<"copying array...\n";
     std::copy(src.begin(), src.end(), this->begin());
     //     std::cout<<"done.\n";
     return *this;
 }
 
+/*
+// copy assignment (copy-and-swap idiom)
 template <typename T>
-const Array<T, 2>& Array<T, 2>::operator=(const T& val)
+Array<T, 2>& Array<T, 2>::operator=(Array<T, 2> src)
+{
+    std::cout<<"Array<T,2>& Array<T,2>::operator=(Array<T,2>)\n";
+    std::swap(_extends, src._extends);
+    std::swap(_offset, src._offset);
+    std::swap(_strides, src._strides);
+    std::swap(_size, src._size);
+    std::swap(_mem, src._mem);
+    return *this;
+}
+*/
+
+template <typename T>
+Array<T, 2>& Array<T, 2>::operator=(const T& val)
 {
     //   std::cout<<"Array<"<<typeid(T).name()<<","<<NrDims
     //            <<">::operator=(T)(0)"<<std::endl;
@@ -1089,14 +900,12 @@ Array<T, 2>& Array<T, 2>::operator/=(const T& x)
 }
 
 template <typename T>
-Array<T, 1> Array<T, 2>::operator[](int in)
+Array<T,1> Array<T,2>::operator[](int in)
 {
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.pop_back();
-    bas.pop_back();
     str.pop_back();
 
     if (in < 0)
@@ -1104,12 +913,33 @@ Array<T, 1> Array<T, 2>::operator[](int in)
     std::size_t offs = _strides.back() * in;
 
     Array<T, 1> _x(ext,
-        DimVector<int, 1>(bas),
         DimVector<int, 1>(str),
-        _mem,
+        Array_base<T>::data(),
         offs,
         _size);
-    //     std::cout<<"const Array<T,1> Array<T,2>::operator[](int)\n";
+    std::cout<<"Array<T,1> Array<T,2>::operator[](int)\n";
+    return _x;
+}
+template <typename T>
+
+Array<T,1> Array<T,2>::operator[](int in) const
+{
+    extends ext = _extends;
+    strides str = _strides;
+
+    ext.pop_back();
+    str.pop_back();
+
+    if (in < 0)
+        in += ext.front();
+    std::size_t offs = _strides.back() * in;
+
+    const Array<T, 1> _x(ext,
+        DimVector<int, 1>(str),
+        std::const_pointer_cast<const T>(_mem)/*Array_base<T>::data()*/,
+        offs,
+        _size);
+    std::cout<<"Array<T,1> Array<T,2>::operator[](int) const\n";
     return _x;
 }
 
@@ -1118,15 +948,12 @@ template <typename T>
 Array<T, 2> Array<T, 2>::operator[](Range r)
 {
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     std::swap(ext.front(), ext.back());
-    std::swap(bas.front(), bas.back());
     std::swap(str.front(), str.back());
 
     Array<T, 2> _x(ext,
-        DimVector<int, 2>(bas),
         DimVector<int, 2>(str),
         _mem,
         0UL,
@@ -1140,23 +967,20 @@ const Array<T, 1> Array<T, 2>::row(std::size_t a_row) const
 {
     //assert(_isReference==false);
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.pop_back();
-    bas.pop_back();
     str.pop_back();
 
     //std::size_t offs=_strides.back()*a_row;
     //const T* addr { Array_base<T>::data()+offs };
-    Array<T, 1> _x(ext, DimVector<int, 1>(bas));
+    Array<T, 1> _x(ext);
     for (std::size_t i = 0; i < ext[0]; ++i) {
         const auto val = _mem.get()[_offset + a_row * _strides[1] + i];
         _x[i] = val;
     }
     /*
     const Array<T,1> _x(ext,
-                DimVector<int,1>(bas),
                 DimVector<int,1>(str),
                 addr,
                 _size-offs);
@@ -1170,17 +994,14 @@ Array<T,1> Array<T,2>::row(std::size_t a_row)
 {
     //assert(_isReference==false);
     extends ext=_extends;
-    bases bas =_bases;
     strides str =_strides;
 
     ext.pop_back();
-    bas.pop_back();
     str.pop_back();
 
     std::size_t offs=_strides.back()*row;
 
     Array<T,1> _x(ext,
-                DimVector<int,1>(bas),
                 DimVector<int,1>(str),
                 _mem+offs,
                 _size-offs);
@@ -1193,24 +1014,21 @@ const Array<T, 1> Array<T, 2>::col(std::size_t a_col) const
 {
     //assert(_isReference==false);
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.pop_front();
-    bas.pop_front();
     str.pop_front();
 
     std::size_t offs = _strides.front() * a_col;
     const T* addr { Array_base<T>::data() + offs };
     /*
     const Array<T,1> _x(ext,
-                DimVector<int,1>(bas),
                 DimVector<int,1>(str),
                 addr,
                 _size-offs);
 */
 
-    Array<T, 1> _x(ext, DimVector<int, 1>(bas));
+    Array<T, 1> _x(ext);
     for (std::size_t i = 0; i < ext[0]; ++i) {
         _x.data().get()[i] = _mem.data().get()[_offset + i * str[0] + a_col];
     }
@@ -1225,17 +1043,14 @@ Array<T, 1> Array<T, 2>::col(std::size_t col)
 {
     //assert(_isReference==false);
     extends ext = _extends;
-    bases bas = _bases;
     strides str = _strides;
 
     ext.pop_front();
-    bas.pop_front();
     str.pop_front();
 
     std::size_t offs = _strides.front() * col;
 
     Array<T, 1> _x(ext,
-        DimVector<int, 1>(bas),
         DimVector<int, 1>(str),
         _mem, offs,
         _size);
@@ -1283,7 +1098,6 @@ void Array<T, 2>::print() const
     std::cout << "size of datatype: " << sizeof(T) << " bytes" << std::endl;
     std::cout << "nr. of elements: " << NrElements() << std::endl;
     std::cout << "extends: x=" << _extends[0] << ", y=" << _extends[1] << std::endl;
-    std::cout << "bases: x=" << _bases[0] << ", y=" << _bases[1] << std::endl;
     std::cout << "strides: x=" << _strides[0] << ", y=" << _strides[1] << std::endl;
     std::cout << "min indices: x=" << min_sindices()[0] << ", y=" << min_sindices()[1] << std::endl;
     std::cout << "max indices: x=" << max_sindices()[0] << ", y=" << max_sindices()[1] << std::endl;
@@ -1299,43 +1113,52 @@ Array<T, 1>::Array()
     : Array_base<T>()
 {
     _extends.fill(0);
-    _bases.fill(0);
     _strides.fill(0);
 }
 
 template <typename T>
 Array<T, 1>::Array(const extends& a_extends,
-    const bases& a_bases,
     const T& init)
     : Array_base<T>(a_extends[0], init)
 {
+    std::cout<<"Array<T,1>::Array(const extends&,const T&)\n";
     assert((a_extends.size() == 1));
     _extends = a_extends;
-
-    if (a_bases.empty())
-        _bases.fill(0);
-    else {
-        _bases = a_bases;
-        assert((a_bases.size() == 1));
-    }
     _strides = { 1 };
 }
 
 template <typename T>
 Array<T, 1>::Array(const extends& a_extends,
-    const bases& a_bases,
     const strides& a_strides,
     std::shared_ptr<T> a_mem,
     std::size_t a_offs,
     std::size_t a_size)
     : Array_base<T>(a_mem, a_size)
     , _extends(a_extends)
-    , _bases(a_bases)
     , _strides(a_strides)
     , _offset(a_offs)
 {
+    std::cout<<"Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<T>, std::size_t, std::size_t)\n";
     assert((a_extends.size() == 1));
-    assert((a_bases.size() == 1));
+    assert((a_strides.size() == 1));
+    //      _mem=a_mem;
+    //      _size=a_size;
+    _isReference = true;
+}
+
+template <typename T>
+Array<T, 1>::Array(const extends& a_extends,
+    const strides& a_strides,
+    const std::shared_ptr<const T>& a_mem,
+    std::size_t a_offs,
+    std::size_t a_size)
+    : Array_base<T>(a_mem, a_size)
+    , _extends(a_extends)
+    , _strides(a_strides)
+    , _offset(a_offs)
+{
+    std::cout<<"Array<T,1>::Array(const extends&, const strides&, std::shared_ptr<const T>, std::size_t, std::size_t)\n";
+    assert((a_extends.size() == 1));
     assert((a_strides.size() == 1));
     //      _mem=a_mem;
     //      _size=a_size;
@@ -1346,13 +1169,13 @@ template <typename T>
 Array<T, 1>::Array(const Array& src)
     : Array_base<T>(src.NrElements())
     , _extends(src._extends)
-    , _bases(src._bases)
 {
-    //std::cout<<"Array<T,1>::Array(const Array<T,1>&)\n";
+    std::cout<<"Array<T,1>::Array(const Array<T,1>&)";
     //assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
     _strides = { 1 };
-    std::copy(src.begin(), src.end(), begin());
+//     _isReference = false;
+    std::copy(src.begin(), src.end(), T_base::begin());
 }
 
 template <typename T>
@@ -1362,70 +1185,67 @@ Array<T, 1>::Array(std::initializer_list<T> l)
     if (elements == 0)
         return;
     assert(this->resize(elements));
-    auto memit = T_base::begin();
-    std::copy(l->begin(), l->end(), T_base::begin());
-    _bases = { 0 };
+    std::copy(l.begin(), l.end(), T_base::begin());
     _extends = { elements };
     _strides = { 1 };
 }
 
-/*
+
 template <typename T>
-Array<T,1>& Array<T,1>::operator=(const Array<T,1> &src) const
+Array<T,1>& Array<T,1>::operator=(const Array<T,1> &src)
 {
+    std::cout<<"Array<T,1>& Array<T,1>::operator=(const Array<T,1>&)\n";
     _extends=src.size();
-    _bases=src._bases;
     if (_isReference) {
         _mem=nullptr;
         _isReference=false;
     }
+    src.print();
     assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
     _strides = { 1 };
-    std::copy(src.begin(),src.end(),begin());
-    std::cout<<"const Array<T,1>::operator=(const Array<T,1>&) const\n";
+    _offset = 0;
+    std::copy(src.begin(),src.end(), Array_base<T>::begin());
     return *this;
 }
-*/
 
+/*
 template <typename T>
-Array<T, 1>& Array<T, 1>::operator=(const Array<T, 1>& x)
+Array<T, 1>& Array<T, 1>::operator=(const Array<T, 1>& src)
 {
-    //     std::cout<<"Array<"<<typeid(T).name()<<",1>::operator=(const Array& x)"<<std::endl;
-
-    if (this == &x)
+    std::cout<<"Array<"<<typeid(T).name()<<",1>::operator=(const Array&)"<<std::endl;
+    if (this == &src)
         return *this;
     //         std::cout<<"Array<T,1>::operator=(const Array<T,1>&)\n";
 
     if (_isReference)
-        assert(NrElements() == x.NrElements());
+        assert(NrElements() == src.NrElements());
     else {
-        if (_size != x.NrElements()) {
-            /*
-        if (_size) delete[] _mem;
-        _mem=0;
-        _size=x.NrElements();
-        if (_size) _mem=new T[_size];
-*/
+        if (_size != src.NrElements()) {
+
+//         if (_size) delete[] _mem;
+//         _mem=0;
+//         _size=src.NrElements();
+//         if (_size) _mem=new T[_size];
+
             _isReference = false;
-            assert(this->resize(x.NrElements()));
+            assert(this->resize(src.NrElements()));
         }
-        _extends = x._extends;
-        _bases = x._bases;
+        _extends = src._extends;
         _strides[0] = 1;
     }
 
-    if (!_isReference && !x._isReference) {
-        memcpy(_mem.get(), x._mem.get(), sizeof(T) * x.NrElements());
+    if (!_isReference && !src._isReference) {
+        memcpy(_mem.get(), src._mem.get(), sizeof(T) * src.NrElements());
         return *this;
     } else if (_isReference) {
-        _extends = x._extends;
-        _bases = x._bases;
+        _extends = src._extends;
         //            _strides=x._strides;
     }
-    std::copy(x.begin(), x.end(), begin());
+    std::copy(src.begin(), src.end(), begin());
     return *this;
 }
+*/
 
 /*
 template <typename T>
@@ -1441,7 +1261,6 @@ const Array<T,1>& Array<T,1>::operator=(const Array<T,1> &x)
     }
     assert(this->resize(x.NrElements()));
     _extends=x._extends;
-    _bases=x._bases;
     _strides[0] = 1;
     std::copy(x.begin(),x.end(),begin());
     return *this;

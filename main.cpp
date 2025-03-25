@@ -30,6 +30,7 @@
 #include "log.h"
 #include "point.h"
 #include "rect.h"
+#include "array2.h"
 
 
 typedef std::complex<double> complex_t;
@@ -223,11 +224,12 @@ int main(int argc, char* argv[])
     if (argc!=1) { Usage(progname); exit(0);}
     std::string filename(*argv);
     
-    Array<complex_t, 2> sumarray, powerspec;
-    Array<complex_t, 2> indata;
+    Array2<complex_t> sumarray, powerspec;
+    Array2<complex_t> indata;
     Bispectrum<bispec_complex_t> bispectrum;
-    Array<complex_t, 2> phases;
-    FrameExtractor fe(filename);
+    Array2<complex_t> phases;
+
+    FrameExtractor fe(filename);    
     log::info() << "opening video file " << filename;
     if (!fe.is_valid()) {
         log::critical(-1) << "file open error: " << fe.filename();
@@ -242,10 +244,10 @@ int main(int argc, char* argv[])
     log::debug() << "frame data:";
     if (log::system::level() >= log::Level::Debug) indata.print();
 
-    log::debug() << "creating bispectrum with size [" << indata.cols() << " " << indata.rows() << " " << bispectrum_depth << " " << bispectrum_depth << "]";
-    bispectrum = Bispectrum<bispec_complex_t>({ indata.cols(), indata.rows(), bispectrum_depth, bispectrum_depth });
+    log::debug() << "creating bispectrum with size [" << indata.ncols() << " " << indata.nrows() << " " << bispectrum_depth << " " << bispectrum_depth << "]";
+    bispectrum = Bispectrum<bispec_complex_t>({ indata.ncols(), indata.nrows(), bispectrum_depth, bispectrum_depth });
     if (log::system::level() >= log::Level::Debug) bispectrum.print();
-    fftw_plan forward_plan = fftw_plan_dft_2d(indata.cols(), indata.rows(),
+    fftw_plan forward_plan = fftw_plan_dft_2d(indata.nrows(), indata.ncols(),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         FFTW_FORWARD, FFTW_ESTIMATE);
@@ -283,7 +285,7 @@ int main(int argc, char* argv[])
     }
     sumarray /= 1.0 * nframes;
     log::info() << "normalizing bispectrum";
-    powerspec /= complex_t(nframes * powerspec.NrElements(), 0.);
+    powerspec /= complex_t(nframes * powerspec.size(), 0.);
     log::info() << "normalizing power spectrum";
     bispectrum /= bispec_complex_t(nframes, 0.);
     log::notice() << "writing bispectrum to file 'bispectrum.dat'";
@@ -292,7 +294,7 @@ int main(int argc, char* argv[])
 
     log::notice() << "reconstructing fourier phases from bispectrum";
     PhaseMap pm;
-    phases = reconstruct_phases<complex_t, bispec_complex_t>(bispectrum, indata.cols(), indata.rows(), reco_radius, &pm);
+    phases = reconstruct_phases<complex_t, bispec_complex_t>(bispectrum, indata.ncols(), indata.nrows(), reco_radius, &pm);
     if (log::system::level() >= log::Level::Debug) {
         log::debug() << "sumarray:";
         sumarray.print();
@@ -301,10 +303,10 @@ int main(int argc, char* argv[])
         log::info() << "phases:";
         phases.print();
     }
-    log::notice() << "applying window function to phase map";
-    Hann<complex_t> window_f(powerspec.rows(), powerspec.cols(), 2 * reco_radius);
+    log::info() << "applying window function to phase map";
+    Hann<complex_t> window_f(powerspec.ncols(), powerspec.nrows(), 2 * reco_radius);
     phases *= window_f;
-    Array<complex_t, 2> result_image(powerspec.rows(), powerspec.cols());
+    Array2<complex_t> result_image(powerspec.ncols(), powerspec.nrows());
     log::info() << "calculating sqrt of power spectrum";
     std::transform(powerspec.begin(), powerspec.end(), result_image.begin(),
         [](const complex_t& val) {
@@ -313,7 +315,7 @@ int main(int argc, char* argv[])
     log::notice() << "combining powerspectrum with phases";
     result_image *= phases;
 
-    fftw_plan reverse_plan = fftw_plan_dft_2d(result_image.cols(), result_image.rows(),
+    fftw_plan reverse_plan = fftw_plan_dft_2d(result_image.nrows(), result_image.ncols(),
         reinterpret_cast<fftw_complex*>(result_image.data().get()),
         reinterpret_cast<fftw_complex*>(result_image.data().get()),
         FFTW_BACKWARD, FFTW_ESTIMATE);

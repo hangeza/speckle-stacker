@@ -5,7 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "multidimarray.h"
+#include "array2.h"
 #include "phasemap.h"
 
 namespace smip {
@@ -53,9 +53,9 @@ private:
 
 void save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
-Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
-cv::Mat Array2Mat(const Array<T, 2>& arr,
+cv::Mat Array2Mat(const Array2<T>& arr,
     U (*converter)(const T&) = std::abs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
@@ -64,14 +64,14 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
 // implementation part
 
 template <typename T>
-Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel)
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);
     const std::size_t bytesperpixel { mat.elemSize() };
     const std::size_t bytesperchannel { mat.elemSize1() };
     const std::size_t channels { bytesperpixel / bytesperchannel };
-    Array<T, 2> arr(rows, cols);
+    Array2<T> arr(rows, cols);
     if (mat.isContinuous()) {
         cols *= rows;
         rows = 1;
@@ -91,12 +91,12 @@ Array<T, 2> Mat2Array(cv::Mat& mat, color_channel_t channel)
 }
 
 template <typename T, typename U>
-cv::Mat Array2Mat(const Array<T, 2>& arr,
+cv::Mat Array2Mat(const Array2<T>& arr,
     U (*converter)(const T&),
     int cv_datatype,
     bool signed_symmetry)
 {
-    int cols = arr.cols(), rows = arr.rows();
+    int cols = arr.ncols(), rows = arr.nrows();
     assert(cv_datatype == CV_8UC1
         || cv_datatype == CV_8UC2
         || cv_datatype == CV_8UC3
@@ -120,12 +120,12 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
             for (int j = 0; j < cols; j++) {
                 T value;
                 if (signed_symmetry) {
-                    int ii = i + arr.min_sindices()[0];
-                    int jj = j + arr.min_sindices()[1];
-                    //                     std::cout<<"index "<<ii<<","<<jj<<"\n";
-                    value = { arr.at({ ii, jj }) };
-                } else
-                    value = arr.at({ i, j });
+                    int ii = i + arr.min_sindices()[1];
+                    int jj = j + arr.min_sindices()[0];
+                    value = { arr.at({ jj, ii }) };
+                } else {
+                    value = arr.at({ j, i });
+                }
                 auto x = converter(value);
                 if (channels == 1) {
                     Mi[j * channels] = static_cast<std::uint8_t>(x * std::numeric_limits<std::uint8_t>::max());
@@ -145,12 +145,11 @@ cv::Mat Array2Mat(const Array<T, 2>& arr,
             for (int j = 0; j < cols; j++) {
                 T value;
                 if (signed_symmetry) {
-                    int ii = i + arr.min_sindices()[0];
-                    int jj = j + arr.min_sindices()[1];
-                    //                     std::cout<<"index "<<ii<<","<<jj<<"\n";
-                    value = { arr.at({ ii, jj }) };
+                    int ii = i + arr.min_sindices()[1];
+                    int jj = j + arr.min_sindices()[0];
+                    value = { arr.at({ jj, ii }) };
                 } else
-                    value = arr.at({ i, j });
+                    value = arr.at({ j, i });
                 auto x = converter(value);
                 if (channels == 1) {
                     Mi[j * channels] = static_cast<std::uint16_t>(x * std::numeric_limits<std::uint16_t>::max());

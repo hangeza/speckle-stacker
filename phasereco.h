@@ -1,5 +1,5 @@
 #pragma once
-#include "multidimarray.h"
+//#include "multidimarray.h"
 #include "phasemap.h"
 #include "array2.h"
 
@@ -8,10 +8,10 @@ namespace smip {
 template <typename T>
 class Bispectrum;
 template <typename T>
-class Array<T, 2>;
+class Array2;
 
 template <typename T, typename U>
-Array<T, 2> reconstruct_phases(const Bispectrum<U>& bispec,
+Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     std::size_t xsize, std::size_t ysize,
     double reco_radius,
     PhaseMap* phasemap = nullptr);
@@ -20,19 +20,19 @@ void NextRecoIndex(double& r, double& phi, int& i, int& j);
 
 template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
-    Array<T, 2>& phases,
+    Array2<T>& phases,
     PhaseMap& pm,
     int wx, int wy);
 
 template <typename T, typename U>
-Array<T, 2> reconstruct_phases(const Bispectrum<U>& bispec,
+Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     std::size_t xsize, std::size_t ysize,
     double reco_radius,
     PhaseMap* phasemap)
 {
     PhaseMap pm(xsize, ysize);
     //    Array<T,2> phases(Array<T,2>::extends{xsize,ysize});
-    Array<T, 2> phases(xsize, ysize);
+    Array2<T> phases(xsize, ysize);
     // Startwerte fuer Reko
     constexpr T init_phase { T { 1., 0. } };
 
@@ -97,7 +97,7 @@ Array<T, 2> reconstruct_phases(const Bispectrum<U>& bispec,
 
 template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
-    Array<T, 2>& phases,
+    Array2<T>& phases,
     PhaseMap& pm,
     int wx, int wy)
 {

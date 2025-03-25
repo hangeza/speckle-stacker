@@ -3,7 +3,7 @@
 namespace smip {
 
 template <typename T>
-class Array<T, 2>;
+class Array2;
 
 struct PhaseMapElement {
     PhaseMapElement() = default;
