@@ -1,5 +1,7 @@
 #pragma once
 
+namespace smip {
+
 template <typename T>
 class Array<T, 2>;
 
@@ -14,4 +16,6 @@ struct PhaseMapElement {
     double consistency { 0. };
 };
 
-typedef Array<PhaseMapElement, 2> PhaseMap;
+typedef Array2<PhaseMapElement> PhaseMap;
+
+} // namespace smip

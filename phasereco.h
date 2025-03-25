@@ -1,6 +1,9 @@
 #pragma once
 #include "multidimarray.h"
 #include "phasemap.h"
+#include "array2.h"
+
+namespace smip {
 
 template <typename T>
 class Bispectrum;
@@ -151,3 +154,5 @@ void calc_phase(const Bispectrum<U>& bispec,
         phases.at({ wx, wy }) = mean_phase / std::abs(mean_phase);
     }
 }
+
+} // namespace smip

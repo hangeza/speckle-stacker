@@ -1,5 +1,7 @@
 #pragma once
 
+namespace smip {
+
 template <typename T>
 class Array<T, 2>;
 
@@ -74,3 +76,5 @@ GeneralHamming<T>::GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, std:
         }
     }
 }
+
+} // namespace smip

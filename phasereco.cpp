@@ -12,6 +12,8 @@
 #include "phasemap.h"
 #include "phasereco.h"
 
+namespace smip {
+
 static constexpr double c_2pi { 6.2831853071796E+00 }; /* 2*pi */
 
 void NextRecoIndex(double& r, double& phi, int& i, int& j)
@@ -34,3 +36,5 @@ void NextRecoIndex(double& r, double& phi, int& i, int& j)
     i = ii;
     j = jj;
 }
+
+} // namespace smip

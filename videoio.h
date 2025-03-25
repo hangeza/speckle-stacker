@@ -8,6 +8,8 @@
 #include "multidimarray.h"
 #include "phasemap.h"
 
+namespace smip {
+    
 enum color_channel_t : std::uint8_t {
     black   = 0b0000'0000,
     blue    = 0b0000'0001,
@@ -24,11 +26,11 @@ struct RGB {
 template <typename T>
 RGB<T> mapToColor(double value);
 
-namespace smip {
+
 double get_phase_consistency(const PhaseMapElement& pme);
 template <typename T>
 T complex_phase(const std::complex<T>& a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
-}
+
 
 class FrameExtractor {
 public:
@@ -194,3 +196,5 @@ RGB<T> mapToColor(double value)
     }
     return color;
 }
+
+} // namespace smip

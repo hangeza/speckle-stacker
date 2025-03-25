@@ -11,6 +11,8 @@
 #include "multidimarray.h"
 #include "phasemap.h"
 
+namespace smip {
+
 PhaseMapElement::PhaseMapElement(bool a_flag)
     : flag(a_flag)
 {
@@ -21,3 +23,5 @@ PhaseMapElement::PhaseMapElement(bool a_flag, double a_consistency)
     , consistency(a_consistency)
 {
 }
+
+} // namespace smip

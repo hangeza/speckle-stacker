@@ -17,6 +17,8 @@
 
 //typedef std::complex<double> complex_t;
 
+namespace smip {
+
 template <typename T, std::size_t ndims>
 using dimvector = typename std::array<T, ndims>;
 
@@ -493,3 +495,5 @@ dimvector<int, 4> Bispectrum<T>::max_indices() const
     auto mins { min_indices() };
     return { mins[0] + static_cast<int>(sizes()[0]) - 1, mins[1] + static_cast<int>(sizes()[1]) - 1, mins[2] + static_cast<int>(sizes()[2]) - 1, mins[3] + static_cast<int>(sizes()[3]) - 1 };
 }
+
+} // namespace smip

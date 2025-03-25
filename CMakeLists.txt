@@ -36,6 +36,8 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/array_base.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/array2.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/bispectrum.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/multidimarray.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/videoio.h"
@@ -43,6 +45,8 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/window_function.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/log.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/point.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/rect.h"
 )
 
 # tell cmake to build our executable
