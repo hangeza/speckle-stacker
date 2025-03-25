@@ -275,7 +275,6 @@ int main(int argc, char* argv[])
         sumarray += indata;
         log::info() << "executing fft";
         fftw_execute(forward_plan);
-        //std::cout<<"fftw result = "<<forward_plan<<std::endl;
         log::info() << "accumulating fft to mean bispectrum";
         bispectrum.accumulate_from_fft(indata);
         log::info() << "creating power spectrum from fft";
