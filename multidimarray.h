@@ -449,19 +449,19 @@ public:
     /*! print some info about actual instance to stdout */
     void print() const
     {
-        std::cout << "Object: Array<1>" << std::endl;
-        std::cout << "Field Address: " << this << std::endl;
-        std::cout << "Data Address: " << _mem << std::endl;
+        std::cout << "object: Array<1>" << std::endl;
+        std::cout << "field address: " << this << std::endl;
+        std::cout << "data address: " << _mem << std::endl;
         if (_isReference)
-            std::cout << "(Field is a reference!)" << std::endl;
-        std::cout << "Datatype: " << typeid(T).name() << std::endl;
-        std::cout << "size of Datatype: " << sizeof(T) << " bytes" << std::endl;
-        std::cout << "Nr. of Elements: " << NrElements() << std::endl;
-        std::cout << "Extend: " << _extends[0] << std::endl;
-        std::cout << "Base: " << _bases[0] << std::endl;
-        std::cout << "Stride: " << _strides[0] << std::endl;
+            std::cout << "(field is a reference!)" << std::endl;
+        std::cout << "datatype: " << typeid(T).name() << std::endl;
+        std::cout << "size of datatype: " << sizeof(T) << " bytes" << std::endl;
+        std::cout << "nr. of elements: " << NrElements() << std::endl;
+        std::cout << "extend: " << _extends[0] << std::endl;
+        std::cout << "stride: " << _strides[0] << std::endl;
+        std::cout << "offset: " << _offset << std::endl;
         std::cout << "size: " << this->size() << std::endl;
-        std::cout << "size of Array: " << sizeof(T) * this->size() << " bytes" << std::endl;
+        std::cout << "size of array: " << sizeof(T) * this->size() << " bytes" << std::endl;
     }
 
     /* protected members */

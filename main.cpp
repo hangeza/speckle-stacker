@@ -236,9 +236,9 @@ int main(int argc, char* argv[])
 //         exit(-1);
     }
     const std::size_t nframes { std::min(fe.nframes(), max_frames) };
-    log::notice() << "opened video file: " << fe.nframes() << " frames";
+    log::info() << "opened video file: " << fe.nframes() << " frames";
     log::notice() << "using " << nframes << "/" << fe.nframes() << " frames";
-    log::notice() << "creating sum, power spectra and accumulating bispectrum of all frames"; 
+    log::info() << "creating sum, power spectra and accumulating bispectrum of all frames"; 
     log::info() << "reading first (reference) frame";
     indata = Mat2Array<complex_t>(fe.extract_next_frame());
     log::debug() << "frame data:";
@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
         log::info() << "adding power spectrum to mean power spectrum";
         powerspec += indata;
     }
+    log::info() << "normalizing sum image";
     sumarray /= 1.0 * nframes;
     log::info() << "normalizing bispectrum";
     powerspec /= complex_t(nframes * powerspec.size(), 0.);
@@ -292,7 +293,7 @@ int main(int argc, char* argv[])
     bispectrum.write_to_file("bispectrum.dat");
     fftw_destroy_plan(forward_plan);
 
-    log::notice() << "reconstructing fourier phases from bispectrum";
+    log::info() << "reconstructing fourier phases from bispectrum";
     PhaseMap pm;
     phases = reconstruct_phases<complex_t, bispec_complex_t>(bispectrum, indata.ncols(), indata.nrows(), reco_radius, &pm);
     if (log::system::level() >= log::Level::Debug) {
@@ -312,7 +313,7 @@ int main(int argc, char* argv[])
         [](const complex_t& val) {
             return complex_t { std::sqrt(val.real()), 0. };
         });
-    log::notice() << "combining powerspectrum with phases";
+    log::info() << "combining powerspectrum with phases";
     result_image *= phases;
 
     fftw_plan reverse_plan = fftw_plan_dft_2d(result_image.nrows(), result_image.ncols(),
