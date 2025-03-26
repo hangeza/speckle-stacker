@@ -39,6 +39,10 @@ typedef std::valarray<int> indexvector;
 template <typename T>
 class Bispectrum : public Array_base<T> {
 public:
+    typedef DimVector<std::size_t, 2> extends;
+    typedef DimVector<int, 2> s_indices;
+    typedef DimVector<std::size_t, 2> u_indices;
+
     struct ElementOutOfBounds : std::runtime_error {
         using std::runtime_error::runtime_error;
     };
