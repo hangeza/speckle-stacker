@@ -111,3 +111,19 @@ void DimVector<T, NrDims>::fill(T value)
 {
     this->assign(NrDims, value);
 }
+
+// *************************************************
+// non-member definitions
+// *************************************************
+
+template <typename T, std::size_t NrDims>
+std::ostream& operator<<(std::ostream& os, const DimVector<T, NrDims>& obj)
+{
+    // write obj to stream
+    os << "[ ";
+    for ( auto dim : obj ) {
+        os << dim << " ";
+    }
+    os << "]";
+    return os;
+}
