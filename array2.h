@@ -454,19 +454,9 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v)
 template <typename T>
 std::ostream& operator<<(std::ostream& o, Array2<T>& v)
 {
-    /*
-   std::cout<<"ostream<<(Array<T,2>)"<<std::endl;
-   std::cout<<"dims="<<v.GetExtends().size()<<std::endl;
-   std::cout<<"size="<<v.size()<<std::endl;
-   std::cout<<"extends[0]="<<v.GetExtends()[0]<<std::endl;
-   std::cout<<"strides[0]="<<v.GetStrides()[0]<<std::endl;
-   v[0].Print();
-*/
     for (std::size_t i = 0; i < v.nrows(); i++) {
         o << v.get_row(i) << std::endl;
     }
-    //   o<<"\b)";
-    //   std::copy(v.begin(),v.end(),std::ostream_iterator<Array<T,1> >(o," "));
     return o;
 }
 

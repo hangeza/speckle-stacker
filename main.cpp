@@ -263,6 +263,7 @@ int main(int argc, char* argv[])
         FFTW_FORWARD, FFTW_ESTIMATE);
     log::info() << "adding frame to sum image";
     sumarray = indata;
+
     log::info() << "executing fft";
     fftw_execute(forward_plan);
     log::info() << "accumulating fft to mean bispectrum";

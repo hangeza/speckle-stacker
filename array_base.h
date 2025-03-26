@@ -80,13 +80,9 @@ public:
     {
         if (_isReference)
             return false;
-        //if (_mem) { delete[] _mem; _mem = nullptr; }
         auto temp = std::make_unique<T[]>(new_size);
         _mem.reset(temp.release());
         _size = new_size;
-        //if (_size) _mem=new T[_size];
-        //else return true;
-        //assert (_mem!=0);
         return (_mem != nullptr);
     }
 
@@ -132,29 +128,22 @@ template <typename T>
 Array_base<T>::Array_base(std::size_t a_size)
     : _size(a_size)
 {
-    //     std::cout<<"Array_base<T>::Array_base(std::size_t)\n";
     if (!_size)
         return;
     auto temp = std::make_unique<T[]>(_size);
     _mem.reset(temp.release());
-    //_mem=new T[_size];
-    //for (std::size_t i=0;i<_size;i++) _mem.get()[i] = T(def);
-    //    std::cout<<"Array_base<T>::Array_base(size_t)\n";
 }
 
 template <typename T>
 Array_base<T>::Array_base(std::size_t a_size, const T& def)
     : _size(a_size)
 {
-    //     std::cout<<"Array_base<T>::Array_base(std::size_t, const T&)\n";
     if (!_size)
         return;
     auto temp = std::make_unique<T[]>(_size);
     _mem.reset(temp.release());
-    //_mem=new T[_size];
     for (std::size_t i = 0; i < _size; i++)
         _mem.get()[i] = T(def);
-    //    std::cout<<"Array_base<T>::Array_base(size_t, const T&)\n";
 }
 
 template <typename T>
@@ -188,7 +177,6 @@ Array_base<T>& Array_base<T>::operator=(Array_base<T>&& other)
 template <typename T>
 void Array_base<T>::set_at(std::shared_ptr<T> data, size_t a_size)
 {
-    //if (!_isReference && size) delete[] _mem;
     _size = a_size;
     _mem = data;
     _isReference = true;
