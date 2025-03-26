@@ -46,8 +46,10 @@ public:
 
     iterator begin() { return _mem.get(); }
     const_iterator begin() const { return data().get(); }
+    const_iterator cbegin() const { return data().get(); }
     iterator end() { return _mem.get() + _size; }
     const_iterator end() const { return data().get() + _size; }
+    const_iterator cend() const { return data().get() + _size; }
 
     std::shared_ptr<T> data() { return _mem; }
     std::shared_ptr<const T> data() const { return std::const_pointer_cast<const T>(_mem); }
