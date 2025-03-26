@@ -19,6 +19,11 @@
 #include <memory>
 #include <numeric>
 
+// namespace smip 
+// {
+
+template <typename T> concept concept_floating = std::is_floating_point_v<T>;
+
 //! Container class for general (1-dim) Arrays
 /*!
  * ...
@@ -34,8 +39,10 @@ public:
     typedef const T& const_reference;
 
     Array_base() = default;
-    Array_base(const Array_base& src);
-    Array_base(Array_base&& src);
+    Array_base(const Array_base<T>& src);
+    template <concept_floating U>
+    Array_base(const Array_base<U>& src);
+    Array_base(Array_base<T>&& src);
     Array_base(size_t a_size);
     Array_base(size_t a_size, const T& def);
     Array_base(std::shared_ptr<T> data, std::size_t a_size);
@@ -100,7 +107,7 @@ protected:
  * class Array_base
  */
 template <typename T>
-Array_base<T>::Array_base(const Array_base& src)
+Array_base<T>::Array_base(const Array_base<T>& src)
     : _size(src._size)
 {
     //     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
@@ -115,7 +122,23 @@ Array_base<T>::Array_base(const Array_base& src)
 }
 
 template <typename T>
-Array_base<T>::Array_base(Array_base&& src)
+template <concept_floating U>
+Array_base<T>::Array_base(const Array_base<U>& src)
+    : _size(src._size)
+{
+    //     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
+    if (!_size)
+        return;
+
+    auto temp = std::make_unique<T[]>(_size);
+    //std::shared_ptr<T> buf(nullptr, [](T* p) { delete[] p; });
+    _mem.reset(temp.release());
+    //_mem=new T[_size];
+    std::copy(src.begin(), src.end(), this->begin());
+}
+
+template <typename T>
+Array_base<T>::Array_base(Array_base<T>&& src)
     : _size(src._size)
     , _isReference(src._isReference)
     , _mem(std::move(src._mem))
@@ -181,3 +204,5 @@ void Array_base<T>::set_at(std::shared_ptr<T> data, size_t a_size)
     _mem = data;
     _isReference = true;
 }
+
+// } // namespace smip

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
+#include <concepts>
 
 #include "array_base.h"
 #include "dimvector.h"
@@ -19,6 +20,8 @@ template <typename T>
 std::ostream& operator<<(std::ostream& o, Array2<T>& v);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
+
+// template <typename T> concept concept_floating = std::is_floating_point_v<T>;
 
 //! Container class for 2d arrays
 /*!
@@ -38,6 +41,9 @@ public:
     Array2() = default;
     // Copy constructor
     Array2(const Array2<T>& src);
+    template <concept_floating U>
+    Array2(const Array2<U>& src);
+
     // Move constructor
     Array2(Array2<T>&& other) noexcept;
     Array2(std::size_t xsize, std::size_t ysize);
@@ -103,6 +109,15 @@ private:
 
 template <typename T>
 Array2<T>::Array2(const Array2<T>& src)
+    : Array_base<T>(src)
+    , m_xsize(src.m_xsize)
+    , m_ysize(src.m_ysize)
+{
+}
+
+template <typename T>
+template <concept_floating U>
+Array2<T>::Array2(const Array2<U>& src)
     : Array_base<T>(src)
     , m_xsize(src.m_xsize)
     , m_ysize(src.m_ysize)
