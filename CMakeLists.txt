@@ -13,9 +13,10 @@ include(GNUInstallDirs)
 SET(CMAKE_BUILD_TYPE Debug)
 
 ADD_DEFINITIONS(-std=gnu++2a)
-#ADD_DEFINITIONS(-O3)
+ADD_DEFINITIONS(-O3)
 ADD_DEFINITIONS(-ffast-math)
 ADD_DEFINITIONS(-Wall)
+ADD_DEFINITIONS(-flto)
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )

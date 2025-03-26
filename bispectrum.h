@@ -278,6 +278,7 @@ std::size_t Bispectrum<T>::calc_offset(indexvector indices) const
     return addr;
 }
 
+#pragma GCC optimize ("unroll-loops")
 template <typename T>
 template <typename U>
 void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
