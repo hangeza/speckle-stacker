@@ -40,32 +40,32 @@ using namespace smip;
 void Usage(const char* progname)
 {
     using namespace std;
-    cout<<"Speckle Masking Image Processing v1.0"<<endl;
-    cout<<"2002-2012, 2025 HG Zaunick <hg.zaunick@gmx.de>"<<endl;
-    cout<<endl;
-    cout<<"   Usage :  "<<std::string(progname)<<" [nrpbcvh?] <source root>"<<endl;
-    cout<<"    available options:"<<endl;
-    cout<<"     -n   --nrframes    <pics>    :   process at most number of <pics> frames"<<endl;
-    cout<<"                                      default : all files in folder"<<endl;
-    cout<<"     -r   --refframe    <index>   :   index of reference frame (default : first found)"<<endl;
-    cout<<"     -p   --recoradius  <pixels>  :   radius of phase reconstruction (default : 2 * cispectrum extent)"<<endl;
-    cout<<"     -b   --bdepth       <pixels>  :   bispectrum extent (3rd and 4th dimension) (default : 20)"<<endl;
-    cout<<"     -c   --channel     <r|g|b|i> :   color channel (default: i)"<<endl;
-    cout<<"          --calcsum               :   calculate picture sum and shifted sum (default)"<<endl;
-    cout<<"          --no-calcsum            :   do not calculate picture sum and shifted sum"<<endl;
-    cout<<"          --specklemasking        :   perform speckle masking (default)"<<endl;
-    cout<<"          --no-specklemasking     :   do not perform speckle masking"<<endl;
-    cout<<"     -k   --croppos <l:t>         :   fixed crop box position (default: 0:0)"<<endl;
-    cout<<"     -s   --cropsize <w:h>        :   crop box size (default: total image)"<<endl;
-    cout<<"     -f   --follow                :   follow object defined by the ref frame:  shifts the crop box"<<endl;
-    cout<<"                                       for each frame such that the object defined by the reference frame"<<endl;
-    cout<<"                                       is always centered. if no crop box position is specified"<<endl;
-    cout<<"                                       by --croppos, the brightest object within the ref. image is"<<endl;
-    cout<<"                                       automatically selected and the crop box centered around it."<<endl;
-    cout<<"     -v   --verbose               :   increase verbosity level"<<endl;
-    cout<<"          --version               :   display version and exit"<<endl;
-    cout<<"     -h -?  --help                :   help (this screen)"<<endl;
-    cout<<endl;
+    cout << "Speckle Masking Image Processing v1.0" << endl;
+    cout << "2002-2012, 2025 HG Zaunick <hg.zaunick@gmx.de>" << endl;
+    cout << endl;
+    cout << "   Usage :  " << std::string(progname) << " [nrpbcvh?] <source root>" << endl;
+    cout << "    available options:" << endl;
+    cout << "     -n   --nrframes    <pics>    :   process at most number of <pics> frames" << endl;
+    cout << "                                      default : all files in folder" << endl;
+    cout << "     -r   --refframe    <index>   :   index of reference frame (default : first found)" << endl;
+    cout << "     -p   --recoradius  <pixels>  :   radius of phase reconstruction (default : 2 * cispectrum extent)" << endl;
+    cout << "     -b   --bdepth       <pixels>  :   bispectrum extent (3rd and 4th dimension) (default : 20)" << endl;
+    cout << "     -c   --channel     <r|g|b|i> :   color channel (default: i)" << endl;
+    cout << "          --calcsum               :   calculate picture sum and shifted sum (default)" << endl;
+    cout << "          --no-calcsum            :   do not calculate picture sum and shifted sum" << endl;
+    cout << "          --specklemasking        :   perform speckle masking (default)" << endl;
+    cout << "          --no-specklemasking     :   do not perform speckle masking" << endl;
+    cout << "     -k   --croppos <l:t>         :   fixed crop box position (default: 0:0)" << endl;
+    cout << "     -s   --cropsize <w:h>        :   crop box size (default: total image)" << endl;
+    cout << "     -f   --follow                :   follow object defined by the ref frame:  shifts the crop box" << endl;
+    cout << "                                       for each frame such that the object defined by the reference frame" << endl;
+    cout << "                                       is always centered. if no crop box position is specified" << endl;
+    cout << "                                       by --croppos, the brightest object within the ref. image is" << endl;
+    cout << "                                       automatically selected and the crop box centered around it." << endl;
+    cout << "     -v   --verbose               :   increase verbosity level" << endl;
+    cout << "          --version               :   display version and exit" << endl;
+    cout << "     -h -?  --help                :   help (this screen)" << endl;
+    cout << endl;
 }
 
 int main(int argc, char* argv[])
