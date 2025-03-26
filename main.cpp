@@ -31,6 +31,7 @@
 #include "rect.h"
 #include "videoio.h"
 #include "window_function.h"
+#include "crosscorrel.h"
 
 typedef std::complex<double> complex_t;
 typedef std::complex<float> bispec_complex_t;

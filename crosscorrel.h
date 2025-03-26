@@ -3,17 +3,33 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <type_traits>
 #include <fftw3.h>
 #include "array2.h"
 #include "dimvector.h"
+#include <concepts>
 
 namespace smip {
 
 template <typename T>
 class Array2;
 
-template <typename T>
+template <typename T> concept floating_only = std::is_floating_point_v<T>;
+
+// the general class template for all types should never be called
+template<typename T>
 class CrossCorrelation {
+public:
+    static auto get_displacement(const Array2<T>& a, const Array2<T>& b) -> DimVector<int, 2> {
+        throw std::invalid_argument("invalid SFINAE call of CrossCorrelation::get_displacement()");
+        return DimVector<int, 2>();
+    }
+};
+
+// the partial specialization with concept selects only floating point types
+template <floating_only T>
+class CrossCorrelation <T>
+{
 public:
     CrossCorrelation() = delete;
     CrossCorrelation(const Array2<T>& ref);
@@ -22,7 +38,11 @@ public:
     auto get_displacement() -> DimVector<int,2>;
 
     auto operator()(const Array2<T>& frame) -> DimVector<int,2>;
-    static auto get_displacement(const Array2<T>& a, const Array2<T>& b) -> DimVector<int,2>;
+    static auto get_displacement(const Array2<T>& a, const Array2<T>& b) -> DimVector<int,2>
+    {
+        CrossCorrelation<T> correl(a);
+        return correl(b);
+    }
     
 private:
     enum class readiness : std::uint8_t
@@ -48,12 +68,12 @@ CrossCorrelation(const Array2<T>& ref) -> CrossCorrelation<T>;
 //********************
 // implementation part
 //********************
-template <typename T>
+template <floating_only T>
 CrossCorrelation<T>::CrossCorrelation(const Array2<T>& ref)
     : m_refframe(ref)
 {}
 
-template <typename T>
+template <floating_only T>
 void CrossCorrelation<T>::correlate(const Array2<T>& frame)
 {
     if ( (frame.ncols() != m_refframe.ncols()) || (frame.nrows() != m_refframe.nrows()) ) {
@@ -102,13 +122,13 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
     m_readiness = readiness::correl;
 }
 
-template <typename T>
+template <floating_only T>
 auto CrossCorrelation<T>::get_correlation_array() -> const Array2<T>&
 {
     return m_correlation;
 }
 
-template <typename T>
+template <floating_only T>
 auto CrossCorrelation<T>::get_displacement() -> DimVector<int,2>
 {
     if (m_readiness == readiness::correl) {
@@ -117,7 +137,7 @@ auto CrossCorrelation<T>::get_displacement() -> DimVector<int,2>
     return m_shift;    
 }
 
-template <typename T>
+template <floating_only T>
 void CrossCorrelation<T>::calculate_displacement()
 {
     if (m_readiness == readiness::correl) { 
@@ -130,20 +150,13 @@ void CrossCorrelation<T>::calculate_displacement()
     }
 }
 
-template <typename T>
+template <floating_only T>
 auto CrossCorrelation<T>::operator()(const Array2<T>& frame) -> DimVector<int,2>
 {
     m_readiness = readiness::none;
     correlate(frame);
     calculate_displacement();
     return m_shift;
-}
-
-template <typename T>
-auto CrossCorrelation<T>::get_displacement(const Array2<T>& a, const Array2<T>& b) -> DimVector<int,2>
-{
-    CrossCorrelation<T> correl(a);
-    return correl(b);
 }
 
 } // namespace smip
