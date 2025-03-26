@@ -13,8 +13,10 @@
 
 namespace smip {
 
-// template <typename T>
-// class Array2<T>;
+template <typename T>
+class Array2;
+template <typename T>
+std::ostream& operator<<(std::ostream& o, Array2<T>& v);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
@@ -412,7 +414,31 @@ template <typename T>
 Array2<T> operator+(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
+    z += y;
+    return std::move(z);
+}
+
+template <typename T>
+Array2<T> operator-(const Array2<T>& x, const Array2<T>& y)
+{
+    Array2<T> z { x };
+    z -= y;
+    return std::move(z);
+}
+
+template <typename T>
+Array2<T> operator*(const Array2<T>& x, const Array2<T>& y)
+{
+    Array2<T> z { x };
     z *= y;
+    return std::move(z);
+}
+
+template <typename T>
+Array2<T> operator/(const Array2<T>& x, const Array2<T>& y)
+{
+    Array2<T> z { x };
+    z /= y;
     return std::move(z);
 }
 
