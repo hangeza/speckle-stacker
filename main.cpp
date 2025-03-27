@@ -293,11 +293,14 @@ int main(int argc, char* argv[])
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         log::info() << "adding frame to sum image";
         // element-wise conversion and compound addition from complex indata frame to real sumarray
+        // equivalent to sumarray += indata;
         std::transform(sumarray.cbegin(), sumarray.cend(), indata.cbegin(), sumarray.begin(), 
                         [](double s, const complex_t& c){ 
                             return s + c.real();
                         });
-        //sumarray += indata;
+
+        auto xyshift = cross_correl(Array2<double>::convert(indata,complex_abs<double>));
+        log::info() << "relative shift wrt ref frame: [x,y] = " << xyshift;
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";
