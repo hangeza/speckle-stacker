@@ -22,8 +22,6 @@ std::ostream& operator<<(std::ostream& o, Array2<T>& v);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
-// template <typename T> concept concept_floating = std::is_floating_point_v<T>;
-
 //! Container class for 2d arrays
 /*!
  * ...
@@ -32,7 +30,6 @@ template <typename T>
 class Array2 : public Array_base<T> {
     using Array_base<T>::_mem;
     using Array_base<T>::_size;
-    struct Proxy;
 
 public:
     typedef DimVector<std::size_t, 2> extends;
@@ -123,7 +120,7 @@ public:
     std::size_t ysize() const { return m_ysize; }
     std::size_t ncols() const { return m_xsize; }
     std::size_t nrows() const { return m_ysize; }
-    s_indices min_sindices() const { return { -static_cast<int>(ncols()) / 2, -static_cast<int>(nrows()) / 2 }; }
+    s_indices min_sindices() const { return { -static_cast<int>(ncols()>>1), -static_cast<int>(nrows()>>1) }; }
     s_indices max_sindices() const { return { -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1, -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1 }; }
 
     void print() const;

@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
     }
     std::string filename(*argv);
 
-    Array2<complex_t> sumarray, powerspec;
+    Array2<complex_t> powerspec;
     Array2<complex_t> indata;
     Bispectrum<bispec_complex_t> bispectrum;
     Array2<complex_t> phases;
@@ -299,9 +299,9 @@ int main(int argc, char* argv[])
         powerspec += indata;
     }
     log::info() << "normalizing sum image";
-    sumarray /= 1.0 * nframes;
+    sumarray /= nframes;
     log::info() << "normalizing bispectrum";
-    powerspec /= complex_t(nframes * powerspec.size(), 0.);
+    powerspec /= nframes * powerspec.size();
     log::info() << "normalizing power spectrum";
     bispectrum /= bispec_complex_t(nframes, 0.);
     log::notice() << "writing bispectrum to file 'bispectrum.dat'";
@@ -357,7 +357,7 @@ int main(int argc, char* argv[])
         log::debug() << "power spectrum: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
     auto normfact { std::abs(*(minmax.second)) / 1000. };
-    powerspec /= complex_t { normfact, 0. };
+    powerspec /= normfact;
     minmax = std::minmax_element(phases.begin(), phases.end(), abscomp);
     if (log::system::level() >= log::Level::Debug) {
         log::debug() << "phases: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
