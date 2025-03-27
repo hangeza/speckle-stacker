@@ -62,9 +62,6 @@ public:
     // Assignment operator from value of foreign arithmetic type
     template <concept_arithmetic U>
     Array2<T>& operator=(const U& val);
-    // Assignment from Array2 of foreign type using a conversion functor
-    template <typename U>
-    Array2<T>& import(const Array2<U>& src, std::function<T(const U&)> conversion);
     // Move assignment operator
     Array2<T>& operator=(Array2<T>&& other) noexcept;
     // Compound assignment operators from same type
@@ -124,6 +121,27 @@ public:
     s_indices max_sindices() const { return { -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1, -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1 }; }
 
     void print() const;
+
+    // Conversion from Array2 of foreign type using a conversion functor
+    template <typename U>
+    void import(const Array2<U>& src, std::function<T(const U&)> conversion);
+    // Conversion from Array2 of foreign type without a conversion functor
+    template <concept_arithmetic U>
+    void import(const Array2<U>& src);
+
+    // Static conversion from Array2 of foreign type with conversion functor
+    template <typename U>
+    static Array2<T> convert(const Array2<U>& src, std::function<T(const U&)> conversion) {
+         Array2<T> arr {};
+         arr.import(src, conversion);
+         return arr;
+    };
+    // Static conversion from Array2 of foreign arithmetic type without conversion functor
+    template <concept_arithmetic U>
+    static Array2<T> convert(const Array2<U>& src) {
+        //Array2<T> arr(src);
+        return std::move(Array2<T>(src));
+    };
 
     //     friend Array2<T> operator+<>(const Array2<T> &x,const Array2<T> &y);
 
@@ -318,19 +336,6 @@ Array2<T>& Array2<T>::operator=(const Array2<U>& src)
         assert(this->resize(src.size()));
     }
     std::copy(src.begin(), src.end(), this->begin());
-    return *this;
-}
-
-template <typename T>
-template <typename U>
-Array2<T>& Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversion)
-{
-    m_xsize = src.m_xsize;
-    m_ysize = src.m_ysize;
-    if (this->size() != src.size()) {
-        assert(this->resize(src.size()));
-    }
-    std::transform(src.begin(), src.end(), this->begin(), conversion);
     return *this;
 }
 
@@ -553,6 +558,32 @@ Array2<T> Array2<T>::get_subarray(const Rect<std::size_t>& rect)
     }
     return subarr;
 }
+
+template <typename T>
+template <concept_arithmetic U>
+void Array2<T>::import(const Array2<U>& src)
+{
+    m_xsize = src.m_xsize;
+    m_ysize = src.m_ysize;
+    if (this->size() != src.size()) {
+        assert(this->resize(src.size()));
+    }
+    std::transform(src.begin(), src.end(), this->begin(), [](){});
+}
+
+// static conversion
+template <typename T>
+template <typename U>
+void Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversion)
+{
+    m_xsize = src.xsize();
+    m_ysize = src.ysize();
+    if (this->size() != src.size()) {
+        assert(this->resize(src.size()));
+    }
+    std::transform(src.begin(), src.end(), this->begin(), conversion);
+}
+
 
 template <typename T>
 void Array2<T>::print() const
