@@ -22,6 +22,7 @@
 #include "array_base.h"
 #include "dimvector.h"
 
+namespace smip {
 /*
  *! class Range
  */
@@ -1556,7 +1557,10 @@ protected:
     std::shared_ptr<T> m_data;
 };
 
+} // namespace smip
+
 namespace std {
+using namespace smip;
 
 template <typename T, std::size_t N>
 struct iterator_traits<array_iterator<T, N>> {

@@ -19,10 +19,11 @@
 #include <memory>
 #include <numeric>
 
-// namespace smip 
-// {
+namespace smip 
+{
 
 template <typename T> concept concept_floating = std::is_floating_point_v<T>;
+template <typename T> concept concept_arithmetic = std::is_arithmetic_v<T>;
 
 //! Container class for general (1-dim) Arrays
 /*!
@@ -40,7 +41,7 @@ public:
 
     Array_base() = default;
     Array_base(const Array_base<T>& src);
-    template <concept_floating U>
+    template <concept_arithmetic U>
     Array_base(const Array_base<U>& src);
     Array_base(Array_base<T>&& src);
     Array_base(size_t a_size);
@@ -122,7 +123,7 @@ Array_base<T>::Array_base(const Array_base<T>& src)
 }
 
 template <typename T>
-template <concept_floating U>
+template <concept_arithmetic U>
 Array_base<T>::Array_base(const Array_base<U>& src)
     : _size(src._size)
 {
@@ -205,4 +206,4 @@ void Array_base<T>::set_at(std::shared_ptr<T> data, size_t a_size)
     _isReference = true;
 }
 
-// } // namespace smip
+} // namespace smip

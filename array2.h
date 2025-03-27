@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <typeinfo>
 #include <concepts>
+#include <functional>
 
 #include "array_base.h"
 #include "dimvector.h"
@@ -39,9 +40,10 @@ public:
     typedef DimVector<std::size_t, 2> u_indices;
 
     Array2() = default;
-    // Copy constructor
+    // Copy constructor from Array2 of same type
     Array2(const Array2<T>& src);
-    template <concept_floating U>
+    // Copy constructor from Array2 of foreign arithmetic type
+    template <concept_arithmetic U>
     Array2(const Array2<U>& src);
 
     // Move constructor
@@ -53,18 +55,49 @@ public:
     Array2(std::initializer_list<std::initializer_list<T>> l);
     ~Array2() = default;
 
+    // Assignment operator
     Array2<T>& operator=(const Array2<T>& x);
+    // Assignment operator from foreign arithmetic Array2 type
+    template <concept_arithmetic U>
+    Array2<T>& operator=(const Array2<U>& x);
+    // Assignment operator from value
+    Array2<T>& operator=(const T& val);
+    // Assignment operator from value of foreign arithmetic type
+    template <concept_arithmetic U>
+    Array2<T>& operator=(const U& val);
+    // Assignment from Array2 of foreign type using a conversion functor
+    template <typename U>
+    Array2<T>& import(const Array2<U>& src, std::function<T(const U&)> conversion);
     // Move assignment operator
     Array2<T>& operator=(Array2<T>&& other) noexcept;
-    Array2<T>& operator=(const T& val);
+    // Compound assignment operators from same type
     Array2<T>& operator+=(const Array2<T>& x);
-    Array2<T>& operator+=(const T& val);
     Array2<T>& operator-=(const Array2<T>& x);
-    Array2<T>& operator-=(const T& val);
     Array2<T>& operator*=(const Array2<T>& x);
-    Array2<T>& operator*=(const T& val);
     Array2<T>& operator/=(const Array2<T>& x);
+    // Compound assignment operators from foreign arithmetic Array2 type
+    template <concept_arithmetic U>
+    Array2<T>& operator+=(const Array2<U>& x);
+    template <concept_arithmetic U>
+    Array2<T>& operator-=(const Array2<U>& x);
+    template <concept_arithmetic U>
+    Array2<T>& operator*=(const Array2<U>& x);
+    template <concept_arithmetic U>
+    Array2<T>& operator/=(const Array2<U>& x);
+    // Compound assignment operator from value
+    Array2<T>& operator+=(const T& val);
+    Array2<T>& operator-=(const T& val);
+    Array2<T>& operator*=(const T& val);
     Array2<T>& operator/=(const T& val);
+    // Compound assignment operator from value of foreign arithmetic type
+    template <concept_arithmetic U>
+    Array2<T>& operator+=(const U& val);
+    template <concept_arithmetic U>
+    Array2<T>& operator-=(const U& val);
+    template <concept_arithmetic U>
+    Array2<T>& operator*=(const U& val);
+    template <concept_arithmetic U>
+    Array2<T>& operator/=(const U& val);
     // Unary plus operator (identity, returns the matrix as-is)
     Array2<T> operator+() const;
     // Unary minus operator (negates all elements of the matrix)
@@ -116,7 +149,7 @@ Array2<T>::Array2(const Array2<T>& src)
 }
 
 template <typename T>
-template <concept_floating U>
+template <concept_arithmetic U>
 Array2<T>::Array2(const Array2<U>& src)
     : Array_base<T>(src)
     , m_xsize(src.m_xsize)
@@ -277,7 +310,43 @@ Array2<T>& Array2<T>::operator=(const Array2<T>& src)
 }
 
 template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator=(const Array2<U>& src)
+{
+    if (this == &src)
+        return *this;
+    m_xsize = src.m_xsize;
+    m_ysize = src.m_ysize;
+    if (this->size() != src.size()) {
+        assert(this->resize(src.size()));
+    }
+    std::copy(src.begin(), src.end(), this->begin());
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+Array2<T>& Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversion)
+{
+    m_xsize = src.m_xsize;
+    m_ysize = src.m_ysize;
+    if (this->size() != src.size()) {
+        assert(this->resize(src.size()));
+    }
+    std::transform(src.begin(), src.end(), this->begin(), conversion);
+    return *this;
+}
+
+template <typename T>
 Array2<T>& Array2<T>::operator=(const T& val)
+{
+    std::fill(this->begin(), this->end(), val);
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator=(const U& val)
 {
     std::fill(this->begin(), this->end(), val);
     return *this;
@@ -294,12 +363,38 @@ Array2<T>& Array2<T>::operator+=(const Array2<T>& x)
 }
 
 template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator+=(const Array2<U>& x)
+{
+    assert(x.size() == this->size());
+    std::transform(this->begin(), this->end(),
+        x.begin(), this->begin(),
+        [](const T& a, const U&b){
+            return a + static_cast<T>(b);
+        });
+    return *this;
+}
+
+template <typename T>
 Array2<T>& Array2<T>::operator-=(const Array2<T>& x)
 {
     assert(x.size() == this->size());
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::minus<T>());
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator-=(const Array2<U>& x)
+{
+    assert(x.size() == this->size());
+    std::transform(this->begin(), this->end(),
+        x.begin(), this->begin(),
+        [](const T& a, const U&b){
+            return a - static_cast<T>(b);
+        });
     return *this;
 }
 
@@ -314,12 +409,38 @@ Array2<T>& Array2<T>::operator*=(const Array2<T>& x)
 }
 
 template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator*=(const Array2<U>& x)
+{
+    assert(x.size() == this->size());
+    std::transform(this->begin(), this->end(),
+        x.begin(), this->begin(),
+        [](const T& a, const U&b){
+            return a * static_cast<T>(b);
+        });
+    return *this;
+}
+
+template <typename T>
 Array2<T>& Array2<T>::operator/=(const Array2<T>& x)
 {
     assert(x.size() == this->size());
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::divides<T>());
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator/=(const Array2<U>& x)
+{
+    assert(x.size() == this->size());
+    std::transform(this->begin(), this->end(),
+        x.begin(), this->begin(),
+        [](const T& a, const U&b){
+            return a / static_cast<T>(b);
+        });
     return *this;
 }
 
@@ -331,9 +452,25 @@ Array2<T>& Array2<T>::operator+=(const T& x)
 }
 
 template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator+=(const U& x)
+{
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a += static_cast<T>(x); });
+    return *this;
+}
+
+template <typename T>
 Array2<T>& Array2<T>::operator-=(const T& x)
 {
     std::for_each(this->begin(), this->end(), [&x](T& a) { a -= x; });
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator-=(const U& x)
+{
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a -= static_cast<T>(x); });
     return *this;
 }
 
@@ -345,9 +482,25 @@ Array2<T>& Array2<T>::operator*=(const T& x)
 }
 
 template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator*=(const U& x)
+{
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a *= static_cast<T>(x); });
+    return *this;
+}
+
+template <typename T>
 Array2<T>& Array2<T>::operator/=(const T& x)
 {
     std::for_each(this->begin(), this->end(), [&x](T& a) { a /= x; });
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array2<T>& Array2<T>::operator/=(const U& x)
+{
+    std::for_each(this->begin(), this->end(), [&x](T& a) { a /= static_cast<T>(x); });
     return *this;
 }
 

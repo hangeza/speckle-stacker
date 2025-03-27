@@ -10,6 +10,7 @@
 #include <numeric>
 #include <unistd.h> // for getopt()
 #include <vector>
+#include <complex>
 
 #include <fftw3.h>
 
