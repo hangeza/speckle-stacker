@@ -263,8 +263,15 @@ int main(int argc, char* argv[])
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         FFTW_FORWARD, FFTW_ESTIMATE);
+    
     log::info() << "adding frame to sum image";
-    sumarray = indata;
+    // first, create empty sumarray with frame size
+    Array2<double> sumarray(indata.ncols(), indata.nrows());
+    // element-wise conversion from complex indata frame to real sumarray
+    std::transform(indata.begin(), indata.end(), sumarray.begin(), [](const complex_t& c){ return c.real();}); 
+    //sumarray = indata;
+    // set up cross correlation object with first frame as reference frame
+    CrossCorrelation<double> cross_correl(sumarray);
 
     log::info() << "executing fft";
     fftw_execute(forward_plan);
@@ -285,7 +292,12 @@ int main(int argc, char* argv[])
         indata += Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         log::info() << "adding frame to sum image";
-        sumarray += indata;
+        // element-wise conversion and compound addition from complex indata frame to real sumarray
+        std::transform(sumarray.cbegin(), sumarray.cend(), indata.cbegin(), sumarray.begin(), 
+                        [](double s, const complex_t& c){ 
+                            return s + c.real();
+                        });
+        //sumarray += indata;
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";
@@ -348,11 +360,11 @@ int main(int argc, char* argv[])
     auto abscomp = [](const std::complex<double>& a, const std::complex<double>& b) {
         return (std::abs(a) < std::abs(b));
     };
-    auto minmax = std::minmax_element(sumarray.begin(), sumarray.end(), abscomp);
+    auto minmax_d = std::minmax_element(sumarray.begin(), sumarray.end());
     if (log::system::level() >= log::Level::Debug) {
-        log::debug() << "sum image: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
+        log::debug() << "sum image: min=" << *(minmax_d.first) << " max=" << *(minmax_d.second);
     }
-    minmax = std::minmax_element(powerspec.begin(), powerspec.end(), abscomp);
+    auto minmax = std::minmax_element(powerspec.begin(), powerspec.end(), abscomp);
     if (log::system::level() >= log::Level::Debug) {
         log::debug() << "power spectrum: min=" << std::abs(*(minmax.first)) << " max=" << std::abs(*(minmax.second));
     }
@@ -376,20 +388,20 @@ int main(int argc, char* argv[])
     cv::namedWindow("Display Phases Image", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Display PhaseCons Image", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Display Reco Image", cv::WINDOW_AUTOSIZE);
-    cv::imshow("Display Sum Image", Array2Mat(sumarray, std::abs<double>, CV_8UC3, false));
-    cv::imshow("Display FFT Image", Array2Mat(powerspec, std::abs<double>, CV_8UC3));
-    cv::imshow("Display Phases Image", Array2Mat(phases, complex_phase<double>, CV_8UC3));
+    cv::imshow("Display Sum Image", Array2Mat<double,double>(sumarray, std::fabs<double>, CV_8UC3, false));
+    cv::imshow("Display FFT Image", Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_8UC3));
+    cv::imshow("Display Phases Image", Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_8UC3));
     cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_8UC3));
-    cv::imshow("Display Reco Image", Array2Mat(result_image, std::abs<double>, CV_8UC3));
-    save_frame(Array2Mat(sumarray, std::abs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
-    save_frame(Array2Mat(sumarray, std::abs<double>, CV_16U, false), "sum_image.png");
-    save_frame(Array2Mat(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
-    save_frame(Array2Mat(phases, complex_phase<double>, CV_16U), "phases.png");
+    cv::imshow("Display Reco Image", Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_8UC3));
+    save_frame(Array2Mat<double,double>(sumarray, std::fabs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
+    save_frame(Array2Mat<double,double>(sumarray, std::fabs<double>, CV_16U, false), "sum_image.png");
+    save_frame(Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
+    save_frame(Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_16U), "phases.png");
     save_frame(Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_16UC3), "phasecons.png");
-    save_frame(Array2Mat(powerspec, std::abs<double>, CV_16UC3), "powerspec_falsecolor.png");
-    save_frame(Array2Mat(powerspec, std::abs<double>, CV_16U), "powerspec.png");
-    save_frame(Array2Mat(result_image, std::abs<double>, CV_16UC3), "reco_image_falsecolor.png");
-    save_frame(Array2Mat(result_image, std::abs<double>, CV_16U), "reco_image.png");
+    save_frame(Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_16UC3), "powerspec_falsecolor.png");
+    save_frame(Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_16U), "powerspec.png");
+    save_frame(Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_16UC3), "reco_image_falsecolor.png");
+    save_frame(Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_16U), "reco_image.png");
     cv::waitKey(0);
 
     return 0;

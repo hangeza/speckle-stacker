@@ -28,7 +28,9 @@ RGB<T> mapToColor(double value);
 
 double get_phase_consistency(const PhaseMapElement& pme);
 template <typename T>
-T complex_phase(const std::complex<T>& a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
+T complex_phase(std::complex<T> a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
+template <typename T>
+T complex_abs(const std::complex<T>& z) { return std::abs(z); }
 
 class FrameExtractor {
 public:
@@ -54,7 +56,7 @@ template <typename T>
 Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array2<T>& arr,
-    U (*converter)(const T&) = std::abs<U>,
+    std::function<U(T)> converter = std::fabs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
 
@@ -89,7 +91,7 @@ Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
 
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array2<T>& arr,
-    U (*converter)(const T&),
+    std::function<U(T)> converter,
     int cv_datatype,
     bool signed_symmetry)
 {
