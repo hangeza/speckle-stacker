@@ -124,7 +124,6 @@ int main(int argc, char* argv[])
         ch = getopt_long(argc, argv, "vn:r:p:b:c:h?k:s:",
             long_options, &option_index);
 
-        std::string stdstr;
         std::istringstream istr;
         switch (ch) {
         case 'v':
@@ -170,10 +169,9 @@ int main(int argc, char* argv[])
             break;
         case 'c':
             //cout<<"color channel : "<<optarg<<endl;
-            if (optarg != "") {
-                stdstr = std::string(optarg);
-                //std::string str(optarg);
-                for (int i = 0; i < stdstr.size(); ++i) {
+            if (std::string(optarg) != "") {
+                std::string stdstr = std::string(optarg);
+                for (std::size_t i { 0 }; i < stdstr.size(); ++i) {
                     switch (stdstr[i]) {
                     case 'r':
                         color_channel = color_channel_t::red;
