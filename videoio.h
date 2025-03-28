@@ -9,7 +9,7 @@
 #include "phasemap.h"
 
 namespace smip {
-    
+
 enum color_channel_t : std::uint8_t {
     black   = 0b0000'0000,
     blue    = 0b0000'0001,
@@ -59,6 +59,7 @@ cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(T)> converter = std::fabs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
+
 
 // implementation part
 

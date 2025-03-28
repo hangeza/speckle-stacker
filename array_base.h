@@ -59,7 +59,7 @@ public:
     const_iterator end() const { return data().get() + _size; }
     const_iterator cend() const { return data().get() + _size; }
 
-    std::shared_ptr<T> data() { return _mem; }
+    std::shared_ptr<T>& data() { return _mem; }
     std::shared_ptr<const T> data() const { return std::const_pointer_cast<const T>(_mem); }
 
     reference operator[](std::size_t i) { return _mem.get()[i]; }

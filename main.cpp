@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         reinterpret_cast<fftw_complex*>(indata.data().get()),
         FFTW_FORWARD, FFTW_ESTIMATE);
-    
+
     log::info() << "adding frame to sum image";
     // first, create empty sumarray with frame size
     Array2<double> sumarray(indata.ncols(), indata.nrows());
@@ -291,16 +291,12 @@ int main(int argc, char* argv[])
         indata = complex_t {};
         indata += Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
-        log::info() << "adding frame to sum image";
-        // element-wise conversion and compound addition from complex indata frame to real sumarray
-        // equivalent to sumarray += indata;
-        std::transform(sumarray.cbegin(), sumarray.cend(), indata.cbegin(), sumarray.begin(), 
-                        [](double s, const complex_t& c){ 
-                            return s + c.real();
-                        });
-
+        // calculate shift of frame wrt ref frame through cross correlation
         auto xyshift = cross_correl(Array2<double>::convert(indata,complex_abs<double>));
         log::info() << "relative shift wrt ref frame: [x,y] = " << xyshift;
+        log::info() << "adding back-shifted frame to sum image";
+        // add back-shifted frame to sum image
+        sumarray += Array2<double>::convert(indata,complex_abs<double>).shifted({-xyshift[0],-xyshift[1]});
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";

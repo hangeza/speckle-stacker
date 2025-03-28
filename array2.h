@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <concepts>
 #include <functional>
+#include <algorithm>
 
 #include "array_base.h"
 #include "dimvector.h"
@@ -112,6 +113,8 @@ public:
     std::vector<T> get_col(std::size_t col) const;
     std::vector<T> get_row(std::size_t row) const;
     Array2<T> get_subarray(const Rect<std::size_t>& rect);
+    void shift(const DimVector<int,2>& distance);
+    Array2<T> shifted(const DimVector<int,2>& distance);
 
     std::size_t xsize() const { return m_xsize; }
     std::size_t ysize() const { return m_ysize; }
@@ -131,17 +134,10 @@ public:
 
     // Static conversion from Array2 of foreign type with conversion functor
     template <typename U>
-    static Array2<T> convert(const Array2<U>& src, std::function<T(const U&)> conversion) {
-         Array2<T> arr {};
-         arr.import(src, conversion);
-         return arr;
-    };
+    static Array2<T> convert(const Array2<U>& src, std::function<T(const U&)> conversion);
     // Static conversion from Array2 of foreign arithmetic type without conversion functor
     template <concept_arithmetic U>
-    static Array2<T> convert(const Array2<U>& src) {
-        //Array2<T> arr(src);
-        return std::move(Array2<T>(src));
-    };
+    static Array2<T> convert(const Array2<U>& src);
 
     //     friend Array2<T> operator+<>(const Array2<T> &x,const Array2<T> &y);
 
@@ -560,6 +556,35 @@ Array2<T> Array2<T>::get_subarray(const Rect<std::size_t>& rect)
 }
 
 template <typename T>
+void Array2<T>::shift(const DimVector<int,2>& distance)
+{
+    Array2<T> shifted_arr(std::move(this->shifted(distance)));
+    std::swap(shifted_arr.data(), (*this).data());
+}
+
+template <typename T>
+Array2<T> Array2<T>::shifted(const DimVector<int,2>& distance)
+{
+    Array2<T> shifted_arr(m_xsize,m_ysize,T{});
+    Point<int> startpos {
+        std::clamp(distance[0], 0, static_cast<int>(m_xsize)-1),
+        std::clamp(distance[1], 0, static_cast<int>(m_ysize)-1)
+    };
+    Point<int> endpos {
+        std::clamp(distance[0] + static_cast<int>(m_xsize), 1, static_cast<int>(m_xsize)),
+        std::clamp(distance[1] + static_cast<int>(m_ysize), 1, static_cast<int>(m_ysize))
+    };
+    
+    for (int row { startpos.y }; row < endpos.y; ++row) {
+        for (int col { startpos.x }; col < endpos.x; ++col) {
+            shifted_arr(col,row) = (*this)(col-distance[0],row-distance[1]);
+        }
+    }
+    return shifted_arr;
+}
+
+// non-static conversion
+template <typename T>
 template <concept_arithmetic U>
 void Array2<T>::import(const Array2<U>& src)
 {
@@ -571,7 +596,7 @@ void Array2<T>::import(const Array2<U>& src)
     std::transform(src.begin(), src.end(), this->begin(), [](){});
 }
 
-// static conversion
+// non-static conversion
 template <typename T>
 template <typename U>
 void Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversion)
@@ -583,6 +608,21 @@ void Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversi
     }
     std::transform(src.begin(), src.end(), this->begin(), conversion);
 }
+
+// Static conversion from Array2 of foreign type with conversion functor
+template <typename T>
+template <typename U>
+Array2<T> Array2<T>::convert(const Array2<U>& src, std::function<T(const U&)> conversion) {
+        Array2<T> arr {};
+        arr.import(src, conversion);
+        return arr;
+};
+// Static conversion from Array2 of foreign arithmetic type without conversion functor
+template <typename T>
+template <concept_arithmetic U>
+Array2<T> Array2<T>::convert(const Array2<U>& src) {
+    return std::move(Array2<T>(src));
+};
 
 
 template <typename T>
