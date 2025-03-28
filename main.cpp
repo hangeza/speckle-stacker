@@ -11,6 +11,7 @@
 #include <unistd.h> // for getopt()
 #include <vector>
 #include <complex>
+#include <stdexcept>
 
 #include <fftw3.h>
 
@@ -152,11 +153,8 @@ int main(int argc, char* argv[])
             _a = _b = -1;
             char _c;
             istr >> _a >> _c >> _b;
-            if (_a <= 0)
-                break;
-            if (_b <= 0)
-                _b = _a;
-            crop_rect += { _a, _b };
+            if ( _a < 0 || _b <= 0 ) throw std::range_error("invalid crop box pos arguments");
+            crop_rect += { static_cast<std::size_t>(_a), static_cast<std::size_t>(_b) };
             log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
             break;
         case 's':
@@ -166,11 +164,8 @@ int main(int argc, char* argv[])
             b = -1;
             char c;
             istr >> a >> c >> b;
-            if (a <= 0)
-                break;
-            if (b <= 0)
-                b = a;
-            crop_rect.set_size({ a, b });
+            if (a <= 0 || b <= 0) throw std::range_error("invalid crop box size arguments");
+            crop_rect.set_size({ static_cast<std::size_t>(a), static_cast<std::size_t>(b) });
             log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
             break;
         case 'c':

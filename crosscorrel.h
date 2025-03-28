@@ -124,14 +124,14 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
 template <concept_floating T>
 auto CrossCorrelation<T>::get_correlation_array() -> const Array2<T>&
 {
-    if ( m_readiness < readiness::correl ) throw std::bad_function_call("No correlation matrix available");
+    if ( m_readiness < readiness::correl ) throw std::bad_function_call();
     return m_correlation;
 }
 
 template <concept_floating T>
 auto CrossCorrelation<T>::get_displacement() -> DimVector<int,2>
 {
-    if ( m_readiness < readiness::correl ) throw std::bad_function_call("No correlation matrix available");
+    if ( m_readiness < readiness::correl ) throw std::bad_function_call();
     if (m_readiness == readiness::correl) {
         calculate_displacement();
     }
