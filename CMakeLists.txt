@@ -17,6 +17,8 @@ ADD_DEFINITIONS(-O3)
 ADD_DEFINITIONS(-ffast-math)
 ADD_DEFINITIONS(-Wall)
 ADD_DEFINITIONS(-flto)
+# uncomment to use lld linker when compiling with clang
+#ADD_LINK_OPTIONS(-fuse-ld=lld)
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
@@ -68,4 +70,4 @@ TARGET_LINK_LIBRARIES(smip
  ${OpenCV_LIBS}
 )
 
-add_custom_target(clangformat COMMAND clang-format-11 -style=WebKit -i ${ALL_FILES})
+add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
