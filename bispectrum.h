@@ -239,18 +239,18 @@ Bispectrum<T>& Bispectrum<T>::operator/=(const T& c)
 template <typename T>
 indexvector Bispectrum<T>::calc_indices(std::size_t addr) const
 {
-    assert(addr < base_size);
-    std::size_t temp { base_size / base_sizes[0] };
+    assert(addr < base_size());
+    std::size_t temp { base_size() / base_sizes()[0] };
     std::size_t rest { addr };
     indexvector indices { 0, 0, 0, 0 };
     indices[0] = -static_cast<int>(rest / temp);
     temp *= -indices[0];
     rest = rest - temp;
-    temp = base_sizes[2] * base_sizes[3];
+    temp = base_sizes()[2] * base_sizes()[3];
     indices[1] = static_cast<int>(rest / temp);
     temp *= indices[1];
     rest = rest - temp;
-    temp = base_sizes[3];
+    temp = base_sizes()[3];
     indices[2] = -static_cast<int>(rest / temp);
     temp *= -indices[2];
     rest = rest - temp;
@@ -407,7 +407,7 @@ T Bispectrum<T>::get_element(indexvector indices) const
         /*
         std::cerr<<"error: trying to access element out of range"<<std::endl;
         std::cerr<<"Bispectrum::GetElement(int,int,int,int)m1"<<std::endl;
-        std::cerr<<"basesize="<<base_size<<"  Indices="<<indices[0]<<";"<<indices[1]<<";"<<indices[2]<<";"<<indices[3]<<std::endl;
+        std::cerr<<"basesize="<<base_size()<<"  Indices="<<indices[0]<<";"<<indices[1]<<";"<<indices[2]<<";"<<indices[3]<<std::endl;
         return 0;
     */
     }
@@ -463,7 +463,7 @@ T Bispectrum<T>::get_element(indexvector indices) const
         /*
         std::cerr<<"error: trying to access element out of range"<<std::endl;
         std::cerr<<"Bispectrum::GetElement(int,int,int,int)m2"<<std::endl;
-        std::cerr<<"addr="<<addr<<" basesize="<<base_size<<"  Indices="<<uv[0]<<";"<<uv[1]<<";"<<uv[2]<<";"<<uv[3]<<std::endl;
+        std::cerr<<"addr="<<addr<<" basesize="<<base_size()<<"  Indices="<<uv[0]<<";"<<uv[1]<<";"<<uv[2]<<";"<<uv[3]<<std::endl;
         */
         throw ElementOutOfBounds("trying to access bispectrum element out of range");
     }
