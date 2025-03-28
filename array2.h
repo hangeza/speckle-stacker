@@ -121,7 +121,12 @@ public:
     std::size_t ncols() const { return m_xsize; }
     std::size_t nrows() const { return m_ysize; }
     s_indices min_sindices() const { return { -static_cast<int>(ncols()>>1), -static_cast<int>(nrows()>>1) }; }
-    s_indices max_sindices() const { return { -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1, -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1 }; }
+    s_indices max_sindices() const {
+        return {
+            -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
+            -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
+        };
+    }
 
     void print() const;
 

@@ -339,7 +339,7 @@ int main(int argc, char* argv[])
         [](const complex_t& val) {
             return complex_t { std::sqrt(val.real()), 0. };
         });
-    log::info() << "combining powerspectrum with phases";
+    log::info() << "combining power spectrum with phases";
     result_image *= phases;
 
     fftw_plan reverse_plan = fftw_plan_dft_2d(result_image.nrows(), result_image.ncols(),
