@@ -112,8 +112,8 @@ private:
 
 // *** implementation part ***
 
-template <typename T>
-Bispectrum() -> Bispectrum<T>;
+// template <typename T>
+// Bispectrum() -> Bispectrum<T>;
 
 template <typename T>
 Bispectrum<T>::Bispectrum()
