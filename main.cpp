@@ -4,14 +4,14 @@
 #include <sstream>
 #include <stdlib.h>
 
+#include <complex>
 #include <fstream>
 #include <functional>
 #include <iterator>
 #include <numeric>
+#include <stdexcept>
 #include <unistd.h> // for getopt()
 #include <vector>
-#include <complex>
-#include <stdexcept>
 
 #include <fftw3.h>
 
@@ -25,6 +25,7 @@
 
 #include "array2.h"
 #include "bispectrum.h"
+#include "crosscorrel.h"
 #include "log.h"
 #include "multidimarray.h"
 #include "phasemap.h"
@@ -33,7 +34,6 @@
 #include "rect.h"
 #include "videoio.h"
 #include "window_function.h"
-#include "crosscorrel.h"
 
 typedef std::complex<double> complex_t;
 typedef std::complex<float> bispec_complex_t;
@@ -152,7 +152,8 @@ int main(int argc, char* argv[])
             _a = _b = -1;
             char _c;
             istr >> _a >> _c >> _b;
-            if ( _a < 0 || _b <= 0 ) throw std::range_error("invalid crop box pos arguments");
+            if (_a < 0 || _b <= 0)
+                throw std::range_error("invalid crop box pos arguments");
             crop_rect += { static_cast<std::size_t>(_a), static_cast<std::size_t>(_b) };
             log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
             break;
@@ -163,7 +164,8 @@ int main(int argc, char* argv[])
             b = -1;
             char c;
             istr >> a >> c >> b;
-            if (a <= 0 || b <= 0) throw std::range_error("invalid crop box size arguments");
+            if (a <= 0 || b <= 0)
+                throw std::range_error("invalid crop box size arguments");
             crop_rect.set_size({ static_cast<std::size_t>(a), static_cast<std::size_t>(b) });
             log::debug() << "crop box size (w:h): " << crop_rect.width() << "," << crop_rect.height();
             break;
@@ -261,7 +263,7 @@ int main(int argc, char* argv[])
     // first, create empty sumarray with frame size
     Array2<double> sumarray(indata.ncols(), indata.nrows());
     // element-wise conversion from complex indata frame to real sumarray
-    std::transform(indata.begin(), indata.end(), sumarray.begin(), [](const complex_t& c){ return c.real();}); 
+    std::transform(indata.begin(), indata.end(), sumarray.begin(), [](const complex_t& c) { return c.real(); });
     //sumarray = indata;
     // set up cross correlation object with first frame as reference frame
     CrossCorrelation<double> cross_correl(sumarray);
@@ -289,7 +291,7 @@ int main(int argc, char* argv[])
         log::info() << "relative shift wrt ref frame: [x,y] = " << xyshift;
         log::info() << "adding back-shifted frame to sum image";
         // add back-shifted frame to sum image
-        sumarray += Array2<double>::convert<std::complex<double>>(indata,complex_abs<double>).shifted({-xyshift[0],-xyshift[1]});
+        sumarray += Array2<double>::convert<std::complex<double>>(indata, complex_abs<double>).shifted({ -xyshift[0], -xyshift[1] });
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";
@@ -380,20 +382,20 @@ int main(int argc, char* argv[])
     cv::namedWindow("Display Phases Image", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Display PhaseCons Image", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Display Reco Image", cv::WINDOW_AUTOSIZE);
-    cv::imshow("Display Sum Image", Array2Mat<double,double>(sumarray, std::fabs<double>, CV_8UC3, false));
-    cv::imshow("Display FFT Image", Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_8UC3));
-    cv::imshow("Display Phases Image", Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_8UC3));
+    cv::imshow("Display Sum Image", Array2Mat<double, double>(sumarray, std::fabs<double>, CV_8UC3, false));
+    cv::imshow("Display FFT Image", Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_8UC3));
+    cv::imshow("Display Phases Image", Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_8UC3));
     cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_8UC3));
-    cv::imshow("Display Reco Image", Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_8UC3));
-    save_frame(Array2Mat<double,double>(sumarray, std::fabs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
-    save_frame(Array2Mat<double,double>(sumarray, std::fabs<double>, CV_16U, false), "sum_image.png");
-    save_frame(Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
-    save_frame(Array2Mat<complex_t,double>(phases, complex_phase<double>, CV_16U), "phases.png");
+    cv::imshow("Display Reco Image", Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_8UC3));
+    save_frame(Array2Mat<double, double>(sumarray, std::fabs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
+    save_frame(Array2Mat<double, double>(sumarray, std::fabs<double>, CV_16U, false), "sum_image.png");
+    save_frame(Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_16U), "phases.png");
     save_frame(Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_16UC3), "phasecons.png");
-    save_frame(Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_16UC3), "powerspec_falsecolor.png");
-    save_frame(Array2Mat<complex_t,double>(powerspec, complex_abs<double>, CV_16U), "powerspec.png");
-    save_frame(Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_16UC3), "reco_image_falsecolor.png");
-    save_frame(Array2Mat<complex_t,double>(result_image, complex_abs<double>, CV_16U), "reco_image.png");
+    save_frame(Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_16UC3), "powerspec_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_16U), "powerspec.png");
+    save_frame(Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_16UC3), "reco_image_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_16U), "reco_image.png");
     cv::waitKey(0);
 
     return 0;

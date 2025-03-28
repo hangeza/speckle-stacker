@@ -60,7 +60,6 @@ cv::Mat Array2Mat(const Array2<T>& arr,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
 
-
 // implementation part
 
 template <typename T>

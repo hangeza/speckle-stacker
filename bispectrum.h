@@ -283,9 +283,9 @@ std::size_t Bispectrum<T>::calc_offset(indexvector indices) const
 }
 
 #ifdef __GNUC__
-    #ifndef __clang__
-        #pragma GCC optimize ("unroll-loops")
-    #endif
+#ifndef __clang__
+#pragma GCC optimize("unroll-loops")
+#endif
 #endif
 template <typename T>
 template <typename U>

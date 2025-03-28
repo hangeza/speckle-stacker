@@ -1,8 +1,8 @@
 #pragma once
 
-#include <deque>
 #include <cassert>
 #include <cstdarg>
+#include <deque>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
@@ -20,7 +20,8 @@ class DimVector : public std::valarray<T> {
 public:
     DimVector()
         : std::valarray<T>(NrDims, T {})
-    {}
+    {
+    }
     DimVector(std::initializer_list<T> l);
 
     [[nodiscard]] DimVector<T, NrDims + 1> operator,(T in);
@@ -28,9 +29,9 @@ public:
     [[nodiscard]] DimVector<T, NrDims + 1> appended_front(T new_dimsize);
     [[nodiscard]] DimVector<T, NrDims - 1> removed_back();
     [[nodiscard]] DimVector<T, NrDims - 1> removed_front();
-    
+
     void fill(T value);
-    inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T{1}, std::multiplies<T>()); }
+    inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
 };
 
 /*
@@ -40,7 +41,7 @@ template <concept_integral T, std::size_t NrDims>
 DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
     : std::valarray<T>(l)
 {
-     assert(l.size() == NrDims);
+    assert(l.size() == NrDims);
 }
 
 template <concept_integral T, std::size_t NrDims>
@@ -65,7 +66,7 @@ template <concept_integral T, std::size_t NrDims>
 DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_back()
 {
     DimVector<T, NrDims - 1> newvec {};
-    newvec[std::slice(0, NrDims-1, 1)] = *this;
+    newvec[std::slice(0, NrDims - 1, 1)] = *this;
     return newvec;
 }
 
@@ -73,7 +74,7 @@ template <concept_integral T, std::size_t NrDims>
 DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_front()
 {
     DimVector<T, NrDims - 1> newvec {};
-    newvec[std::slice(1, NrDims-1, 1)] = *this;
+    newvec[std::slice(1, NrDims - 1, 1)] = *this;
     return newvec;
 }
 
@@ -82,7 +83,6 @@ void DimVector<T, NrDims>::fill(T value)
 {
     *this = value;
 }
-
 
 /*
  *! class DimVector_old
@@ -105,15 +105,12 @@ public:
 
     void fill(T value);
     inline T sum() const { return std::accumulate(this->begin(), this->end(), T {}); }
-    inline T product() const { return std::accumulate(this->begin(), this->end(), T{1}, std::multiplies<T>()); }
+    inline T product() const { return std::accumulate(this->begin(), this->end(), T { 1 }, std::multiplies<T>()); }
 };
-
 
 // *************************************************
 // Member definitions / implementation part
 // *************************************************
-
-
 
 /*
  * class DimVector_old
@@ -195,7 +192,7 @@ std::ostream& operator<<(std::ostream& os, const DimVector<T, NrDims>& obj)
 {
     // write obj to stream
     os << "[ ";
-    for ( auto dim : obj ) {
+    for (auto dim : obj) {
         os << dim << " ";
     }
     os << "]";
@@ -207,7 +204,7 @@ std::ostream& operator<<(std::ostream& os, const DimVector_old<T, NrDims>& obj)
 {
     // write obj to stream
     os << "[ ";
-    for ( auto dim : obj ) {
+    for (auto dim : obj) {
         os << dim << " ";
     }
     os << "]";
