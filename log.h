@@ -8,18 +8,19 @@
 
 namespace smip::log {
 
-enum Level : std::uint8_t
-{
-    Shutdown  = 0b0000'0001,
-    Emergency = Shutdown | 0b0000'0010,
-    Alert     = Shutdown | 0b0000'0100,
-    Critical  = Shutdown | 0b0000'0110,
-    Error     = 0b0001'0000,
-    Warning   = 0b0010'0000,
-    Notice    = 0b0011'0000,
-    Info      = 0b0100'0000,
-    Debug     = 0b1000'0000
+// clang-format off
+enum Level : std::uint8_t {
+    Shutdown    = 0b0000'0001,
+    Emergency   = Shutdown | 0b0000'0010,
+    Alert       = Shutdown | 0b0000'0100,
+    Critical    = Shutdown | 0b0000'0110,
+    Error       = 0b0001'0000,
+    Warning     = 0b0010'0000,
+    Notice      = 0b0011'0000,
+    Info        = 0b0100'0000,
+    Debug       = 0b1000'0000
 };
+//clang-format on
 
 /**
  * @brief The system class

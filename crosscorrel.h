@@ -44,12 +44,13 @@ public:
     }
 
 private:
-    enum class readiness : std::uint8_t
-    {
+    // clang-format off
+    enum class readiness : std::uint8_t {
         none    = 0x00,
         correl  = 0x01,
         shift   = 0x02
     } m_readiness { readiness::none };
+    // clang-format on
 
     void calculate_displacement();
 

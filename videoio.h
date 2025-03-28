@@ -10,6 +10,7 @@
 
 namespace smip {
 
+// clang-format off
 enum color_channel_t : std::uint8_t {
     black   = 0b0000'0000,
     blue    = 0b0000'0001,
@@ -17,6 +18,7 @@ enum color_channel_t : std::uint8_t {
     red     = 0b0000'0100,
     white   = blue | green | red
 };
+// clang-format on
 
 template <typename T>
 struct RGB {
