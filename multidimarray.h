@@ -81,10 +81,10 @@ protected:
     using T_base::_size;
 
 public:
-    typedef DimVector<std::size_t, NrDims> extends;
-    typedef DimVector<int, NrDims> strides;
-    typedef DimVector<int, NrDims> s_indices;
-    typedef DimVector<std::size_t, NrDims> u_indices;
+    typedef DimVector_old<std::size_t, NrDims> extends;
+    typedef DimVector_old<int, NrDims> strides;
+    typedef DimVector_old<int, NrDims> s_indices;
+    typedef DimVector_old<std::size_t, NrDims> u_indices;
 
     typedef array_iterator<T, NrDims> iterator;
     typedef const const_array_iterator<T, NrDims> const_iterator;
@@ -229,10 +229,10 @@ protected:
     using Array_base<T>::_isReference;
 
 public:
-    typedef DimVector<std::size_t, 2> extends;
-    typedef DimVector<int, 2> strides;
-    typedef DimVector<int, 2> s_indices;
-    typedef DimVector<std::size_t, 2> u_indices;
+    typedef DimVector_old<std::size_t, 2> extends;
+    typedef DimVector_old<int, 2> strides;
+    typedef DimVector_old<int, 2> s_indices;
+    typedef DimVector_old<std::size_t, 2> u_indices;
 
     typedef array_iterator<T, 2> iterator;
     typedef const const_array_iterator<T, 2> const_iterator;
@@ -344,9 +344,9 @@ protected:
     using Array_base<T>::_isReference;
 
 public:
-    typedef DimVector<std::size_t, 1> extends;
-    typedef DimVector<int, 1> strides;
-    typedef DimVector<int, 1> indices;
+    typedef DimVector_old<std::size_t, 1> extends;
+    typedef DimVector_old<int, 1> strides;
+    typedef DimVector_old<int, 1> indices;
 
     typedef array_iterator<T, 1> iterator;
     typedef const const_array_iterator<T, 1> const_iterator;
@@ -621,7 +621,7 @@ Array<T, NrDims - 1> Array<T, NrDims>::operator[](int in) const
     int offs = _strides[0] * in;
 
     Array<T, NrDims - 1> _x(ext,
-        DimVector<int, NrDims - 1>(str),
+        DimVector_old<int, NrDims - 1>(str),
         _mem + offs,
         _size - offs);
 
@@ -641,7 +641,7 @@ Array<T, NrDims> Array<T, NrDims>::operator[](Range r)
     str.pop_front();
 
     Array<T, NrDims> _x(ext,
-        DimVector<int, NrDims>(str),
+        DimVector_old<int, NrDims>(str),
         _mem,
         _size);
     return _x;
@@ -911,7 +911,7 @@ Array<T, 1> Array<T, 2>::operator[](int in)
     std::size_t offs = _strides.back() * in;
 
     Array<T, 1> _x(ext,
-        DimVector<int, 1>(str),
+        DimVector_old<int, 1>(str),
         Array_base<T>::data(),
         offs,
         _size);
@@ -933,7 +933,7 @@ Array<T, 1> Array<T, 2>::operator[](int in) const
     std::size_t offs = _strides.back() * in;
 
     const Array<T, 1> _x(ext,
-        DimVector<int, 1>(str),
+        DimVector_old<int, 1>(str),
         std::const_pointer_cast<const T>(_mem) /*Array_base<T>::data()*/,
         offs,
         _size);
@@ -952,7 +952,7 @@ Array<T, 2> Array<T, 2>::operator[](Range r)
     std::swap(str.front(), str.back());
 
     Array<T, 2> _x(ext,
-        DimVector<int, 2>(str),
+        DimVector_old<int, 2>(str),
         _mem,
         0UL,
         _size);
@@ -979,7 +979,7 @@ const Array<T, 1> Array<T, 2>::row(std::size_t a_row) const
     }
     /*
     const Array<T,1> _x(ext,
-                DimVector<int,1>(str),
+                DimVector_old<int,1>(str),
                 addr,
                 _size-offs);
 */
@@ -1000,7 +1000,7 @@ Array<T,1> Array<T,2>::row(std::size_t a_row)
     std::size_t offs=_strides.back()*row;
 
     Array<T,1> _x(ext,
-                DimVector<int,1>(str),
+                DimVector_old<int,1>(str),
                 _mem+offs,
                 _size-offs);
 //    std::cout<<"Array<T,1> Array<T,2>::row(std::size_t row)\n";
@@ -1021,7 +1021,7 @@ const Array<T, 1> Array<T, 2>::col(std::size_t a_col) const
     const T* addr { Array_base<T>::data() + offs };
     /*
     const Array<T,1> _x(ext,
-                DimVector<int,1>(str),
+                DimVector_old<int,1>(str),
                 addr,
                 _size-offs);
 */
@@ -1049,7 +1049,7 @@ Array<T, 1> Array<T, 2>::col(std::size_t col)
     std::size_t offs = _strides.front() * col;
 
     Array<T, 1> _x(ext,
-        DimVector<int, 1>(str),
+        DimVector_old<int, 1>(str),
         _mem, offs,
         _size);
     //    std::cout<<"Array<T,1> Array<T,2>::col(std::size_t col)\n";
@@ -1465,9 +1465,9 @@ public:
     void advance() const { ++(*this); }
 
 protected:
-    DimVector<std::size_t, NrDims> m_extends;
-    DimVector<int, NrDims> m_strides;
-    DimVector<std::size_t, NrDims> m_dim_pos;
+    DimVector_old<std::size_t, NrDims> m_extends;
+    DimVector_old<int, NrDims> m_strides;
+    DimVector_old<std::size_t, NrDims> m_dim_pos;
     std::size_t m_offset { 0 };
     std::size_t m_pos { 0 };
     std::shared_ptr<const T> m_data;
@@ -1549,9 +1549,9 @@ public:
     void advance() const { ++(*this); }
 
 protected:
-    DimVector<std::size_t, NrDims> m_extends;
-    DimVector<int, NrDims> m_strides;
-    DimVector<std::size_t, NrDims> m_dim_pos;
+    DimVector_old<std::size_t, NrDims> m_extends;
+    DimVector_old<int, NrDims> m_strides;
+    DimVector_old<std::size_t, NrDims> m_dim_pos;
     std::size_t m_offset { 0 };
     std::size_t m_pos { 0 };
     std::shared_ptr<T> m_data;
