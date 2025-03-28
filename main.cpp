@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     log::info() << "Speckle Masking Image Processing";
     log::info() << "v1.0 (c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
 
-    std::size_t max_frames { 400 };
+    std::size_t max_frames { 10000 };
     std::size_t ref_frame { 0 };
     std::size_t bispectrum_depth { 15 };
     std::size_t reco_radius = bispectrum_depth * 2;
