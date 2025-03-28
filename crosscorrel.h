@@ -23,10 +23,11 @@ public:
         return DimVector<int, 2>();
     }
 };
+*/
 
 // the partial specialization with concept selects only floating point types
 template <concept_floating T>
-class CrossCorrelation <T>
+class CrossCorrelation
 {
 public:
     CrossCorrelation() = delete;
@@ -60,7 +61,7 @@ private:
 //********************
 // deduction guides
 //********************
-template <typename T>
+template <concept_floating T>
 CrossCorrelation(const Array2<T>& ref) -> CrossCorrelation<T>;
 
 //********************

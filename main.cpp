@@ -292,11 +292,11 @@ int main(int argc, char* argv[])
         indata += Mat2Array<complex_t>(fe.extract_next_frame());
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         // calculate shift of frame wrt ref frame through cross correlation
-        auto xyshift = cross_correl(Array2<double>::convert(indata,complex_abs<double>));
+        auto xyshift = cross_correl(Array2<double>::convert<std::complex<double>>(indata, complex_abs<double>));
         log::info() << "relative shift wrt ref frame: [x,y] = " << xyshift;
         log::info() << "adding back-shifted frame to sum image";
         // add back-shifted frame to sum image
-        sumarray += Array2<double>::convert(indata,complex_abs<double>).shifted({-xyshift[0],-xyshift[1]});
+        sumarray += Array2<double>::convert<std::complex<double>>(indata,complex_abs<double>).shifted({-xyshift[0],-xyshift[1]});
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";
