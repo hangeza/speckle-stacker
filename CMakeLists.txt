@@ -49,6 +49,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/point.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/rect.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/dimvector.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/crosscorrel.h"
 )
 
 # tell cmake to build our executable
