@@ -1122,7 +1122,7 @@ Array<T, 1>::Array(const extends& a_extends,
     std::cout << "Array<T,1>::Array(const extends&,const T&)\n";
     assert((a_extends.size() == 1));
     _extends = a_extends;
-    _strides = { 1 };
+    _strides = 1;
 }
 
 template <typename T>
@@ -1171,7 +1171,7 @@ Array<T, 1>::Array(const Array& src)
     std::cout << "Array<T,1>::Array(const Array<T,1>&)";
     //assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
-    _strides = { 1 };
+    _strides = 1;
     //     _isReference = false;
     std::copy(src.begin(), src.end(), T_base::begin());
 }
@@ -1184,8 +1184,8 @@ Array<T, 1>::Array(std::initializer_list<T> l)
         return;
     assert(this->resize(elements));
     std::copy(l.begin(), l.end(), T_base::begin());
-    _extends = { elements };
-    _strides = { 1 };
+    _extends = elements;
+    _strides = 1;
 }
 
 template <typename T>
@@ -1200,7 +1200,7 @@ Array<T, 1>& Array<T, 1>::operator=(const Array<T, 1>& src)
     src.print();
     assert(this->resize(src.NrElements()));
     assert(src._extends.size() == 1);
-    _strides = { 1 };
+    _strides = 1;
     _offset = 0;
     std::copy(src.begin(), src.end(), Array_base<T>::begin());
     return *this;
