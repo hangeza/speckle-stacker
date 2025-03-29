@@ -64,7 +64,7 @@ jobs:
 
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
         echo "Downloading FFTW3 for Windows..."
-        Invoke-WebRequest -Uri "https://github.com/fftw3/fftw3-windows/releases/download/v3.3.8/fftw-3.3.8-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
+        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
     
         # Check if the download was successful
         if (-Not (Test-Path "$env:Temp\fftw3.zip")) {
