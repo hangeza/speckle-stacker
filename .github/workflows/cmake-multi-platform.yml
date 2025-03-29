@@ -58,20 +58,19 @@ jobs:
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       run: |
-      # Install required compilers using Chocolatey
-      choco install ${{ matrix.name }} --version ${{ matrix.version }}
+        # Install required compilers using Chocolatey
+        choco install ${{ matrix.name }} --version ${{ matrix.version }}
     
-      # Download and extract FFTW3 for Windows (64-bit)
-      echo "Downloading FFTW3 for Windows..."
-      Invoke-WebRequest -Uri "https://sourceforge.net/projects/fftw3w32/files/fftw-3.3.8-dll64.zip/download" -OutFile "$env:Temp\fftw3.zip"
-      Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
+        # Download and extract FFTW3 for Windows (64-bit)
+        echo "Downloading FFTW3 for Windows..."
+        Invoke-WebRequest -Uri "https://sourceforge.net/projects/fftw3w32/files/fftw-3.3.8-dll64.zip/download" -OutFile "$env:Temp\fftw3.zip"
+        Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
 
-      # Set up environment variables for FFTW3
-      setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
-      setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
-      setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
-
-      echo "FFTW3 installed and environment variables set."
+        # Set up environment variables for FFTW3
+        setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
+        setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
+        setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
+        echo "FFTW3 installed and environment variables set."
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
