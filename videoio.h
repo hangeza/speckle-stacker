@@ -56,7 +56,7 @@ template <typename T>
 Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array2<T>& arr,
-    std::function<U(T)> converter = std::fabs<U>,
+    std::function<U(const T&)> converter = std::fabs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
 
@@ -91,7 +91,7 @@ Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
 
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array2<T>& arr,
-    std::function<U(T)> converter,
+    std::function<U(const T&)> converter,
     int cv_datatype,
     bool signed_symmetry)
 {
