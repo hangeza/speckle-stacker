@@ -58,7 +58,22 @@ jobs:
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
-      run: choco install ${{ matrix.name }} libopencv-dev fftw3 fftw3-dev
+      run: choco install ${{ matrix.name }} libopencv-dev
+      # Download and extract FFTW3 for Windows (64-bit)
+        echo "Downloading FFTW3 for Windows..."
+        Invoke-WebRequest -Uri "https://www.fftw.org/fftw-3.3.8-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
+        Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
+
+        # Set up environment variables for FFTW3 (adjust path if needed)
+        setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
+        setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
+        setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
+
+        echo "FFTW3 installed and environment variables set."
+
+        # Verify the setup (optional)
+        echo "Include Path: $env:FFTW3_INCLUDE_DIR"
+        echo "Library Path: $env:FFTW3_LIBRARY_DIR"
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
