@@ -32,8 +32,8 @@ jobs:
             cpp_compiler: gcc
             name: mingw
           - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
+            c_compiler: clang
+            cpp_compiler: clang
             name: mingw
           - os: ubuntu-latest
             c_compiler: gcc
@@ -44,8 +44,8 @@ jobs:
         exclude:
           - os: windows-latest
             c_compiler: msvc
-          #- os: windows-latest
-          #  c_compiler: msvc
+          - os: windows-latest
+            c_compiler: cl
           - os: ubuntu-latest
             c_compiler: cl
 

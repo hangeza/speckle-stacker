@@ -105,7 +105,7 @@ set(ALL_FILES
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
- PRIVATE ${FFTW3_LIBRARIES}
+ ${FFTW3_LIBRARIES}
 )
 #if(FFTW3_LIBRARIES)
 #    target_link_libraries(SpeckleStacker PRIVATE ${FFTW3_LIBRARIES})
