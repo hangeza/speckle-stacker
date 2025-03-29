@@ -19,14 +19,9 @@
 #include <memory>
 #include <numeric>
 
-namespace smip {
+#include "types.h"
 
-template <typename T>
-concept concept_integral = std::is_integral_v<T>;
-template <typename T>
-concept concept_floating = std::is_floating_point_v<T>;
-template <typename T>
-concept concept_arithmetic = std::is_arithmetic_v<T>;
+namespace smip {
 
 //! Container class for general (1-dim) Arrays
 /*!

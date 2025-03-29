@@ -1,10 +1,13 @@
 #pragma once
 
 #include <functional>
+#include <algorithm>
 #include <string>
 
 #include <opencv2/opencv.hpp>
 
+#include "types.h"
+#include "utility.h"
 #include "array2.h"
 #include "phasemap.h"
 
@@ -28,11 +31,6 @@ struct RGB {
 template <typename T>
 RGB<T> mapToColor(double value);
 
-double get_phase_consistency(const PhaseMapElement& pme);
-template <typename T>
-T complex_phase(std::complex<T> a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
-template <typename T>
-T complex_abs(const std::complex<T>& z) { return std::abs(z); }
 
 class FrameExtractor {
 public:

@@ -36,6 +36,7 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/phasemap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/log.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/utility.cpp"
 )
 
 set(HEADER_FILES
@@ -52,6 +53,8 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/rect.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/dimvector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/crosscorrel.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/types.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/utility.h"
 )
 
 # tell cmake to build our executable
