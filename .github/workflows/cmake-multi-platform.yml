@@ -54,8 +54,7 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Install Dependencies
-    
+        
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
         if: runner.os == "Windows" && matrix.name
