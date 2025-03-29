@@ -29,7 +29,7 @@ jobs:
         include:
           - os: windows-latest
             c_compiler: gcc
-            cpp_compiler: g++
+            cpp_compiler: gcc
             name: mingw
             version: 11.2.0
           - os: windows-latest
@@ -66,7 +66,7 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} gcc g++ clang clang++ libopencv-dev
+        choco install ${{ matrix.name }} libopencv-dev
         #--version ${{ matrix.version }}
 
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
@@ -118,6 +118,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
+        -G "MinGW Makefiles"
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
