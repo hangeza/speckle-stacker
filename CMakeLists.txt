@@ -37,10 +37,30 @@ endif()
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
-include_directories(PkgConfig::FFTW)
-link_libraries(PkgConfig::FFTW)
+# Add support for FFTW3 on Windows
+if(WIN32)
+    # Look for the environment variables we set in the GitHub Actions workflow
+    if(DEFINED ENV{FFTW3_INCLUDE_DIR} AND DEFINED ENV{FFTW3_LIBRARY_DIR})
+        message(STATUS "Found FFTW3 in environment")
+        
+        # Include the FFTW3 headers
+        include_directories($ENV{FFTW3_INCLUDE_DIR})
+
+        # Link the FFTW3 libraries
+        link_directories($ENV{FFTW3_LIBRARY_DIR})
+
+        # Optionally, you can specify the exact library (e.g., if it's located in the lib folder)
+        set(FFTW3_LIBRARIES fftw3-3)  # Adjust the library name if necessary (check for the correct file name)
+    else()
+        message(WARNING "FFTW3 not found in environment, skipping FFTW3 support")
+    endif()
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
+    include_directories(PkgConfig::FFTW)
+    link_libraries(PkgConfig::FFTW)
+endif()
+
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
@@ -85,6 +105,10 @@ set(ALL_FILES
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
+ PRIVATE ${FFTW3_LIBRARIES}
 )
+#if(FFTW3_LIBRARIES)
+#    target_link_libraries(SpeckleStacker PRIVATE ${FFTW3_LIBRARIES})
+#endif()
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
