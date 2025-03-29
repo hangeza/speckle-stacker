@@ -23,12 +23,12 @@ enum color_channel_t : std::uint8_t {
 };
 // clang-format on
 
-template <typename T>
+template <concept_arithmetic T>
 struct RGB {
     T r, g, b;
 };
 
-template <typename T>
+template <concept_arithmetic T>
 RGB<T> mapToColor(double value);
 
 
@@ -170,7 +170,7 @@ cv::Mat Array2Mat(const Array2<T>& arr,
 
 // Function to map a double (range [0.0, 1.0]) to RGB values
 // modified based on source ChatGPT
-template <typename T>
+template <concept_arithmetic T>
 RGB<T> mapToColor(double value)
 {
     // Ensure the value is clamped between 0 and 1
