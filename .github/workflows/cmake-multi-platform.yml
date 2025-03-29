@@ -58,10 +58,10 @@ jobs:
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows' && matrix.name
-      run: choco install ${{ matrix.name }} libopencv-dev fftw3-dev --version ${{ matrix.version }}
+      run: choco install ${{ matrix.name }} libopencv-dev libfftw3-dev --version ${{ matrix.version }}
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
-      run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev fftw3-dev
+      run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
