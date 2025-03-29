@@ -28,8 +28,15 @@ jobs:
         c_compiler: [gcc, clang, cl]
         include:
           - os: windows-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            name: mingw-w64
+            version: 11.2.0
+          - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            name: mingw-w64
+            version: 11.2.0
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -37,8 +44,8 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
         exclude:
-          - os: windows-latest
-            c_compiler: gcc
+          #- os: windows-latest
+          #  c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
           - os: ubuntu-latest
@@ -56,11 +63,10 @@ jobs:
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && matrix.name
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} libopencv-dev
-        # --version ${{ matrix.version }}
+        choco install ${{ matrix.name }} --version ${{ matrix.version }}
 
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
         echo "Downloading FFTW3 for Windows..."
@@ -81,6 +87,22 @@ jobs:
         setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
 
         echo "FFTW3 installed and environment variables set."
+        
+        # Install OpenCV for Windows
+        echo "Downloading OpenCV for Windows..."
+        Invoke-WebRequest -Uri "https://github.com/opencv/opencv/releases/download/4.5.5/opencv-4.5.5-vc14_vc15.exe" -OutFile "$env:Temp\opencv_installer.exe"
+    
+        # Run the OpenCV installer (silent install)
+        Start-Process "$env:Temp\opencv_installer.exe" -ArgumentList "/S" -NoNewWindow -Wait
+    
+        # Set up environment variables for OpenCV
+        setx OPENCV_DIR "C:\opencv"
+        setx OPENCV_INCLUDE_DIR "C:\opencv\build\include"
+        setx OPENCV_LIB_DIR "C:\opencv\build\x64\vc15\lib"
+        setx OPENCV_BIN_DIR "C:\opencv\build\x64\vc15\bin"
+        setx OPENCV_LIBS "C:\opencv\build\x64\vc15\lib\opencv_world455.lib"
+    
+        echo "OpenCV installed and environment variables set."
 
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
