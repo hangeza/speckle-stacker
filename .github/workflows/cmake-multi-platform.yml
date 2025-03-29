@@ -81,9 +81,14 @@ jobs:
         Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
 
         # Set up environment variables for FFTW3
-        setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
-        setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
-        setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
+        # Set the paths for FFTW3 as outputs
+        echo "FFTW3_INCLUDE_DIR=$env:Temp\fftw3\include" >> $GITHUB_ENV
+        echo "FFTW3_LIBRARY_DIR=$env:Temp\fftw3\lib" >> $GITHUB_ENV
+        echo "FFTW3_LIBRARIES=$env:Temp\fftw3\lib\libfftw3-3.dll" >> $GITHUB_ENV
+        
+        #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
+        #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
+        #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
         echo "FFTW3_INCLUDE_DIR = " "$env:FFTW3_INCLUDE_DIR"
         echo "FFTW3_LIBRARY_DIR = " "$env:FFTW3_LIBRARY_DIR"
         echo "FFTW3_LIBRARIES = " "$env:FFTW3_LIBRARIES"
@@ -113,6 +118,10 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
+      env: 
+        FFTW3_INCLUDE_DIR: ${{ env.FFTW3_INCLUDE_DIR }}
+        FFTW3_LIBRARY_DIR: ${{ env.FFTW3_LIBRARY_DIR }}
+        FFTW3_LIBRARIES: ${{ env.FFTW3_LIBRARIES }}
       run: >
         echo "FFTW3_INCLUDE_DIR = " "$env:FFTW3_INCLUDE_DIR"
         echo "FFTW3_LIBRARY_DIR = " "$env:FFTW3_LIBRARY_DIR"
