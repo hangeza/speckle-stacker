@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1)
 
 PROJECT(SMIP)
 
@@ -17,6 +17,20 @@ ADD_DEFINITIONS(-O3)
 ADD_DEFINITIONS(-ffast-math)
 ADD_DEFINITIONS(-Wall)
 ADD_DEFINITIONS(-flto)
+
+MESSAGE("Compiler is " ${CMAKE_CXX_COMPILER_ID})
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # using Clang
+  ADD_LINK_OPTIONS(-fuse-ld=lld)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  #MESSAGE("GNU")
+  # using GCC
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  # using Intel C++
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  # using Visual Studio C++
+endif()
 # uncomment to use lld linker when compiling with clang
 #ADD_LINK_OPTIONS(-fuse-ld=lld)
 
