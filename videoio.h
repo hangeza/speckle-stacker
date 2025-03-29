@@ -174,7 +174,7 @@ template <concept_arithmetic T>
 RGB<T> mapToColor(double value)
 {
     // Ensure the value is clamped between 0 and 1
-    value = std::max(0.0, std::min(1.0, value));
+    value = std::clamp(value, 0., 1.);
 
     RGB<T> color;
 
