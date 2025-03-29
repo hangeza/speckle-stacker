@@ -57,7 +57,7 @@ jobs:
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
-      if: runner.os == "Windows" && matrix.name
+      if: runner.os == 'Windows' && matrix.name
       run: choco install ${{ matrix.name }} libopencv-dev fftw3-dev --version ${{ matrix.version }}
     - name: Install dependencies (macOS)
       if: runner.os == "macOS" ** matrix.package
