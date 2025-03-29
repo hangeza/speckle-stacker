@@ -50,9 +50,9 @@ void Usage(const char* progname)
     cout << "   Usage :  " << std::string(progname) << " [nrpbcvh?] <source root>" << endl;
     cout << "    available options:" << endl;
     cout << "     -n   --nrframes    <pics>    :   process at most number of <pics> frames" << endl;
-    cout << "                                      default : all files in folder" << endl;
+    cout << "                                      default : all frames" << endl;
     cout << "     -r   --refframe    <index>   :   index of reference frame (default : first found)" << endl;
-    cout << "     -p   --recoradius  <pixels>  :   radius of phase reconstruction (default : 2 * cispectrum extent)" << endl;
+    cout << "     -p   --recoradius  <pixels>  :   radius of phase reconstruction (default : 2 * bispectrum extent)" << endl;
     cout << "     -b   --bdepth       <pixels>  :   bispectrum extent (3rd and 4th dimension) (default : 20)" << endl;
     cout << "     -c   --channel     <r|g|b|i> :   color channel (default: i)" << endl;
     cout << "          --calcsum               :   calculate picture sum and shifted sum (default)" << endl;
@@ -263,8 +263,8 @@ int main(int argc, char* argv[])
     // first, create empty sumarray with frame size
     Array2<double> sumarray(indata.ncols(), indata.nrows());
     // element-wise conversion from complex indata frame to real sumarray
+    // sumarray = indata;
     std::transform(indata.begin(), indata.end(), sumarray.begin(), [](const complex_t& c) { return c.real(); });
-    //sumarray = indata;
     // set up cross correlation object with first frame as reference frame
     CrossCorrelation<double> cross_correl(sumarray);
 
