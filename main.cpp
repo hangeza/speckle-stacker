@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
     std::size_t max_frames { 10000 };
     std::size_t ref_frame { 0 };
-    std::size_t bispectrum_depth { 15 };
+    std::size_t bispectrum_depth { 20 };
     std::size_t reco_radius = bispectrum_depth * 2;
     std::uint8_t color_channel { color_channel_t::white };
     Rect<std::size_t> crop_rect {};
