@@ -9,8 +9,8 @@ struct Rect {
     Point<T> topleft {};
     Point<T> bottomright {};
     Rect() = default;
-    //Rect(const Rect&) = default;
-    //Rect(Rect&&) = default;
+    Rect(const Rect&) = default;
+    Rect(Rect&&) = default;
     Rect(const Point<T>& a, const Point<T>& b);
     Rect(Point<T> a_center, T a_width, T a_height);
     auto width() const -> T;
