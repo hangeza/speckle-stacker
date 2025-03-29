@@ -84,7 +84,9 @@ jobs:
         setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
         setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
         setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
-
+        echo "FFTW3_INCLUDE_DIR = " ${FFTW3_INCLUDE_DIR}
+        echo "FFTW3_LIBRARY_DIR = " ${FFTW3_LIBRARY_DIR}
+        echo "FFTW3_LIBRARIES = " ${FFTW3_LIBRARIES}
         echo "FFTW3 installed and environment variables set."
         
         # Install OpenCV for Windows
@@ -112,6 +114,9 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
       run: >
+        echo "FFTW3_INCLUDE_DIR = " ${FFTW3_INCLUDE_DIR}
+        echo "FFTW3_LIBRARY_DIR = " ${FFTW3_LIBRARY_DIR}
+        echo "FFTW3_LIBRARIES = " ${FFTW3_LIBRARIES}
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
