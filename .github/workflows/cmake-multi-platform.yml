@@ -58,7 +58,7 @@ jobs:
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
-      run: choco install ${{ matrix.name }} libopencv-dev libfftw3-dev
+      run: choco install ${{ matrix.name }} libopencv-dev fftw3 fftw3-dev
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
