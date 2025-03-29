@@ -59,7 +59,7 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} 
+        choco install ${{ matrix.name }} libopencv-dev
         # --version ${{ matrix.version }}
     
         # Download and extract FFTW3 for Windows (64-bit)
