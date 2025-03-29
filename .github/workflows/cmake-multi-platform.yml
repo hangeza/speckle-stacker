@@ -53,13 +53,13 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
-      run: choco install ${{ matrix.name }} libopencv-dev
-      # Download and extract FFTW3 for Windows (64-bit)
+      run: |
+        choco install ${{ matrix.name }} libopencv-dev 
+        # Download and extract FFTW3 for Windows (64-bit) 
         echo "Downloading FFTW3 for Windows..."
         Invoke-WebRequest -Uri "https://www.fftw.org/fftw-3.3.8-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
         Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
