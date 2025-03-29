@@ -18,6 +18,16 @@ namespace smip {
 template <concept_integral T, std::size_t NrDims>
 class DimVector : public std::valarray<T> {
 public:
+    using std::valarray<T>::valarray;
+    using std::valarray<T>::operator=;
+    using std::valarray<T>::operator+;
+    using std::valarray<T>::operator-;
+    using std::valarray<T>::operator+=;
+    using std::valarray<T>::operator-=;
+    using std::valarray<T>::operator*=;
+    using std::valarray<T>::operator/=;
+    using std::valarray<T>::size;
+
     DimVector()
         : std::valarray<T>(NrDims, T {})
     {

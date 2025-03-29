@@ -291,7 +291,8 @@ int main(int argc, char* argv[])
         log::info() << "relative shift wrt ref frame: [x,y] = " << xyshift;
         log::info() << "adding back-shifted frame to sum image";
         // add back-shifted frame to sum image
-        sumarray += Array2<double>::convert<std::complex<double>>(indata, complex_abs<double>).shifted({ -xyshift[0], -xyshift[1] });
+        xyshift = -xyshift;
+        sumarray += Array2<double>::convert<std::complex<double>>(indata, complex_abs<double>).shifted(xyshift);
         log::info() << "executing fft";
         fftw_execute(forward_plan);
         log::info() << "accumulating fft to mean bispectrum";
