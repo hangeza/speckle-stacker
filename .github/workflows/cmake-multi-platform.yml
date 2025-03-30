@@ -82,9 +82,9 @@ jobs:
 
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
-        echo "FFTW3_INCLUDE_DIR=$env:Temp\fftw3\include" >> $env:GITHUB_ENV
-        echo "FFTW3_LIBRARY_DIR=$env:Temp\fftw3\lib" >> "$GITHUB_ENV"
-        echo "FFTW3_LIBRARIES=$env:Temp\fftw3\lib\libfftw3-3.dll" >> "$GITHUB_ENV"
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include" >> $env:GITHUB_ENV
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib" >> "$GITHUB_ENV"
+        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\lib\libfftw3-3.dll" >> $GITHUB_ENV
 
         echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include"
         echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib"
