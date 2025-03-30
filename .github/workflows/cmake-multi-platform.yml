@@ -114,9 +114,9 @@ jobs:
         #setx FFTW3_LIBRARIES "$env:Temp\\fftw3\\lib\\libfftw3-3.dll"
         
         # Display the environment variables
-        echo "FFTW3_INCLUDE_DIR=${{ steps.fftw.outputs.fftw3_include }}"
-        echo "FFTW3_LIBRARY_DIR=${{ steps.fftw.outputs.fftw3_libdir }}"
-        echo "FFTW3_LIBRARIES=${{ steps.fftw.outputs.fftw3_lib }}"
+        #echo "FFTW3_INCLUDE_DIR=${{ steps.fftw.outputs.fftw3_include }}"
+        #echo "FFTW3_LIBRARY_DIR=${{ steps.fftw.outputs.fftw3_libdir }}"
+        #echo "FFTW3_LIBRARIES=${{ steps.fftw.outputs.fftw3_lib }}"
         echo "FFTW3 installed and environment variables set."
       
     - name: Configure CMake (Windows)
@@ -124,13 +124,13 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       env:
         FFTW3_INCLUDE_DIR: "${{ steps.fftw.outputs.fftw3_include }}"
-        FFTW3_LIBRARY_DIR: ${{ steps.fftw.outputs.fftw3_libdir }}
-        FFTW3_LIBRARIES: ${{ steps.fftw.outputs.fftw3_lib }}
+        FFTW3_LIBRARY_DIR: "${{ steps.fftw.outputs.fftw3_libdir }}"
+        FFTW3_LIBRARIES: "${{ steps.fftw.outputs.fftw3_lib }}"
       if: runner.os == 'Windows' && matrix.name
       run: |
-        echo "FFTW3_INCLUDE_DIR =" $FFTW3_INCLUDE_DIR
-        echo "FFTW3_LIBRARY_DIR =" $FFTW3_LIBRARY_DIR
-        echo "FFTW3_LIBRARIES =" $FFTW3_LIBRARIES
+        echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
+        echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
+        echo "FFTW3_LIBRARIES = $env:FFTW3_LIBRARIES"
         cmake -B ${{ steps.win-build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MinGW Makefiles"
 
     - name: Configure CMake (Linux)
