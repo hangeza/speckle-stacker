@@ -126,21 +126,20 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
-      env: |
-        FFTW3_INCLUDE_DIR: ${{ env.FFTW3_INCLUDE_DIR }}
-        FFTW3_LIBRARY_DIR: ${{ env.FFTW3_LIBRARY_DIR }}
-        FFTW3_LIBRARIES: ${{ env.FFTW3_LIBRARIES }}
       run: |
         # Display the environment variables before running CMake
-        echo "FFTW3_INCLUDE_DIR:" ${{ env.FFTW3_INCLUDE_DIR }}
-        echo "FFTW3_LIBRARY_DIR:" ${{ env.FFTW3_LIBRARY_DIR }}
-        echo "FFTW3_LIBRARIES:" ${{ env.FFTW3_LIBRARIES }}
+        echo "FFTW3_INCLUDE_DIR:" "${{ env.FFTW3_INCLUDE_DIR }}"
+        echo "FFTW3_LIBRARY_DIR:" "${{ env.FFTW3_LIBRARY_DIR }}"
+        echo "FFTW3_LIBRARIES:" "${{ env.FFTW3_LIBRARIES }}"
         # Run the cmake command
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
+        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+        -DSOME_FFTW3_INCLUDE_DIR=${{ env.FFTW3_INCLUDE_DIR }} \
+        -DSOME_FFTW3_LIBRARY_DIR=${{ env.FFTW3_LIBRARY_DIR }} \
+        -DSOME_FFTW3_LIBRARIES=${{ env.FFTW3_LIBRARIES }} \
+        -S ${{ github.workspace }} \
         -G "MinGW Makefiles"
 
     - name: Configure CMake (Linux)
