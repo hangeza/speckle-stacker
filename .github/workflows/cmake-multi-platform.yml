@@ -51,7 +51,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
     - name: Set reusable strings (Windows)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Windows' && matrix.name
@@ -77,30 +76,30 @@ jobs:
 
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
         echo "Downloading FFTW3 for Windows..."
-        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
+        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\\fftw3.zip"
     
         # Check if the download was successful
-        if (-Not (Test-Path "$env:Temp\fftw3.zip")) {
+        if (-Not (Test-Path "$env:Temp\\fftw3.zip")) {
         Write-Error "FFTW3 download failed!"
         exit 1
         }
 
         # Extract the zip file
-        Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
+        Expand-Archive -Path "$env:Temp\\fftw3.zip" -DestinationPath "$env:Temp\\fftw3"
 
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
-        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include" >> $env:GITHUB_ENV
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib" >> $env:GITHUB_ENV
-        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\lib\libfftw3-3.dll" >> $env:GITHUB_ENV
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> $env:GITHUB_ENV
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> $env:GITHUB_ENV
+        echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> $env:GITHUB_ENV
 
-        #echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include"
-        #echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib"
-        #echo "FFTW3_LIBRARIES = $env:Temp\fftw3\lib\libfftw3-3.dll"
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include"
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib"
+        echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll"
 
-        #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
-        #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
-        #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
+        #setx FFTW3_INCLUDE_DIR "$env:Temp\\fftw3\\include"
+        #setx FFTW3_LIBRARY_DIR "$env:Temp\\fftw3\\lib"
+        #setx FFTW3_LIBRARIES "$env:Temp\\fftw3\\lib\\libfftw3-3.dll"
         echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
         echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
         echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
@@ -163,12 +162,14 @@ jobs:
       run: cmake --build ${{ steps.linux-strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test (Windows)
+      if: runner.os == 'Windows' && matrix.name
       working-directory: ${{ steps.win-strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
     
     - name: Test (Linux)
+      if: runner.os == 'Linux'
       working-directory: ${{ steps.linux-strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
