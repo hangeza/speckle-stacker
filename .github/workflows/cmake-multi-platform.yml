@@ -54,16 +54,18 @@ jobs:
 
     - name: Set reusable strings (Windows)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
-    - name: Set reusable strings (Linux)
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
+      if: runner.os == 'Windows' && matrix.name
+      id: win-strings
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+    - name: Set reusable strings (Linux)
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      if: runner.os == 'Linux'
+      id: linux-strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
@@ -133,7 +135,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
       run: |
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} 
+        cmake -B ${{ steps.win-strings.outputs.build-output-dir }} 
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} 
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} 
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} 
@@ -146,7 +148,7 @@ jobs:
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        cmake -B ${{ steps.linux-strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
