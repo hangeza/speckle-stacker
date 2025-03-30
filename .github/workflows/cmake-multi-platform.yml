@@ -57,14 +57,14 @@ jobs:
       id: win-strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}\\build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
     - name: Set reusable strings (Linux)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Linux'
       id: linux-strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}//build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
@@ -93,9 +93,9 @@ jobs:
         echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> $env:GITHUB_ENV
         echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> "$env:GITHUB_ENV"
 
-        echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
-        echo "FFTW3_LIBRARY_DIR = ${{ env.Temp\\fftw3\\lib }}"
-        echo "FFTW3_LIBRARIES = ${{ env.Temp\\fftw3\\lib\\libfftw3-3.dll }}"
+        #echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
+        #echo "FFTW3_LIBRARY_DIR = ${{ env.Temp\\fftw3\\lib }}"
+        #echo "FFTW3_LIBRARIES = ${{ env.Temp\\fftw3\\lib\\libfftw3-3.dll }}"
 
         #setx FFTW3_INCLUDE_DIR "$env:Temp\\fftw3\\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\\fftw3\\lib"
