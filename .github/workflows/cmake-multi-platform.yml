@@ -57,7 +57,7 @@ jobs:
       id: win-strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}\\build" >> "$GITHUB_OUTPUT"
         
     - name: Set reusable strings (Linux)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -90,8 +90,8 @@ jobs:
 
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
-        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> $env:GITHUB_ENV
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> $env:GITHUB_ENV
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> "$env:GITHUB_ENV"
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> "$env:GITHUB_ENV"
         echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> "$env:GITHUB_ENV"
 
         #echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
