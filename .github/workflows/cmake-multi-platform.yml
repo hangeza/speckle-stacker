@@ -130,7 +130,7 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
-      run: |
+      run: >
         cmake -B ${{ steps.win-strings.outputs.build-output-dir }} 
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} 
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} 
@@ -143,7 +143,7 @@ jobs:
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
-      run: |
+      run: >
         cmake -B ${{ steps.linux-strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
