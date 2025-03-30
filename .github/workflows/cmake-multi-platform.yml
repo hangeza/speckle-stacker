@@ -90,7 +90,7 @@ jobs:
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
         echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> $env:GITHUB_ENV
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> GITHUB_ENV
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> $env:GITHUB_ENV
         echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> "$env:GITHUB_ENV"
 
         echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
@@ -100,9 +100,9 @@ jobs:
         #setx FFTW3_INCLUDE_DIR "$env:Temp\\fftw3\\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\\fftw3\\lib"
         #setx FFTW3_LIBRARIES "$env:Temp\\fftw3\\lib\\libfftw3-3.dll"
-        echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
-        echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
-        echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
+        #echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
+        #echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
+        #echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
         # Display the environment variables
         #echo "FFTW3_INCLUDE_DIR=$FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR=$FFTW3_LIBRARY_DIR"
