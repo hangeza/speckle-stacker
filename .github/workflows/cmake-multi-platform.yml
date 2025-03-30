@@ -58,6 +58,7 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+        
     - name: Set reusable strings (Linux)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Linux'
@@ -157,6 +158,7 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       if: runner.os == 'Windows' && matrix.name
       run: cmake --build ${{ steps.win-strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      
     - name: Build (Linux)
       if: runner.os == 'Linux'
       run: cmake --build ${{ steps.linux-strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
