@@ -89,9 +89,9 @@ jobs:
         #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
         #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
-        echo "FFTW3_INCLUDE_DIR = " "$env:FFTW3_INCLUDE_DIR"
-        echo "FFTW3_LIBRARY_DIR = " "$env:FFTW3_LIBRARY_DIR"
-        echo "FFTW3_LIBRARIES = " "$env:FFTW3_LIBRARIES"
+        echo "FFTW3_INCLUDE_DIR = ${{ env:FFTW3_INCLUDE_DIR }}"
+        echo "FFTW3_LIBRARY_DIR = ${{ env:FFTW3_LIBRARY_DIR }}"
+        echo "FFTW3_LIBRARIES = ${{ env:FFTW3_LIBRARIES }}"
         echo "FFTW3 installed and environment variables set."
         
         # Install OpenCV for Windows
@@ -122,10 +122,11 @@ jobs:
         FFTW3_INCLUDE_DIR: ${{ env.FFTW3_INCLUDE_DIR }}
         FFTW3_LIBRARY_DIR: ${{ env.FFTW3_LIBRARY_DIR }}
         FFTW3_LIBRARIES: ${{ env.FFTW3_LIBRARIES }}
-      run: >
-        echo "FFTW3_INCLUDE_DIR = " "${{ env.FFTW3_INCLUDE_DIR }}"
-        echo "FFTW3_LIBRARY_DIR = " ${{ env.FFTW3_LIBRARY_DIR }}
-        echo "FFTW3_LIBRARIES = " ${{ env.FFTW3_LIBRARIES }}
+      run: |
+        # Display the environment variables before running CMake
+        echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
+        echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
+        echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
