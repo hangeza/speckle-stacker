@@ -93,9 +93,9 @@ jobs:
         echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> GITHUB_ENV
         echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> "$env:GITHUB_ENV"
 
-        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include"
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib"
-        echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll"
+        echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
+        echo "FFTW3_LIBRARY_DIR = ${{ env:Temp\\fftw3\\lib }}"
+        echo "FFTW3_LIBRARIES = ${{ env.Temp\\fftw3\\lib\\libfftw3-3.dll }}"
 
         #setx FFTW3_INCLUDE_DIR "$env:Temp\\fftw3\\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\\fftw3\\lib"
