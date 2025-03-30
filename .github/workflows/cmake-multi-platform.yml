@@ -54,7 +54,7 @@ jobs:
     - name: Set build dir (Windows)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Windows' && matrix.name
-      id: win-strings
+      id: win-build
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}\\build" >> "$GITHUB_OUTPUT"
@@ -62,7 +62,7 @@ jobs:
     - name: Set build dir (Linux)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Linux'
-      id: linux-strings
+      id: linux-build
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
@@ -81,7 +81,7 @@ jobs:
 
     - name: Install FFTW3 (Windows)
       if: runner.os == 'Windows' && matrix.name
-      id: win-strings
+      id: fftw
       run: |
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
         echo "Downloading FFTW3 for Windows..."
@@ -122,20 +122,20 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       env:
-        FFTW3_INCLUDE_DIR: ${{ steps.win-strings.outputs.fftw3_include }}
-        FFTW3_LIBRARY_DIR: ${{ steps.win-strings.outputs.fftw3_libdir }}
-        FFTW3_LIBRARIES: ${{ steps.win-strings.outputs.fftw3_lib }}
+        FFTW3_INCLUDE_DIR: ${{ steps.fftw.outputs.fftw3_include }}
+        FFTW3_LIBRARY_DIR: ${{ steps.fftw.outputs.fftw3_libdir }}
+        FFTW3_LIBRARIES: ${{ steps.fftw.outputs.fftw3_lib }}
       if: runner.os == 'Windows' && matrix.name
       run: |
         echo "FFTW3_INCLUDE_DIR =" $FFTW3_INCLUDE_DIR
         echo "FFTW3_LIBRARY_DIR =" $FFTW3_LIBRARY_DIR
         echo "FFTW3_LIBRARIES =" $FFTW3_LIBRARIES
-        cmake -B ${{ steps.win-strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MinGW Makefiles"
+        cmake -B ${{ steps.win-build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MinGW Makefiles"
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       run: >
-        cmake -B ${{ steps.linux-strings.outputs.build-output-dir }}
+        cmake -B ${{ steps.linux-build.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -144,22 +144,22 @@ jobs:
     - name: Build (Windows)
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       if: runner.os == 'Windows' && matrix.name
-      run: cmake --build ${{ steps.win-strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
       
     - name: Build (Linux)
       if: runner.os == 'Linux'
-      run: cmake --build ${{ steps.linux-strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.linux-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
-      working-directory: ${{ steps.win-strings.outputs.build-output-dir }}
+      working-directory: ${{ steps.win-build.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
     
     - name: Test (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{ steps.linux-strings.outputs.build-output-dir }}
+      working-directory: ${{ steps.linux-build.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
