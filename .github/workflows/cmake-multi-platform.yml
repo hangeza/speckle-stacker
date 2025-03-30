@@ -89,9 +89,9 @@ jobs:
         #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
         #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
-        echo "FFTW3_INCLUDE_DIR = ${{ env:FFTW3_INCLUDE_DIR }}"
-        echo "FFTW3_LIBRARY_DIR = ${{ env:FFTW3_LIBRARY_DIR }}"
-        echo "FFTW3_LIBRARIES = ${{ env:FFTW3_LIBRARIES }}"
+        echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
+        echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
+        echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
         echo "FFTW3 installed and environment variables set."
         
         # Install OpenCV for Windows
