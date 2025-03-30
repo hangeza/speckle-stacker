@@ -58,14 +58,14 @@ jobs:
       id: win-strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}//build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}\\build" >> "$GITHUB_OUTPUT"
     - name: Set reusable strings (Linux)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       if: runner.os == 'Linux'
       id: linux-strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}\\build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}//build" >> "$GITHUB_OUTPUT"
         
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
