@@ -98,16 +98,16 @@ jobs:
 
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
-        echo "fftw3_include=$env:Temp\fftw3\include" >> $env:GITHUB_OUTPUT
-        echo "fftw3_libdir=$env:Temp\fftw3\lib" >> $env:GITHUB_OUTPUT
-        echo "fftw3_lib=$env:Temp\fftw3\lib\libfftw3-3.dll" >> $env:GITHUB_OUTPUT
+        echo "fftw3_include=$env:Temp\fftw3" >> $env:GITHUB_OUTPUT
+        echo "fftw3_libdir=$env:Temp\fftw3" >> $env:GITHUB_OUTPUT
+        echo "fftw3_lib=$env:Temp\fftw3\libfftw3-3.dll" >> $env:GITHUB_OUTPUT
         
         #echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> $env:GITHUB_ENV
         #echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> $env:GITHUB_ENV
         #echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\lib\\libfftw3-3.dll" >> $env:GITHUB_ENV
-        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include"
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib"
-        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\lib\libfftw3-3.dll"
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3"
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3"
+        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\libfftw3-3.dll"
 
         #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
         #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
