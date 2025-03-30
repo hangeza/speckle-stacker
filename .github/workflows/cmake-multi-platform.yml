@@ -66,7 +66,7 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        
+
         # Setup C++ build toolchain + dependencies
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows' && matrix.name
@@ -77,30 +77,30 @@ jobs:
 
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
         echo "Downloading FFTW3 for Windows..."
-        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\\fftw3.zip"
+        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
     
         # Check if the download was successful
-        if (-Not (Test-Path "$env:Temp\\fftw3.zip")) {
+        if (-Not (Test-Path "$env:Temp\fftw3.zip")) {
         Write-Error "FFTW3 download failed!"
         exit 1
         }
 
         # Extract the zip file
-        Expand-Archive -Path "$env:Temp\\fftw3.zip" -DestinationPath "$env:Temp\\fftw3"
+        Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
 
         # Set up environment variables for FFTW3
         # Set the paths for FFTW3 as outputs
-        echo "FFTW3_INCLUDE_DIR = $env:Temp\\fftw3\\include" >> "$env:GITHUB_ENV"
-        echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib" >> "$env:GITHUB_ENV"
-        echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll" >> "$env:GITHUB_ENV"
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3\include" >> "$env:GITHUB_ENV"
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3\lib" >> "$env:GITHUB_ENV"
+        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\lib\libfftw3-3.dll" >> "$env:GITHUB_ENV"
 
-        #echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\\fftw3\\include }}"
-        #echo "FFTW3_LIBRARY_DIR = ${{ env.Temp\\fftw3\\lib }}"
-        #echo "FFTW3_LIBRARIES = ${{ env.Temp\\fftw3\\lib\\libfftw3-3.dll }}"
+        echo "FFTW3_INCLUDE_DIR = ${{ env.Temp\fftw3\include }}"
+        echo "FFTW3_LIBRARY_DIR = ${{ env.Temp\fftw3\lib }}"
+        echo "FFTW3_LIBRARIES = ${{ env.Temp\fftw3\\lib\libfftw3-3.dll }}"
 
-        #setx FFTW3_INCLUDE_DIR "$env:Temp\\fftw3\\include"
-        #setx FFTW3_LIBRARY_DIR "$env:Temp\\fftw3\\lib"
-        #setx FFTW3_LIBRARIES "$env:Temp\\fftw3\\lib\\libfftw3-3.dll"
+        #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
+        #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
+        #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
         #echo "FFTW3_INCLUDE_DIR = ${{ env.FFTW3_INCLUDE_DIR }}"
         #echo "FFTW3_LIBRARY_DIR = ${{ env.FFTW3_LIBRARY_DIR }}"
         #echo "FFTW3_LIBRARIES = ${{ env.FFTW3_LIBRARIES }}"
@@ -113,10 +113,9 @@ jobs:
         # Install OpenCV for Windows
         #echo "Downloading OpenCV for Windows..."
         #Invoke-WebRequest -Uri "https://github.com/opencv/opencv/releases/download/4.5.5/opencv-4.5.5-vc14_vc15.exe" -#OutFile "$env:Temp\opencv_installer.exe"
-    
         # Run the OpenCV installer (silent install)
         #Start-Process "$env:Temp\opencv_installer.exe" -ArgumentList "/S" -NoNewWindow -Wait
-    
+
         # Set up environment variables for OpenCV
         #setx OPENCV_DIR "C:\opencv"
         #setx OPENCV_INCLUDE_DIR "C:\opencv\build\include"
@@ -134,7 +133,7 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       if: runner.os == 'Windows' && matrix.name
-      run: >
+      run: |
         cmake -B ${{ steps.win-strings.outputs.build-output-dir }} 
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} 
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} 
@@ -147,7 +146,7 @@ jobs:
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
-      run: >
+      run: |
         cmake -B ${{ steps.linux-strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
@@ -176,3 +175,4 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
+
