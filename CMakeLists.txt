@@ -45,6 +45,10 @@ if(WIN32)
         
         # Include the FFTW3 headers
         include_directories($ENV{FFTW3_INCLUDE_DIR})
+        message(STATUS "FFTW3_INCLUDE_DIR=$ENV{FFTW3_INCLUDE_DIR}")
+        message(STATUS "FFTW3_LIBRARY_DIR=$ENV{FFTW3_LIBRARY_DIR}")
+        message(STATUS "FFTW3_INCLUDE_DIR=ENV{FFTW3_INCLUDE_DIR}")
+        message(STATUS "FFTW3_LIBRARY_DIR=ENV{FFTW3_LIBRARY_DIR}")
 
         # Link the FFTW3 libraries
         link_directories($ENV{FFTW3_LIBRARY_DIR})
