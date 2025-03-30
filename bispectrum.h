@@ -326,8 +326,8 @@ void Bispectrum<T>::write_to_file(const std::string& filename) const
     errno = 0;
     stream = fopen(filename.c_str(), "wb");
     if (stream == NULL) {
-        fprintf(stderr, "%s: Couldn't open file %s; %s\n",
-            program_invocation_short_name, filename.c_str(), strerror(errno));
+        fprintf(stderr, "Couldn't write file %s; %s\n",
+            filename.c_str(), strerror(errno));
         exit(EXIT_FAILURE);
         return;
     }
@@ -351,8 +351,8 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
     errno = 0;
     stream = fopen(filename.c_str(), "rb");
     if (stream == NULL) {
-        fprintf(stderr, "%s: Couldn't open file %s; %s\n",
-            program_invocation_short_name, filename.c_str(), strerror(errno));
+        fprintf(stderr, "Couldn't open file %s; %s\n",
+            filename.c_str(), strerror(errno));
         exit(EXIT_FAILURE);
         return;
     }
