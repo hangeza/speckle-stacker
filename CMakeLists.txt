@@ -39,7 +39,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # Add support for FFTW3 on Windows
 if(WIN32)
-    ADD_DEFINITIONS("Wl, -flto")
+    SET(CMAKE_AR  "gcc-ar")
     # Look for the environment variables we set in the GitHub Actions workflow
     if(DEFINED ENV{FFTW3_INCLUDE_DIR} AND DEFINED ENV{FFTW3_LIBRARY_DIR})
         message(STATUS "Found FFTW3 in environment")
