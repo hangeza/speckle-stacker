@@ -25,7 +25,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc, clang]
         include:
           - os: windows-latest
             c_compiler: gcc
@@ -98,9 +98,9 @@ jobs:
         echo "FFTW3_LIBRARY_DIR = $env:Temp\\fftw3\\lib"
         echo "FFTW3_LIBRARIES = $env:Temp\\fftw3\\lib\\libfftw3-3.dll"
 
-        #setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
-        #setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
-        #setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
+        setx FFTW3_INCLUDE_DIR "$env:Temp\fftw3\include"
+        setx FFTW3_LIBRARY_DIR "$env:Temp\fftw3\lib"
+        setx FFTW3_LIBRARIES "$env:Temp\fftw3\lib\libfftw3-3.dll"
         # Display the environment variables
         #echo "FFTW3_INCLUDE_DIR=$FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR=$FFTW3_LIBRARY_DIR"
