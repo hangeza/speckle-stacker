@@ -135,9 +135,9 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} 
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} 
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} 
-        -DSOME_FFTW3_INCLUDE_DIR=${{ env.FFTW3_INCLUDE_DIR }} 
-        -DSOME_FFTW3_LIBRARY_DIR=${{ env.FFTW3_LIBRARY_DIR }} 
-        -DSOME_FFTW3_LIBRARIES=${{ env.FFTW3_LIBRARIES }} 
+        -DSOME_FFTW3_INCLUDE_DIR=$env:FFTW3_INCLUDE_DIR 
+        -DSOME_FFTW3_LIBRARY_DIR=$env:FFTW3_LIBRARY_DIR 
+        -DSOME_FFTW3_LIBRARIES=$env:FFTW3_LIBRARIES 
         -S ${{ github.workspace }} 
         -G "MinGW Makefiles"
 
