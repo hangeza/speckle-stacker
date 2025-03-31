@@ -53,13 +53,11 @@ if(WIN32)
         string(REPLACE "\\" "/" NEW_LIB_PATH "${NEW_LIB_PATH}")
         # Link the FFTW3 libraries
         link_directories(${NEW_LIB_PATH})
-#        link_directories("$ENV{FFTW3_LIBRARY_DIR}")
         # Optionally, you can specify the exact library (e.g., if it's located in the lib folder)
         
         SET(NEW_LIB "$ENV{FFTW3_LIBRARIES}")
         string(REPLACE "\\" "/" NEW_LIB "${NEW_LIB}")
-        set(FFTW3_LIBRARIES ${NEW_LIB})  # Adjust the library name if necessary (check for the correct 
-        #set(FFTW3_LIBRARIES "$ENV{FFTW3_LIBRARIES}")  # Adjust the library name if necessary (check for the correct file name)
+        set(FFTW3_LIBRARIES ${NEW_LIB})  # Adjust the library name if necessary (check for the correct file name)
     else()
         message(WARNING "FFTW3 not found in environment, skipping FFTW3 support")
     endif()
@@ -117,8 +115,4 @@ TARGET_LINK_LIBRARIES(smip
  ${OpenCV_LIBS}
  ${FFTW3_LIBRARIES}
 )
-#if(FFTW3_LIBRARIES)
-#    target_link_libraries(SpeckleStacker PRIVATE ${FFTW3_LIBRARIES})
-#endif()
-
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
