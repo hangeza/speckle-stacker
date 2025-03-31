@@ -235,7 +235,7 @@ Array2<T>::Array2(const extends& a_extends, const T& init)
 
 template <typename T>
 Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
-    : Array_base<T>(1)
+    : Array_base<T>()
 {
     const std::size_t rows_ { l.size() };
     if (rows_ == 0) {
@@ -251,6 +251,7 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
     auto memit = Array_base<T>::begin();
     for (auto row = l.begin(); row != l.end(); ++row) {
         assert(cols_ == row->size());
+        assert(row->size() != 0);
         std::copy(row->begin(), row->end(), memit);
         memit += cols_;
     }
