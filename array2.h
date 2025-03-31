@@ -567,7 +567,8 @@ template <typename T>
 void Array2<T>::shift(const DimVector<int, 2>& distance)
 {
     Array2<T> shifted_arr(std::move(this->shifted(distance)));
-    std::swap(shifted_arr.data(), (*this).data());
+//     std::swap(shifted_arr.data(), (*this).data());
+    *this = shifted_arr;
 }
 
 template <typename T>
