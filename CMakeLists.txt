@@ -50,11 +50,17 @@ if(WIN32)
         message(STATUS "FFTW3_LIBRARY_DIR=$ENV{FFTW3_LIBRARY_DIR}")
         message(STATUS "FFTW3_LIBRARIES=$ENV{FFTW3_LIBRARIES}")
 
+        SET(NEW_LIB_PATH "$ENV{FFTW3_LIBRARY_DIR}")
+        string(REPLACE "\\" "/" NEW_LIB_PATH "${NEW_LIB_PATH}")
         # Link the FFTW3 libraries
-        link_directories("$ENV{FFTW3_LIBRARY_DIR}")
-
+        link_directories(${NEW_LIB_PATH})
+#        link_directories("$ENV{FFTW3_LIBRARY_DIR}")
         # Optionally, you can specify the exact library (e.g., if it's located in the lib folder)
-        set(FFTW3_LIBRARIES "$ENV{FFTW3_LIBRARIES}")  # Adjust the library name if necessary (check for the correct file name)
+        
+        SET(NEW_LIB "$ENV{FFTW3_LIBRARIES}")
+        string(REPLACE "\\" "/" NEW_LIB "${NEW_LIB}")
+        set(FFTW3_LIBRARIES ${NEW_LIB})  # Adjust the library name if necessary (check for the correct 
+        #set(FFTW3_LIBRARIES "$ENV{FFTW3_LIBRARIES}")  # Adjust the library name if necessary (check for the correct file name)
     else()
         message(WARNING "FFTW3 not found in environment, skipping FFTW3 support")
     endif()
