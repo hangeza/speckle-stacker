@@ -891,7 +891,11 @@ template <typename T>
 Array<T, 2>& Array<T, 2>::operator/=(const T& x)
 {
     if (x == T())
-        std::fill(this->begin(), this->end(), T(INFINITY));
+        if (std::numeric_limits<T>::has_quiet_NaN()) {
+            std::fill(this->begin(), this->end(), std::numeric_limits<T>::quiet_NaN());
+        } else {
+            std::fill(this->begin(), this->end(), T{0./0});
+        }
     else
         (*this) *= T(1) / x;
     return *this;
