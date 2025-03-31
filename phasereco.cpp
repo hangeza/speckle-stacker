@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "multidimarray.h"
 #include "phasemap.h"
 #include "phasereco.h"
 

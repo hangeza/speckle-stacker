@@ -85,7 +85,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/array_base.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/array2.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/bispectrum.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/multidimarray.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/videoio.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasemap.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/phasereco.h"

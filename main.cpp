@@ -28,7 +28,6 @@
 #include "bispectrum.h"
 #include "crosscorrel.h"
 #include "log.h"
-#include "multidimarray.h"
 #include "phasemap.h"
 #include "phasereco.h"
 #include "point.h"
