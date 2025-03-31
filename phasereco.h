@@ -150,8 +150,13 @@ void calc_phase(const Bispectrum<U>& bispec,
         pm.at({ wx, wy }).flag = true;
         mean_phase /= static_cast<double>(phaselist.size());
         //         std::cout<<"wx="<<wx<<" wy="<<wy<<" multipl="<<phaselist.size()<<" mean phase="<<mean_phase<<" consis="<<std::abs(mean_phase)<<std::endl;
-        pm.at({ wx, wy }).consistency = std::abs(mean_phase);
-        phases.at({ wx, wy }) = mean_phase / std::abs(mean_phase);
+        const double abs_phase { std::abs(mean_phase) };
+        pm.at({ wx, wy }).consistency = abs_phase;
+        if ( abs_phase > c_epsilon) {
+            phases.at({ wx, wy }) = mean_phase / abs_phase;
+        } else {
+            phases.at({ wx, wy }) = T{0};
+        }
     }
 }
 
