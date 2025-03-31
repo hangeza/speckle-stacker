@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
         phases.print();
     }
     log::info() << "applying window function to phase map";
-    Hann<complex_t> window_f(powerspec.ncols(), powerspec.nrows(), 2 * reco_radius);
+    Hann<complex_t> window_f(powerspec.ncols(), powerspec.nrows(), reco_radius * 2);
     phases *= window_f;
     Array2<complex_t> result_image(powerspec.ncols(), powerspec.nrows());
     log::info() << "calculating sqrt of power spectrum";
