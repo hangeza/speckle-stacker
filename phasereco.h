@@ -31,7 +31,6 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     PhaseMap* phasemap)
 {
     PhaseMap pm(xsize, ysize);
-    //    Array<T,2> phases(Array<T,2>::extends{xsize,ysize});
     Array2<T> phases(xsize, ysize);
     // Startwerte fuer Reko
     constexpr T init_phase { T { 1., 0. } };
