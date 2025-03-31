@@ -9,7 +9,7 @@ class Array2;
 template <typename T>
 class WindowFunction : public Array2<T> {
 public:
-    WindowFunction() { }
+    WindowFunction() = delete;
     WindowFunction(std::size_t a_xsize, std::size_t a_ysize, double window_aperture)
         : Array2<T>(a_xsize, a_ysize)
         , m_aperture(window_aperture)
