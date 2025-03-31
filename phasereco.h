@@ -60,7 +60,7 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
             double temp_phi { 0. };
             double con { 0. };
             std::size_t con_count { 0 };
-            static int temp_i = 0, temp_j = 0;
+            int temp_i { 0 }, temp_j { 0 };
             while (temp_r <= old_r) {
                 if (!((temp_i < pm.min_sindices()[0])
                         || (temp_i > pm.max_sindices()[0])
