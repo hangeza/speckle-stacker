@@ -2,26 +2,31 @@
 
 include_directories(${SMIP_INCLUDE_DIR})
 
-set(TEST_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/smip_test.cpp"
+# create the testing file and list of tests
+set (TestsToRun
+    array1_test.cpp
+    array2_test.cpp
+    smip_test.cpp
 )
 
-message(STATUS "SMIP_INCLUDE_DIR=${SMIP_INCLUDE_DIR}")
+create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
-# tell cmake to build our executable
-ADD_EXECUTABLE(smip_test
-    ${TEST_SOURCES}
-)
+# add the executable
+add_executable (smip_tests ${Tests})
+
+# Add all the ADD_TEST for each test
+foreach (test ${TestsToRun})
+  get_filename_component (TName ${test} NAME_WE)
+  add_test (NAME ${TName} COMMAND smip_tests ${TName})
+endforeach ()
 
 set(ALL_FILES
     "${ALL_FILES}"
-    "${TEST_SOURCES}" PARENT_SCOPE
+    "${TestsToRun}" PARENT_SCOPE
 )
 
-TARGET_LINK_LIBRARIES(smip_test
+TARGET_LINK_LIBRARIES(smip_tests
     pthread
     ${OpenCV_LIBS}
     ${FFTW3_LIBRARIES}
 )
-
-add_test(NAME MainTest COMMAND smip_test)
