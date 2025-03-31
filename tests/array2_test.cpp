@@ -2,7 +2,7 @@
 
 int array2_test(int argc, char* argv[])
 {
-    smip::Array2<int> arr { { 1, 2, 3}, { 4, 5, 6}, { 7, 8, 9} };
+    smip::Array2<int> arr { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
     arr.print();
     std::cout << "arr:\n" << arr;
     auto row { arr.get_row(1) };

@@ -235,7 +235,7 @@ Array2<T>::Array2(const extends& a_extends, const T& init)
 
 template <typename T>
 Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
-    : Array_base<T>()
+    : Array_base<T>(l.size()*l.begin()->size()), m_xsize(l.begin()->size()), m_ysize(l.size())
 {
     const std::size_t rows_ { l.size() };
     if (rows_ == 0) {
@@ -244,7 +244,7 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
         return;
     }
     const std::size_t cols_ { l.begin()->size() };
-    assert(this->resize(cols_ * rows_));
+    if (this->size()!=cols_*rows_) assert(this->resize(cols_ * rows_));
     m_xsize = cols_;
     m_ysize = rows_;
 
