@@ -254,7 +254,7 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
 template <typename T>
 const T* Array2<T>::operator[](int row) const
 {
-    std::size_t urow { (row < 0) ? m_xsize + row : row };
+    std::size_t urow { (row < 0) ? m_ysize + row : row };
     if (urow >= nrows()) {
         throw std::out_of_range("Row index out of bounds");
     }
@@ -264,7 +264,7 @@ const T* Array2<T>::operator[](int row) const
 template <typename T>
 T* Array2<T>::operator[](int row)
 {
-    std::size_t urow { (row < 0) ? m_xsize + row : row };
+    std::size_t urow { (row < 0) ? m_ysize + row : row };
     if (urow >= nrows()) {
         throw std::out_of_range("Row index out of bounds");
     }
