@@ -15,13 +15,15 @@
 #include "rect.h"
 
 namespace smip {
-
 template <typename T>
 class Array2;
+}
 template <typename T>
-std::ostream& operator<<(std::ostream& o, Array2<T>& v);
+std::ostream& operator<<(std::ostream& o, smip::Array2<T>& v);
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
+
+namespace smip {
 
 //! Container class for 2d arrays
 /*!
@@ -685,6 +687,8 @@ Array2<T> operator/(const Array2<T>& x, const Array2<T>& y)
     return std::move(z);
 }
 
+} // namespace smip
+
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const std::vector<T>& v)
 {
@@ -695,12 +699,10 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v)
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& o, Array2<T>& v)
+std::ostream& operator<<(std::ostream& o, smip::Array2<T>& v)
 {
     for (std::size_t i = 0; i < v.nrows(); i++) {
         o << v.get_row(i) << std::endl;
     }
     return o;
 }
-
-} // namespace smip
