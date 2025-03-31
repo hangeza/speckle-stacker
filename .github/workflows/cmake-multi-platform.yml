@@ -29,11 +29,7 @@ jobs:
         include:
           - os: windows-latest
             c_compiler: gcc
-            cpp_compiler: gcc
-            name: mingw
-          - os: windows-latest
-            c_compiler: clang
-            cpp_compiler: clang
+            cpp_compiler: g++
             name: mingw
           - os: ubuntu-latest
             c_compiler: gcc
@@ -43,7 +39,7 @@ jobs:
             cpp_compiler: clang++
         exclude:
           - os: windows-latest
-            c_compiler: msvc
+            c_compiler: clang
           - os: windows-latest
             c_compiler: cl
           - os: ubuntu-latest
