@@ -17,7 +17,10 @@ add_executable (smip_tests ${Tests})
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
   get_filename_component (TName ${test} NAME_WE)
-  add_test (NAME ${TName} COMMAND smip_tests ${TName})
+  add_test (NAME ${TName} COMMAND smip_tests ${TName}
+  --rerun-failed
+  --output-on-failure
+  )
 endforeach ()
 
 set(ALL_FILES
