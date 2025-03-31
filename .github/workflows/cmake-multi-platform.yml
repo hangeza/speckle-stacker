@@ -141,7 +141,8 @@ jobs:
       working-directory: ${{ steps.win-build.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: |
+        ctest --output-on-failure --output-junit junit.xml --build-config ${{ matrix.build_type }}
     
     - name: Test (Linux)
       if: runner.os == 'Linux'
@@ -149,4 +150,4 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        ctest --build-config ${{ matrix.build_type }}
+        ctest --output-on-failure --output-junit junit.xml --build-config ${{ matrix.build_type }}
