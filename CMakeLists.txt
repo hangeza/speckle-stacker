@@ -7,7 +7,7 @@ include(GNUInstallDirs)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #The following lines are required to use Dart
-#ENABLE_TESTING()
+ENABLE_TESTING()
 #INCLUDE(Dart)
 
 #SET(CMAKE_BUILD_TYPE Debug)
@@ -70,6 +70,8 @@ else()
 endif()
 
 
+SET(SMIP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 set(SOURCE_FILES
@@ -109,9 +111,12 @@ set(ALL_FILES
     "${HEADER_FILES}"
 )
 
+add_subdirectory(tests)
+
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
  ${FFTW3_LIBRARIES}
 )
+
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
