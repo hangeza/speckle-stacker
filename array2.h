@@ -625,14 +625,14 @@ Array2<T> Array2<T>::convert(const Array2<U>& src, std::function<T(const U&)> co
     Array2<T> arr {};
     arr.import(src, conversion);
     return arr;
-};
+}
 // Static conversion from Array2 of foreign arithmetic type without conversion functor
 template <typename T>
 template <concept_arithmetic U>
 Array2<T> Array2<T>::convert(const Array2<U>& src)
 {
     return std::move(Array2<T>(src));
-};
+}
 
 template <typename T>
 void Array2<T>::print() const
