@@ -44,8 +44,8 @@ public:
     Array_base(Array_base<T>&& src);
     Array_base(size_t a_size);
     Array_base(size_t a_size, const T& def);
-    Array_base(std::shared_ptr<T> data, std::size_t a_size);
-    Array_base(std::shared_ptr<const T> data, std::size_t a_size);
+    Array_base(std::shared_ptr<T[]> data, std::size_t a_size);
+    Array_base(std::shared_ptr<const T[]> data, std::size_t a_size);
     ~Array_base();
 
     Array_base<T>& operator=(Array_base<T>&& other);
@@ -57,13 +57,13 @@ public:
     const_iterator end() const { return data().get() + _size; }
     const_iterator cend() const { return data().get() + _size; }
 
-    std::shared_ptr<T>& data() { return _mem; }
-    std::shared_ptr<const T> data() const { return std::const_pointer_cast<const T>(_mem); }
+    std::shared_ptr<T[]>& data() { return _mem; }
+    std::shared_ptr<const T[]> data() const { return std::const_pointer_cast<const T[]>(_mem); }
 
     reference operator[](std::size_t i) { return _mem.get()[i]; }
     const_reference operator[](std::size_t i) const
     {
-        return std::const_pointer_cast<const T>(_mem).get()[i];
+        return std::const_pointer_cast<const T[]>(_mem).get()[i];
     }
     reference at(std::size_t i)
     {
@@ -78,9 +78,9 @@ public:
 
 public:
     std::size_t size() const { return _size; }
-    const std::size_t typesize() const { return sizeof(T); }
+    std::size_t typesize() const { return sizeof(T); }
 
-    void set_at(std::shared_ptr<T> data, std::size_t a_size);
+    void set_at(std::shared_ptr<T[]> data, std::size_t a_size);
 
     bool resize(std::size_t new_size)
     {
@@ -95,7 +95,7 @@ public:
 protected:
     std::size_t _size { 0UL };
     bool _isReference { false };
-    std::shared_ptr<T> _mem { nullptr, [](T* p) { delete[] p; } };
+    std::shared_ptr<T[]> _mem { nullptr, [](T* p) { delete[] p; } };
 };
 
 // *************************************************
@@ -169,7 +169,7 @@ Array_base<T>::Array_base(std::size_t a_size, const T& def)
 }
 
 template <typename T>
-Array_base<T>::Array_base(std::shared_ptr<T> data, std::size_t a_size)
+Array_base<T>::Array_base(std::shared_ptr<T[]> data, std::size_t a_size)
     : _size(a_size)
     , _mem(data)
 {
@@ -197,7 +197,7 @@ Array_base<T>& Array_base<T>::operator=(Array_base<T>&& other)
 }
 
 template <typename T>
-void Array_base<T>::set_at(std::shared_ptr<T> data, size_t a_size)
+void Array_base<T>::set_at(std::shared_ptr<T[]> data, size_t a_size)
 {
     _size = a_size;
     _mem = data;
