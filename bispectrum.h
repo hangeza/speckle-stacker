@@ -15,8 +15,6 @@
 
 #include "array2.h"
 
-//typedef std::complex<double> complex_t;
-
 namespace smip {
 
 //! 4-dim Container for handling a complex Bispectrum
@@ -33,7 +31,6 @@ public:
         using std::runtime_error::runtime_error;
     };
 
-    //typedef std::array<std::size_t, 4> dimvector;
     Bispectrum();
     /*! Creates Bispectrum with sizes [<i>i,j,k,l</i>] */
     Bispectrum(const extents& dimsizes);
@@ -403,12 +400,6 @@ T Bispectrum<T>::get_element(s_indices indices) const
     // wenn jetzt noch ausserhalb, dann Abbruch
     if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
         throw ElementOutOfBounds("trying to access bispectrum element out of range");
-        /*
-        std::cerr<<"error: trying to access element out of range"<<std::endl;
-        std::cerr<<"Bispectrum::GetElement(int,int,int,int)m1"<<std::endl;
-        std::cerr<<"basesize="<<base_size()<<"  Indices="<<indices[0]<<";"<<indices[1]<<";"<<indices[2]<<";"<<indices[3]<<std::endl;
-        return 0;
-    */
     }
     bool conjug { false };
 

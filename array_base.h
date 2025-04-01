@@ -1,12 +1,6 @@
 #pragma once
 
-//#include <complex>
-//#include <deque>
-//#include <valarray>
 #include <vector>
-//#include <errno.h>
-//#include <stdio.h>
-//#include <cstdlib>
 #include <typeinfo>
 //#include <climits>
 //#include <algorithm>

@@ -14,18 +14,6 @@ namespace smip {
 template <typename T>
 class Array2;
 
-/*
-// the general class template for all types should never be called
-template<typename T>
-class CrossCorrelation {
-public:
-    static auto get_displacement(const Array2<T>& a, const Array2<T>& b) -> DimVector<int, 2> {
-        throw std::invalid_argument("invalid SFINAE call of CrossCorrelation::get_displacement()");
-        return DimVector<int, 2>();
-    }
-};
-*/
-
 // the partial specialization with concept selects only floating point types
 template <concept_floating T>
 class CrossCorrelation {

@@ -15,9 +15,10 @@
 #include "rect.h"
 
 namespace smip {
-template <typename T>
-class Array2;
+    template <typename T>
+    class Array2;
 }
+
 template <typename T>
 std::ostream& operator<<(std::ostream& o, smip::Array2<T>& v);
 template <typename T>
