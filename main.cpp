@@ -23,7 +23,6 @@
 #include "opencv2/videoio.hpp"
 #include <opencv2/core/mat.hpp>
 
-#include "types.h"
 #include "array2.h"
 #include "bispectrum.h"
 #include "crosscorrel.h"
@@ -32,6 +31,7 @@
 #include "phasereco.h"
 #include "point.h"
 #include "rect.h"
+#include "types.h"
 #include "videoio.h"
 #include "window_function.h"
 

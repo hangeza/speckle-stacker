@@ -132,7 +132,7 @@ Bispectrum<T>::extents Bispectrum<T>::base_sizes() const
 {
     // reduced sizes of ux,uy,vx,vy dimensions
     extents vec = { this->sizes() };
-    vec -= sizes() * extents{ 1, 0, 1, 0 } / 2; 
+    vec -= sizes() * extents { 1, 0, 1, 0 } / 2;
     return vec;
 }
 
@@ -474,31 +474,31 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
 template <typename T>
 Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
 {
-    s_indices mins{};
-//     std::cout << "s_indices Bispectrum<T>::min_indices() const : \n";
-//     std::cout << " mins = " << mins << " (size="<< mins.size()<<"\n";
+    s_indices mins {};
+    //     std::cout << "s_indices Bispectrum<T>::min_indices() const : \n";
+    //     std::cout << " mins = " << mins << " (size="<< mins.size()<<"\n";
     extents sizes = this->sizes();
-//     std::cout << " sizes = " << sizes << " (size="<< sizes.size()<<"\n";
+    //     std::cout << " sizes = " << sizes << " (size="<< sizes.size()<<"\n";
     // Use std::transform to convert from unsigned long to int
     std::transform(std::begin(sizes), std::end(sizes), std::begin(mins),
-                   [](extents::value_type x) { return - static_cast<s_indices::value_type>(x) / 2; });
+        [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
     return mins;
-//     return { -static_cast<int>(sizes()[0] / 2), -static_cast<int>(sizes()[1] / 2), -static_cast<int>(sizes()[2] / 2), -static_cast<int>(sizes()[3] / 2) };
+    //     return { -static_cast<int>(sizes()[0] / 2), -static_cast<int>(sizes()[1] / 2), -static_cast<int>(sizes()[2] / 2), -static_cast<int>(sizes()[3] / 2) };
 }
 
 template <typename T>
 Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
 {
-    s_indices maxes { };
+    s_indices maxes {};
     extents sizes = this->sizes();
     // following cast operation is equivalent to
     // maxes = sizes
     std::transform(std::begin(sizes), std::end(sizes), std::begin(maxes),
-                   [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
+        [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
     maxes += min_indices();
     maxes -= 1;
     return maxes;
-//     return { mins[0] + static_cast<int>(sizes()[0]) - 1, mins[1] + static_cast<int>(sizes()[1]) - 1, mins[2] + static_cast<int>(sizes()[2]) - 1, mins[3] + static_cast<int>(sizes()[3]) - 1 };
+    //     return { mins[0] + static_cast<int>(sizes()[0]) - 1, mins[1] + static_cast<int>(sizes()[1]) - 1, mins[2] + static_cast<int>(sizes()[2]) - 1, mins[3] + static_cast<int>(sizes()[3]) - 1 };
 }
 
 } // namespace smip

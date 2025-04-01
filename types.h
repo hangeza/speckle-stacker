@@ -15,5 +15,4 @@ concept concept_arithmetic = std::is_arithmetic_v<T>;
 // typedef std::complex<double> complex_t;
 // typedef std::complex<float> bispec_complex_t;
 
-
 } // namespace smip

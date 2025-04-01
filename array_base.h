@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <typeinfo>
+#include <vector>
 //#include <climits>
 //#include <algorithm>
 //#include <functional>
@@ -144,7 +144,7 @@ template <typename T>
 Array_base<T>::Array_base(std::size_t a_size)
     : _size(a_size)
 {
-    if (_size==0) {
+    if (_size == 0) {
         _mem.reset();
         return;
     }

@@ -24,7 +24,6 @@ void calc_phase(const Bispectrum<U>& bispec,
     PhaseMap& pm,
     int wx, int wy);
 
-
 //********************
 // implementation part
 //********************
@@ -156,10 +155,10 @@ void calc_phase(const Bispectrum<U>& bispec,
         //         std::cout<<"wx="<<wx<<" wy="<<wy<<" multipl="<<phaselist.size()<<" mean phase="<<mean_phase<<" consis="<<std::abs(mean_phase)<<std::endl;
         const double abs_phase { std::abs(mean_phase) };
         pm.at({ wx, wy }).consistency = abs_phase;
-        if ( abs_phase > c_epsilon) {
+        if (abs_phase > c_epsilon) {
             phases.at({ wx, wy }) = mean_phase / abs_phase;
         } else {
-            phases.at({ wx, wy }) = T{0};
+            phases.at({ wx, wy }) = T { 0 };
         }
     }
 }

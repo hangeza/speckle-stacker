@@ -8,8 +8,8 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
-#include <valarray>
 #include <stdexcept>
+#include <valarray>
 
 namespace smip {
 
@@ -46,7 +46,6 @@ public:
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
 };
 
-
 //********************
 // implementation part
 //********************
@@ -63,7 +62,7 @@ DimVector<T, NrDims>::DimVector(const DimVector<T, NrDims>& x)
     if (x.size() != NrDims && x.size() != 0) {
         throw std::domain_error("invalid initializer size");
     }
-    if (x.size()>0) {
+    if (x.size() > 0) {
         std::copy(std::begin(x), std::end(x), std::begin(*this));
     }
 }
@@ -75,7 +74,7 @@ DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
     if (l.size() == NrDims) {
         std::copy(l.begin(), l.end(), std::begin(*this));
     }
-//     assert(l.size() == NrDims);
+    //     assert(l.size() == NrDims);
 }
 
 template <concept_arithmetic T, std::size_t NrDims>

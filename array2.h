@@ -15,8 +15,8 @@
 #include "rect.h"
 
 namespace smip {
-    template <typename T>
-    class Array2;
+template <typename T>
+class Array2;
 }
 
 template <typename T>
@@ -237,8 +237,8 @@ Array2<T>::Array2(const extents& a_extends, const T& init)
 
 template <typename T>
 Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
-    : Array_base<T>(l.size() * ((l.size()>0)?l.begin()->size():0))
-    , m_xsize((l.size()>0)?l.begin()->size():0)
+    : Array_base<T>(l.size() * ((l.size() > 0) ? l.begin()->size() : 0))
+    , m_xsize((l.size() > 0) ? l.begin()->size() : 0)
     , m_ysize(l.size())
 {
     const std::size_t rows_ { l.size() };
@@ -248,21 +248,22 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
         return;
     }
     const std::size_t cols_ { l.begin()->size() };
-    if (this->size()!=cols_*rows_) assert(this->resize(cols_ * rows_));
+    if (this->size() != cols_ * rows_)
+        assert(this->resize(cols_ * rows_));
 
-//     auto memit = Array_base<T>::begin();
-//     for (auto row = l.begin(); row != l.end(); ++row) {
-//         assert(cols_ == row->size());
-//         assert(row->size() != 0);
-//         std::copy(row->begin(), row->end(), memit);
-//         memit += cols_;
-//     }
+    //     auto memit = Array_base<T>::begin();
+    //     for (auto row = l.begin(); row != l.end(); ++row) {
+    //         assert(cols_ == row->size());
+    //         assert(row->size() != 0);
+    //         std::copy(row->begin(), row->end(), memit);
+    //         memit += cols_;
+    //     }
 
     int row_num { 0 };
-    for( const auto& row : l ) // copy what is there in each row of l
+    for (const auto& row : l) // copy what is there in each row of l
     {
         assert(cols_ == row.size());
-        std::copy( row.begin(), row.end(), (*this)[row_num++] );
+        std::copy(row.begin(), row.end(), (*this)[row_num++]);
     }
 }
 

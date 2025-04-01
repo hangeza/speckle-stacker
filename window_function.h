@@ -14,7 +14,7 @@ public:
         : Array2<T>(a_xsize, a_ysize)
         , m_aperture(window_aperture)
     {
-        if ( !(window_aperture > 0.) ) {
+        if (!(window_aperture > 0.)) {
             throw std::domain_error("WindowFunction aperture size <= 0");
         }
     }

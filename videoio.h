@@ -1,15 +1,15 @@
 #pragma once
 
-#include <functional>
 #include <algorithm>
+#include <functional>
 #include <string>
 
 #include <opencv2/opencv.hpp>
 
-#include "types.h"
-#include "utility.h"
 #include "array2.h"
 #include "phasemap.h"
+#include "types.h"
+#include "utility.h"
 
 namespace smip {
 
@@ -30,7 +30,6 @@ struct RGB {
 
 template <concept_arithmetic T>
 RGB<T> mapToColor(double value);
-
 
 class FrameExtractor {
 public:
