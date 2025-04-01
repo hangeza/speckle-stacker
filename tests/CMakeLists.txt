@@ -23,9 +23,14 @@ foreach (test ${TestsToRun})
   )
 endforeach ()
 
+foreach (test ${TestsToRun})
+  set(TESTFILES "${TESTFILES};${CMAKE_CURRENT_SOURCE_DIR}/${test}")
+endforeach ()
+message(STATUS "TESTFILES=${TESTFILES}")
+
 set(ALL_FILES
     "${ALL_FILES}"
-    "${TestsToRun}" PARENT_SCOPE
+    "${TESTFILES}" PARENT_SCOPE
 )
 
 TARGET_LINK_LIBRARIES(smip_tests

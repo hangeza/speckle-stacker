@@ -98,6 +98,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/crosscorrel.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/types.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/utility.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/math_functions.h"
 )
 
 # tell cmake to build our executable
