@@ -108,9 +108,6 @@ public:
     // Access with operator() for const objects (x[y] access)
     const T& operator()(std::size_t col, std::size_t row) const;
     // Access with operator() for non-const objects (x[y] access)
-    T& operator()(int col, int row);
-    // Access with operator() for const objects (x[y] access)
-    const T& operator()(int col, int row) const;
 
     /*! returns const element with given signed indices */
     const T& at(s_indices indices) const;
@@ -296,28 +293,8 @@ T& Array2<T>::operator()(std::size_t col, std::size_t row)
 }
 
 template <typename T>
-T& Array2<T>::operator()(int col, int row)
-{
-    if (col < 0)
-        col += xsize();
-    if (row < 0)
-        row += ysize();
-    return this->data().get()[row * stride() + col];
-}
-
-template <typename T>
 const T& Array2<T>::operator()(std::size_t col, std::size_t row) const
 {
-    return this->data().get()[row * stride() + col];
-}
-
-template <typename T>
-const T& Array2<T>::operator()(int col, int row) const
-{
-    if (col < 0)
-        col += xsize();
-    if (row < 0)
-        row += ysize();
     return this->data().get()[row * stride() + col];
 }
 
