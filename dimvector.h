@@ -16,7 +16,7 @@ namespace smip {
 /*
  *! class DimVector
  */
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 class DimVector : public std::valarray<T> {
 public:
     using typename std::valarray<T>::value_type;
@@ -46,16 +46,17 @@ public:
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
 };
 
-/*
- *! class DimVector
- */
-template <concept_integral T, std::size_t NrDims>
+
+//********************
+// implementation part
+//********************
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims>::DimVector()
     : std::valarray<T>(NrDims)
 {
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims>::DimVector(const DimVector<T, NrDims>& x)
     : std::valarray<T>(NrDims)
 {
@@ -67,7 +68,7 @@ DimVector<T, NrDims>::DimVector(const DimVector<T, NrDims>& x)
     }
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
     : std::valarray<T>(NrDims)
 {
@@ -77,7 +78,7 @@ DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
 //     assert(l.size() == NrDims);
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims>& DimVector<T, NrDims>::operator=(const DimVector<T, NrDims>& x)
 {
     if (x.size() != NrDims) {
@@ -87,7 +88,7 @@ DimVector<T, NrDims>& DimVector<T, NrDims>::operator=(const DimVector<T, NrDims>
     return *this;
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims + 1> DimVector<T, NrDims>::appended_back(T new_dimsize)
 {
     DimVector<T, NrDims + 1> newvec {};
@@ -96,7 +97,7 @@ DimVector<T, NrDims + 1> DimVector<T, NrDims>::appended_back(T new_dimsize)
     return newvec;
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims + 1> DimVector<T, NrDims>::appended_front(T new_dimsize)
 {
     DimVector<T, NrDims + 1> newvec {};
@@ -105,7 +106,7 @@ DimVector<T, NrDims + 1> DimVector<T, NrDims>::appended_front(T new_dimsize)
     return newvec;
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_back()
 {
     DimVector<T, NrDims - 1> newvec {};
@@ -113,7 +114,7 @@ DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_back()
     return newvec;
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_front()
 {
     DimVector<T, NrDims - 1> newvec {};
@@ -121,7 +122,7 @@ DimVector<T, NrDims - 1> DimVector<T, NrDims>::removed_front()
     return newvec;
 }
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 void DimVector<T, NrDims>::fill(T value)
 {
     *this = value;
@@ -131,7 +132,7 @@ void DimVector<T, NrDims>::fill(T value)
 // non-member definitions
 // *************************************************
 
-template <concept_integral T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims>
 std::ostream& operator<<(std::ostream& os, const DimVector<T, NrDims>& obj)
 {
     // write obj to stream
