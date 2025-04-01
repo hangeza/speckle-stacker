@@ -20,7 +20,7 @@ int correl_test(int /*argc*/, char* /*argv*/[])
 
     for (std::size_t row { 0UL }; row < ysize; ++row) {
         for (std::size_t col { 0UL }; col < xsize; ++col) {
-            gaus(col, row) = smip::Gauss<double, std::size_t>({ col, row }, gausparams);
+            gaus.at({ static_cast<int>(col), static_cast<int>(row) }) = smip::Gauss<double, std::size_t>({ col, row }, gausparams);
         }
     }
     std::random_device rd; // a seed source for the random number engine
