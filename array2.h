@@ -35,7 +35,7 @@ class Array2 : public Array_base<T> {
     using Array_base<T>::_size;
 
 public:
-    typedef DimVector<std::size_t, 2> extends;
+    typedef DimVector<std::size_t, 2> extents;
     typedef DimVector<int, 2> s_indices;
     typedef DimVector<std::size_t, 2> u_indices;
 
@@ -50,8 +50,8 @@ public:
     Array2(Array2<T>&& other) noexcept;
     Array2(std::size_t xsize, std::size_t ysize);
     Array2(std::size_t xsize, std::size_t ysize, const T& init);
-    Array2(const extends& a_extends);
-    Array2(const extends& a_extends, const T& init);
+    Array2(const extents& a_extends);
+    Array2(const extents& a_extends, const T& init);
     Array2(std::initializer_list<std::initializer_list<T>> l);
     ~Array2() = default;
 
@@ -216,7 +216,7 @@ Array2<T>::Array2(std::size_t xsize, std::size_t ysize, const T& init)
 }
 
 template <typename T>
-Array2<T>::Array2(const extends& a_extends)
+Array2<T>::Array2(const extents& a_extends)
     : Array_base<T>(a_extends.product())
 {
     assert(a_extends.size() == 2);
@@ -225,7 +225,7 @@ Array2<T>::Array2(const extends& a_extends)
 }
 
 template <typename T>
-Array2<T>::Array2(const extends& a_extends, const T& init)
+Array2<T>::Array2(const extents& a_extends, const T& init)
     : Array_base<T>(a_extends.product(), init)
 {
     assert(a_extends.size() == 2);
@@ -656,7 +656,7 @@ void Array2<T>::print() const
     std::cout << "datatype: " << typeid(T).name() << std::endl;
     std::cout << "size of datatype: " << sizeof(T) << " bytes" << std::endl;
     std::cout << "nr. of elements: " << this->size() << std::endl;
-    std::cout << "extends: x=" << xsize() << ", y=" << ysize() << std::endl;
+    std::cout << "extents: x=" << xsize() << ", y=" << ysize() << std::endl;
     std::cout << "strides: x=" << 1 << ", y=" << stride() << std::endl;
     std::cout << "min indices: x=" << min_sindices()[0] << ", y=" << min_sindices()[1] << std::endl;
     std::cout << "max indices: x=" << max_sindices()[0] << ", y=" << max_sindices()[1] << std::endl;

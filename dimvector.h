@@ -9,6 +9,7 @@
 #include <memory>
 #include <numeric>
 #include <valarray>
+#include <stdexcept>
 
 namespace smip {
 
@@ -18,6 +19,7 @@ namespace smip {
 template <concept_integral T, std::size_t NrDims>
 class DimVector : public std::valarray<T> {
 public:
+    using std::valarray<T>::value_type;
     using std::valarray<T>::valarray;
     using std::valarray<T>::operator=;
     using std::valarray<T>::operator+;
@@ -28,11 +30,11 @@ public:
     using std::valarray<T>::operator/=;
     using std::valarray<T>::size;
 
-    DimVector()
-        : std::valarray<T>(NrDims, T {})
-    {
-    }
+    DimVector();
+    DimVector(const DimVector<T, NrDims>& x);
     DimVector(std::initializer_list<T> l);
+
+    DimVector& operator=(const DimVector<T, NrDims>& x);
 
     [[nodiscard]] DimVector<T, NrDims + 1> operator,(T in);
     [[nodiscard]] DimVector<T, NrDims + 1> appended_back(T new_dimsize);
@@ -48,10 +50,41 @@ public:
  *! class DimVector
  */
 template <concept_integral T, std::size_t NrDims>
-DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
-    : std::valarray<T>(l)
+DimVector<T, NrDims>::DimVector()
+    : std::valarray<T>(NrDims)
 {
-    assert(l.size() == NrDims);
+}
+
+template <concept_integral T, std::size_t NrDims>
+DimVector<T, NrDims>::DimVector(const DimVector<T, NrDims>& x)
+    : std::valarray<T>(NrDims)
+{
+    if (x.size() != NrDims && x.size() != 0) {
+        throw std::domain_error("invalid initializer size");
+    }
+    if (x.size()>0) {
+        std::copy(std::begin(x), std::end(x), std::begin(*this));
+    }
+}
+
+template <concept_integral T, std::size_t NrDims>
+DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
+    : std::valarray<T>(NrDims)
+{
+    if (l.size() == NrDims) {
+        std::copy(l.begin(), l.end(), std::begin(*this));
+    }
+//     assert(l.size() == NrDims);
+}
+
+template <concept_integral T, std::size_t NrDims>
+DimVector<T, NrDims>& DimVector<T, NrDims>::operator=(const DimVector<T, NrDims>& x)
+{
+    if (x.size() != NrDims) {
+        throw std::domain_error("invalid initializer size");
+    }
+    std::copy(std::begin(x), std::end(x), std::begin(*this));
+    return *this;
 }
 
 template <concept_integral T, std::size_t NrDims>
