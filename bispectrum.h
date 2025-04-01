@@ -95,9 +95,6 @@ private:
 
 // *** implementation part ***
 
-// template <typename T>
-// Bispectrum() -> Bispectrum<T>;
-
 template <typename T>
 Bispectrum<T>::Bispectrum()
     : Array_base<T> {}
@@ -127,9 +124,7 @@ Bispectrum<T>::extents Bispectrum<T>::sizes() const
     extents vec { m_dimsizes / 2 };
     vec *= 2;
     vec += 1UL;
-//     std::cout << "extents Bispectrum<T>::sizes(): " << vec << "\n";
     return vec;
-//     return { 2 * (m_dimsizes[0] / 2) + 1, 2 * (m_dimsizes[1] / 2) + 1, 2 * (m_dimsizes[2] / 2) + 1, 2 * (m_dimsizes[3] / 2) + 1 };
 }
 
 template <typename T>
@@ -138,9 +133,7 @@ Bispectrum<T>::extents Bispectrum<T>::base_sizes() const
     // reduced sizes of ux,uy,vx,vy dimensions
     extents vec = { this->sizes() };
     vec -= sizes() * extents{ 1, 0, 1, 0 } / 2; 
-//     std::cout << "extents Bispectrum<T>::base_sizes(): " << vec << "\n";
     return vec;
-//     return { sizes()[0] - sizes()[0] / 2, sizes()[1], sizes()[2] - sizes()[2] / 2, sizes()[3] };
 }
 
 template <typename T>
