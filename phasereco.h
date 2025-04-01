@@ -24,6 +24,11 @@ void calc_phase(const Bispectrum<U>& bispec,
     PhaseMap& pm,
     int wx, int wy);
 
+
+//********************
+// implementation part
+//********************
+
 template <typename T, typename U>
 Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     std::size_t xsize, std::size_t ysize,
