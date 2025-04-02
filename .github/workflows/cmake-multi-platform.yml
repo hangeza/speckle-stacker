@@ -64,13 +64,18 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-        # Setup C++ build toolchain + dependencies
+    
+    - name: Add msbuild to PATH
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: microsoft/setup-msbuild@v1.0.2
+    
+    # Setup C++ build toolchain + dependencies
     - name: Install build system (Windows)
       if: runner.os == 'Windows' && matrix.name
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} libopencv-dev
+        #choco install ${{ matrix.name }} libopencv-dev
+        choco install libopencv-dev
 
     - name: Install build system (Linux)
       if: runner.os == 'Linux'
