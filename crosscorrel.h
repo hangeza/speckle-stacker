@@ -95,9 +95,9 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         [](const std::complex<double>& a, const std::complex<double>& b) {
             return std::conj(a) * b;
         });
-
+    exit(0);
     // prepare m_correlation for data reception
-    m_correlation = Array2<double> { m_refframe.ncols(), m_refframe.nrows() };
+    m_correlation = Array2<double>(m_refframe.ncols(), m_refframe.nrows());
     // fft1 holds the power spectrum now
     // set up complex-to-real back transformation
     fftw_plan q = fftw_plan_dft_c2r_2d(m_refframe.nrows(), m_refframe.ncols(),
