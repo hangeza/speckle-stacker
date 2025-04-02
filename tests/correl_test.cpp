@@ -18,11 +18,12 @@ int correl_test(int /*argc*/, char* /*argv*/[])
 
     std::vector<smip::DimVector<double, 2>> gausparams { { 1., 1. }, { 0.5 * xsize, 0.5 * ysize }, { sigma, sigma } };
 
-    for (std::size_t row { 0UL }; row < ysize; ++row) {
-        for (std::size_t col { 0UL }; col < xsize; ++col) {
-            gaus.at({ static_cast<int>(col), static_cast<int>(row) }) = smip::Gauss<double, std::size_t>({ col, row }, gausparams);
+    for (std::size_t row { }; row < ysize; ++row) {
+        for (std::size_t col { }; col < xsize; ++col) {
+            //gaus.at({ static_cast<int>(col), static_cast<int>(row) }) = smip::Gauss<double, std::size_t>({ col, row }, gausparams);
         }
     }
+    gaus[ysize/2][xsize/2] = 1.;
     std::random_device rd; // a seed source for the random number engine
     std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(gaus.min_sindices().max() + static_cast<int>(sigma), gaus.max_sindices().min() - static_cast<int>(sigma) - 1);

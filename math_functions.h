@@ -10,10 +10,10 @@
 
 namespace smip {
 
-template <typename T>
+template <concept_arithmetic T>
 T sqr(T x)
 {
-    static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+//     static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
     return x * x;
 }
 
