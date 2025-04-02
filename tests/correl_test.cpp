@@ -6,7 +6,6 @@
 
 int correl_test(int /*argc*/, char* /*argv*/[])
 {
-    return 0;
     constexpr std::size_t N_trials { 100 };
     constexpr std::size_t xsize { 1000 };
     constexpr std::size_t ysize { 1000 };
@@ -25,6 +24,7 @@ int correl_test(int /*argc*/, char* /*argv*/[])
         }
     }
     gaus[ysize/2][xsize/2] = 1.;
+    return 0;
     std::random_device rd; // a seed source for the random number engine
     std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(gaus.min_sindices().max() + static_cast<int>(sigma), gaus.max_sindices().min() - static_cast<int>(sigma) - 1);
