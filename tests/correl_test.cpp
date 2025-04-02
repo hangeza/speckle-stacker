@@ -32,8 +32,8 @@ int correl_test(int /*argc*/, char* /*argv*/[])
     for (auto i { 0UL }; i < N_trials; ++i) {
         const smip::DimVector<int, 2> gen_shift { distrib(gen), distrib(gen) };
         std::cout << "shift wrt ref frame: generated [x,y] = " << gen_shift << "\n";
-        return 0;
         auto shifted_gaus = gaus.shifted(gen_shift);
+        return 0;
         auto meas_shift = cross_correl(shifted_gaus);
         //         std::cout << " vs. measured  [x,y] = " << meas_shift << "\n";
         smip::DimVector<int, 2> shift_diff { meas_shift - gen_shift };
