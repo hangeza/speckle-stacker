@@ -25,12 +25,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc, clang]
         include:
           - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            name: msvc
+            c_compiler: gcc
+            cpp_compiler: gcc
+            name: mingw-w64
+          - os: windows-latest
+            c_compiler: cl-clang
+            cpp-compiler: cl-clang
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -40,8 +43,8 @@ jobs:
         exclude:
           - os: windows-latest
             c_compiler: clang
-          - os: windows-latest
-            c_compiler: gcc
+          #- os: windows-latest
+          #  c_compiler: gcc
           #- os: windows-latest
           #  c_compiler: cl
           - os: ubuntu-latest
@@ -74,8 +77,8 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       run: |
         # Install required compilers using Chocolatey
-        #choco install ${{ matrix.name }} libopencv-dev
-        choco install libopencv-dev
+        choco install ${{ matrix.name }} libopencv-dev
+        #choco install libopencv-dev
 
     - name: Install build system (Linux)
       if: runner.os == 'Linux'
