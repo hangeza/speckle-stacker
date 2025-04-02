@@ -81,7 +81,6 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         m_refframe.data().get(),
         reinterpret_cast<fftw_complex*>(fft1.data().get()),
         FFTW_ESTIMATE);
-    exit(0);
     fftw_plan p2 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
         y.data().get(),
         reinterpret_cast<fftw_complex*>(fft2.data().get()),
