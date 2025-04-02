@@ -32,8 +32,8 @@ jobs:
             cpp_compiler: gcc
             name: mingw-w64
           - os: windows-latest
-            c_compiler: cl-clang
-            cpp-compiler: cl-clang
+            c_compiler: cl
+            cpp-compiler: cl
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
