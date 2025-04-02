@@ -11,7 +11,7 @@
 namespace smip {
 
 template <typename T>
-constexpr T sqr(T x)
+T sqr(T x)
 {
     static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
     return x * x;
