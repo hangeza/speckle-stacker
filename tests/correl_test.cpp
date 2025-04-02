@@ -28,11 +28,11 @@ int correl_test(int /*argc*/, char* /*argv*/[])
     std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<int> distrib(gaus.min_sindices().max() + static_cast<int>(sigma), gaus.max_sindices().min() - static_cast<int>(sigma) - 1);
     std::cout << " random int value: "<< distrib(gen) << "\n";
-    return 0;
     smip::CrossCorrelation<double> cross_correl(gaus);
     for (auto i { 0UL }; i < N_trials; ++i) {
         const smip::DimVector<int, 2> gen_shift { distrib(gen), distrib(gen) };
-        //         std::cout << "shift wrt ref frame: generated [x,y] = " << gen_shift;
+        std::cout << "shift wrt ref frame: generated [x,y] = " << gen_shift << "\n";
+        return 0;
         auto shifted_gaus = gaus.shifted(gen_shift);
         auto meas_shift = cross_correl(shifted_gaus);
         //         std::cout << " vs. measured  [x,y] = " << meas_shift << "\n";
