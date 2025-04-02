@@ -373,7 +373,7 @@ template <typename T>
 template <concept_arithmetic U>
 Array2<T>& Array2<T>::operator=(const U& val)
 {
-    std::fill(this->begin(), this->end(), val);
+    std::fill(this->begin(), this->end(), static_cast<T>(val));
     return *this;
 }
 

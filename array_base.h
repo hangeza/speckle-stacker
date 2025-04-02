@@ -104,8 +104,10 @@ Array_base<T>::Array_base(const Array_base<T>& src)
     : _size(src._size)
 {
     //     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
-    if (!_size)
+    if (_size == 0) {
+        _mem.reset();
         return;
+    }
 
     auto temp = std::make_unique<T[]>(_size);
     //std::shared_ptr<T> buf(nullptr, [](T* p) { delete[] p; });
@@ -120,9 +122,10 @@ Array_base<T>::Array_base(const Array_base<U>& src)
     : _size(src._size)
 {
     //     std::cout<<"Array_base<T>::Array_base(const Array_base&)\n";
-    if (!_size)
+    if (_size == 0) {
+        _mem.reset();
         return;
-
+    }
     auto temp = std::make_unique<T[]>(_size);
     //std::shared_ptr<T> buf(nullptr, [](T* p) { delete[] p; });
     _mem.reset(temp.release());
