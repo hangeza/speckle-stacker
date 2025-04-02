@@ -54,7 +54,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Set build dir (Windows)
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      if: runner.os == 'Windows' && matrix.name
+      if: runner.os == 'Windows'
       id: win-build
       shell: bash
       run: |
@@ -74,18 +74,18 @@ jobs:
     
     # Setup C++ build toolchain + dependencies
     - name: Install build system (Windows)
-      if: runner.os == 'Windows' && matrix.name
+      if: runner.os == 'Windows'
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} libopencv-dev
-        #choco install libopencv-dev
+        #choco install ${{ matrix.name }} libopencv-dev
+        choco install libopencv-dev
 
     - name: Install build system (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
 
     - name: Install FFTW3 (Windows)
-      if: runner.os == 'Windows' && matrix.name
+      if: runner.os == 'Windows'
       id: fftw
       run: |
         # Download and extract FFTW3 for Windows (64-bit) from GitHub
@@ -121,7 +121,7 @@ jobs:
         FFTW3_INCLUDE_DIR: "${{ steps.fftw.outputs.fftw3_include }}"
         FFTW3_LIBRARY_DIR: "${{ steps.fftw.outputs.fftw3_libdir }}"
         FFTW3_LIBRARIES: "${{ steps.fftw.outputs.fftw3_lib }}"
-      if: runner.os == 'Windows' && matrix.name
+      if: runner.os == 'Windows'
       run: |
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
@@ -139,7 +139,7 @@ jobs:
 
     - name: Build (Windows)
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      if: runner.os == 'Windows' && matrix.name
+      if: runner.os == 'Windows'
       run: cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
       
     - name: Build (Linux)
