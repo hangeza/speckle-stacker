@@ -85,6 +85,7 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         reinterpret_cast<fftw_complex*>(fft2.data().get()),
         FFTW_ESTIMATE);
 
+    exit(0);
     fftw_execute(p1);
     fftw_execute(p2);
     fftw_destroy_plan(p1);
@@ -95,7 +96,6 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         [](const std::complex<double>& a, const std::complex<double>& b) {
             return std::conj(a) * b;
         });
-    exit(0);
     // prepare m_correlation for data reception
     m_correlation = Array2<double>(m_refframe.ncols(), m_refframe.nrows());
     // fft1 holds the power spectrum now
