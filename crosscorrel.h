@@ -69,6 +69,7 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         throw std::invalid_argument("Matrix dimensions must match for correlation");
     }
     Array2<double> y(frame);
+    exit(0);
     Array2<std::complex<double>> fft1(m_refframe.ncols() / 2 + 1, m_refframe.nrows());
     Array2<std::complex<double>> fft2(m_refframe.ncols() / 2 + 1, m_refframe.nrows());
 
@@ -85,7 +86,6 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         reinterpret_cast<fftw_complex*>(fft2.data().get()),
         FFTW_ESTIMATE);
 
-    exit(0);
     fftw_execute(p1);
     fftw_execute(p2);
     fftw_destroy_plan(p1);
