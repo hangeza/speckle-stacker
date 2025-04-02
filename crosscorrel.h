@@ -69,9 +69,9 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         throw std::invalid_argument("Matrix dimensions must match for correlation");
     }
     Array2<double> y(frame);
+    assert(y.size() == m_refframe.size());
     Array2<std::complex<double>> fft1(m_refframe.ncols() / 2 + 1, m_refframe.nrows());
     Array2<std::complex<double>> fft2(m_refframe.ncols() / 2 + 1, m_refframe.nrows());
-    exit(0);
 
     // set up real-to-complex DFTs
     // ref: https://www.fftw.org/fftw3_doc/Real_002ddata-DFTs.html#Real_002ddata-DFTs
@@ -81,6 +81,7 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
         m_refframe.data().get(),
         reinterpret_cast<fftw_complex*>(fft1.data().get()),
         FFTW_ESTIMATE);
+    exit(0);
     fftw_plan p2 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
         y.data().get(),
         reinterpret_cast<fftw_complex*>(fft2.data().get()),
