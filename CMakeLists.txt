@@ -121,6 +121,13 @@ if(WIN32)
         ${lib_fftw_name}
     )
     add_dependencies(smip project_fftw)
+    # Copy the DLL after the executable is built
+    add_custom_command(TARGET smip POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/bin"  # This is the directory where the executable is located
+        COMMENT "Copying libfftw3.dll to executable folder"
+    )
 else()
     TARGET_LINK_LIBRARIES(smip
         pthread
