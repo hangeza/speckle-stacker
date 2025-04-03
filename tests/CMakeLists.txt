@@ -15,9 +15,6 @@ create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
 # add the executable
 add_executable (smip_tests ${Tests})
-if(WIN32)
-    add_dependencies(smip_tests project_fftw)
-endif()
 
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
@@ -36,8 +33,17 @@ set(ALL_FILES
     "${TESTFILES}" PARENT_SCOPE
 )
 
-TARGET_LINK_LIBRARIES(smip_tests
-    pthread
-    ${OpenCV_LIBS}
-    fftw
-)
+if(WIN32)
+    TARGET_LINK_LIBRARIES(smip_tests
+        pthread
+        ${OpenCV_LIBS}
+        fftw
+    )
+    add_dependencies(smip_tests fftw)
+else()
+    TARGET_LINK_LIBRARIES(smip_tests
+        pthread
+        ${OpenCV_LIBS}
+    )
+endif()
+

@@ -61,7 +61,6 @@ if(WIN32)
 
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
 
-    #TARGET_LINK_LIBRARIES(SMIP fftw)
     #link_libraries(${fftw})
 else()
     ADD_DEFINITIONS(-flto)
@@ -109,10 +108,6 @@ ADD_EXECUTABLE(smip
     ${HEADER_FILES}
 )
 
-if(WIN32)
-    add_dependencies(smip project_fftw)
-endif()
-
 set(ALL_FILES
     "${SOURCE_FILES}"
     "${HEADER_FILES}"
@@ -120,10 +115,18 @@ set(ALL_FILES
 
 add_subdirectory(tests)
 
-TARGET_LINK_LIBRARIES(smip
- pthread
- ${OpenCV_LIBS}
- fftw
-)
+if(WIN32)
+    TARGET_LINK_LIBRARIES(smip
+        pthread
+        ${OpenCV_LIBS}
+        fftw
+    )
+    add_dependencies(smip fftw)
+else()
+    TARGET_LINK_LIBRARIES(smip
+        pthread
+        ${OpenCV_LIBS}
+    )
+endif()
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
