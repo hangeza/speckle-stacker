@@ -55,7 +55,7 @@ if(WIN32)
 
     add_library(fftw STATIC IMPORTED)
     set(lib_fftw_name
-    ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
+    ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3.dll${CMAKE_STATIC_LIBRARY_SUFFIX})
     set_target_properties(fftw PROPERTIES IMPORTED_LOCATION
     ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
 
