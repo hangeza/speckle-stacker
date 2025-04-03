@@ -49,13 +49,19 @@ if(WIN32)
         CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/fftw/install -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
-        POST_BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    )
+
+    add_library(fftw STATIC IMPORTED)
+
+    # Copy the DLL to the Windows system32 directory after the library is built
+    MESSAGE(STATUS "copy library to system dir")
+    add_custom_command(TARGET fftw POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
         "C:/Windows/System32/"
         COMMENT "Copying libfftw3.dll to system folder"
     )
-
-    add_library(fftw STATIC IMPORTED)
+    
     set(lib_fftw_name
     ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3.dll${CMAKE_STATIC_LIBRARY_SUFFIX})
     set_target_properties(fftw PROPERTIES IMPORTED_LOCATION
@@ -122,14 +128,6 @@ if(WIN32)
     )
     add_dependencies(smip project_fftw)
 
-    ## Copy the DLL to the Windows system32 directory after the library is built
-    #MESSAGE(STATUS "copy library to system dir")
-    #add_custom_command(TARGET smip POST_BUILD
-        #COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        #"${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
-        #"C:/Windows/System32/"
-        #COMMENT "Copying libfftw3.dll to system folder"
-    #)
 else()
     TARGET_LINK_LIBRARIES(smip
         pthread
