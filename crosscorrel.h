@@ -77,19 +77,19 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
     // ref: https://www.fftw.org/fftw3_doc/Real_002ddata-DFTs.html#Real_002ddata-DFTs
     // see definition of FFTW3's real-data DFT data format:
     // https://www.fftw.org/fftw3_doc/Real_002ddata-DFT-Array-Format.html
-//     fftw_plan p1 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
-//         m_refframe.data().get(),
-//         reinterpret_cast<fftw_complex*>(fft1.data().get()),
-//         FFTW_ESTIMATE);
-//     fftw_plan p2 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
-//         y.data().get(),
-//         reinterpret_cast<fftw_complex*>(fft2.data().get()),
-//         FFTW_ESTIMATE);
-// 
-//     fftw_execute(p1);
-//     fftw_execute(p2);
-//     fftw_destroy_plan(p1);
-//     fftw_destroy_plan(p2);
+    fftw_plan p1 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
+        m_refframe.data().get(),
+        reinterpret_cast<fftw_complex*>(fft1.data().get()),
+        FFTW_ESTIMATE);
+    fftw_plan p2 = fftw_plan_dft_r2c_2d(m_refframe.nrows(), m_refframe.ncols(),
+        y.data().get(),
+        reinterpret_cast<fftw_complex*>(fft2.data().get()),
+        FFTW_ESTIMATE);
+
+    fftw_execute(p1);
+    fftw_execute(p2);
+    fftw_destroy_plan(p1);
+    fftw_destroy_plan(p2);
 
     // execute element-wise conj(fft1) * fft2 for power spectrum
     std::transform(fft1.cbegin(), fft1.cend(), fft2.cbegin(), fft1.begin(),
@@ -100,13 +100,13 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
     m_correlation = Array2<double>(m_refframe.ncols(), m_refframe.nrows());
     // fft1 holds the power spectrum now
     // set up complex-to-real back transformation
-//     fftw_plan q = fftw_plan_dft_c2r_2d(m_refframe.nrows(), m_refframe.ncols(),
-//         reinterpret_cast<fftw_complex*>(fft1.data().get()),
-//         m_correlation.data().get(),
-//         FFTW_ESTIMATE);
-//     // back transformed power spectrum = cross correlation to m_correlation
-//     fftw_execute(q);
-//     fftw_destroy_plan(q);
+    fftw_plan q = fftw_plan_dft_c2r_2d(m_refframe.nrows(), m_refframe.ncols(),
+        reinterpret_cast<fftw_complex*>(fft1.data().get()),
+        m_correlation.data().get(),
+        FFTW_ESTIMATE);
+    // back transformed power spectrum = cross correlation to m_correlation
+    fftw_execute(q);
+    fftw_destroy_plan(q);
     m_readiness = readiness::correl;
 }
 
