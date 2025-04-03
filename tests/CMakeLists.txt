@@ -37,9 +37,9 @@ if(WIN32)
     TARGET_LINK_LIBRARIES(smip_tests
         pthread
         ${OpenCV_LIBS}
-        fftw
+        ${lib_fftw_name}
     )
-    add_dependencies(smip_tests fftw)
+    add_dependencies(smip_tests project_fftw)
 else()
     TARGET_LINK_LIBRARIES(smip_tests
         pthread

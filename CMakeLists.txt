@@ -60,7 +60,7 @@ if(WIN32)
     ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
 
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
-
+    link_directories(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib)
     #link_libraries(${fftw})
 else()
     ADD_DEFINITIONS(-flto)
@@ -119,9 +119,9 @@ if(WIN32)
     TARGET_LINK_LIBRARIES(smip
         pthread
         ${OpenCV_LIBS}
-        fftw
+        ${lib_fftw_name}
     )
-    add_dependencies(smip fftw)
+    add_dependencies(smip project_fftw)
 else()
     TARGET_LINK_LIBRARIES(smip
         pthread
