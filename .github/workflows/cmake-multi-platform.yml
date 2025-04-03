@@ -71,8 +71,9 @@ jobs:
     - name: Install build system (Windows)
       if: runner.os == 'Windows' && matrix.name
       run: |
+        pacman -S --needed git mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-gcc
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} libopencv-dev
+        #choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
 
     - name: Install build system (Linux)
@@ -121,7 +122,7 @@ jobs:
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
         #echo "FFTW3_LIBRARIES = $env:FFTW3_LIBRARIES"
-        cmake -B ${{ steps.build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MSYS Makefiles"
+        cmake -B ${{ steps.build.outputs.build-output-dir }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "Ninja"
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux' || (runner.os == 'Windows' && !matrix.name)
