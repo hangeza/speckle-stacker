@@ -35,7 +35,6 @@ set(ALL_FILES
 
 if(WIN32)
     TARGET_LINK_LIBRARIES(smip_tests
-        pthread
         ${OpenCV_LIBS}
         ${lib_fftw_name}
     )

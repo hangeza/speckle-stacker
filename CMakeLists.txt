@@ -117,7 +117,6 @@ add_subdirectory(tests)
 
 if(WIN32)
     TARGET_LINK_LIBRARIES(smip
-        pthread
         ${OpenCV_LIBS}
         ${lib_fftw_name}
     )
