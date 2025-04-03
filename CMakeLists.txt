@@ -38,29 +38,33 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # Add support for FFTW3 on Windows
 if(WIN32)
-    #SET(CMAKE_AR  "gcc-ar")
-    # Look for the environment variables we set in the GitHub Actions workflow
-    if(DEFINED ENV{FFTW3_INCLUDE_DIR} AND DEFINED ENV{FFTW3_LIBRARY_DIR})
-        message(STATUS "Found FFTW3 in environment")
-        
-        # Include the FFTW3 headers
-        include_directories("$ENV{FFTW3_INCLUDE_DIR}")
-        message(STATUS "FFTW3_INCLUDE_DIR=$ENV{FFTW3_INCLUDE_DIR}")
-        message(STATUS "FFTW3_LIBRARY_DIR=$ENV{FFTW3_LIBRARY_DIR}")
-        message(STATUS "FFTW3_LIBRARIES=$ENV{FFTW3_LIBRARIES}")
+    include(ExternalProject)
 
-        SET(NEW_LIB_PATH "$ENV{FFTW3_LIBRARY_DIR}")
-        string(REPLACE "\\" "/" NEW_LIB_PATH "${NEW_LIB_PATH}")
-        # Link the FFTW3 libraries
-        link_directories(${NEW_LIB_PATH})
-        # Optionally, you can specify the exact library (e.g., if it's located in the lib folder)
-        
-        SET(NEW_LIB "$ENV{FFTW3_LIBRARIES}")
-        string(REPLACE "\\" "/" NEW_LIB "${NEW_LIB}")
-        set(FFTW3_LIBRARIES ${NEW_LIB})  # Adjust the library name if necessary (check for the correct file name)
-    else()
-        message(WARNING "FFTW3 not found in environment, skipping FFTW3 support")
-    endif()
+    MESSAGE(STATUS "Trying to install fftw...")
+
+    ExternalProject_Add(project_fftw
+    #GIT_REPOSITORY  https://github.com/FFTW/fftw3
+    URL http://www.fftw.org/fftw-3.3.10.tar.gz
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
+    CONFIGURE_COMMAND
+    ${CMAKE_CURRENT_BINARY_DIR}/fftw/src/project_fftw/configure
+    --prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+    INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+    )
+
+    add_library(fftw STATIC IMPORTED)
+    set(lib_fftw_name
+    ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set_target_properties(fftw PROPERTIES IMPORTED_LOCATION
+    ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
+
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
+
+    #add_executable(prose src/read.cpp)
+    add_dependencies(SMIP project_fftw)
+
+    #TARGET_LINK_LIBRARIES(SMIP fftw)
+    link_libraries(${fftw})
 else()
     ADD_DEFINITIONS(-flto)
     find_package(PkgConfig REQUIRED)
@@ -117,7 +121,7 @@ add_subdirectory(tests)
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
- ${FFTW3_LIBRARIES}
+ #${FFTW3_LIBRARIES}
 )
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
