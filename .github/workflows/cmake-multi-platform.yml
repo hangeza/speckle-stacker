@@ -121,7 +121,7 @@ jobs:
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
         #echo "FFTW3_LIBRARIES = $env:FFTW3_LIBRARIES"
-        cmake -B ${{ steps.build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MSYS2 Makefiles"
+        cmake -B ${{ steps.build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MSYS Makefiles"
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux' || (runner.os == 'Windows' && !matrix.name)
