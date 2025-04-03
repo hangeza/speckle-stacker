@@ -121,7 +121,7 @@ jobs:
         FFTW3_INCLUDE_DIR: "${{ steps.fftw.outputs.fftw3_include }}"
         FFTW3_LIBRARY_DIR: "${{ steps.fftw.outputs.fftw3_libdir }}"
         FFTW3_LIBRARIES: "${{ steps.fftw.outputs.fftw3_lib }}"
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && matrix.name
       run: |
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
@@ -129,7 +129,7 @@ jobs:
         cmake -B ${{ steps.win-build.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "MinGW Makefiles"
 
     - name: Configure CMake (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' || (runner.os == 'Windows' && !matrix.name)
       run: >
         cmake -B ${{ steps.linux-build.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
