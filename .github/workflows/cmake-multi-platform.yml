@@ -30,7 +30,7 @@ jobs:
           - os: windows-latest
             c_compiler: gcc
             cpp_compiler: gcc
-            name: msys2
+            name: ninja
           #- os: windows-latest
           #  c_compiler: cl
           #  cpp-compiler: cl
@@ -71,9 +71,9 @@ jobs:
     - name: Install build system (Windows)
       if: runner.os == 'Windows' && matrix.name
       run: |
-        pacman -S --needed git mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-gcc
+        #pacman -S --needed git mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-gcc
         # Install required compilers using Chocolatey
-        #choco install ${{ matrix.name }} libopencv-dev
+        choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
 
     - name: Install build system (Linux)
