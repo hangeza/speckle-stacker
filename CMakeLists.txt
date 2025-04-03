@@ -60,9 +60,6 @@ if(WIN32)
 
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
 
-    #add_executable(prose src/read.cpp)
-    add_dependencies(SMIP project_fftw)
-
     #TARGET_LINK_LIBRARIES(SMIP fftw)
     link_libraries(${fftw})
 else()
@@ -110,6 +107,10 @@ ADD_EXECUTABLE(smip
     ${SOURCE_FILES}
     ${HEADER_FILES}
 )
+
+if(WIN32)
+    add_dependencies(SMIP project_fftw)
+endif()
 
 set(ALL_FILES
     "${SOURCE_FILES}"
