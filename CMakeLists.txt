@@ -62,7 +62,7 @@ if(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
 
     #TARGET_LINK_LIBRARIES(SMIP fftw)
-    link_libraries(${fftw})
+    #link_libraries(${fftw})
 else()
     ADD_DEFINITIONS(-flto)
     find_package(PkgConfig REQUIRED)
