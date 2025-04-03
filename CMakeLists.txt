@@ -43,14 +43,12 @@ if(WIN32)
     MESSAGE(STATUS "Trying to install fftw...")
 
     ExternalProject_Add(project_fftw
-    #GIT_REPOSITORY  https://github.com/FFTW/fftw3
-    URL http://www.fftw.org/fftw-3.3.10.tar.gz
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
-    CMAKE_ARGS
-		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/fftw/install -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-    #--prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
-    #CONFIGURE_COMMAND configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
-    INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+        #GIT_REPOSITORY  https://github.com/FFTW/fftw3
+        URL http://www.fftw.org/fftw-3.3.10.tar.gz
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
+        CMAKE_ARGS
+            -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/fftw/install -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
     )
 
     add_library(fftw STATIC IMPORTED)
@@ -113,8 +111,6 @@ set(ALL_FILES
     "${HEADER_FILES}"
 )
 
-add_subdirectory(tests)
-
 if(WIN32)
     TARGET_LINK_LIBRARIES(smip
         ${OpenCV_LIBS}
@@ -122,11 +118,19 @@ if(WIN32)
     )
     add_dependencies(smip project_fftw)
     # Copy the DLL after the executable is built
+    #add_custom_command(TARGET smip POST_BUILD
+        #COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        #"${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
+        #"${CMAKE_CURRENT_BINARY_DIR}/bin"  # This is the directory where the executable is located
+        #COMMENT "Copying libfftw3.dll to executable folder"
+    #)
+    # Copy the DLL to the Windows system32 directory after the library is built
+    message(STATUS "copy library to system dir")
     add_custom_command(TARGET smip POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/bin"  # This is the directory where the executable is located
-        COMMENT "Copying libfftw3.dll to executable folder"
+        "C:/Windows/System32/"
+        COMMENT "Copying libfftw3.dll to system folder"
     )
 else()
     TARGET_LINK_LIBRARIES(smip
@@ -134,5 +138,7 @@ else()
         ${OpenCV_LIBS}
     )
 endif()
+
+add_subdirectory(tests)
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
