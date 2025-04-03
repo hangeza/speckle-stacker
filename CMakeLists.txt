@@ -109,7 +109,7 @@ ADD_EXECUTABLE(smip
 )
 
 if(WIN32)
-    add_dependencies(SMIP project_fftw)
+    add_dependencies(smip project_fftw)
 endif()
 
 set(ALL_FILES
