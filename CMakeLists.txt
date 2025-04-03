@@ -44,9 +44,12 @@ if(WIN32)
 
     ExternalProject_Add(project_fftw
     #GIT_REPOSITORY  https://github.com/FFTW/fftw3
-    URL http://www.fftw.org/fftw-3.3.2.tar.gz
+    URL http://www.fftw.org/fftw-3.3.10.tar.gz
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
-    CONFIGURE_COMMAND configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+    CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+    #--prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+    #CONFIGURE_COMMAND configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
     )
 

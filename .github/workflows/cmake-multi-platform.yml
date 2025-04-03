@@ -32,15 +32,15 @@ jobs:
             c_compiler: gcc
             cpp_compiler: gcc
             name: ninja
-          #- os: windows-latest
-          #  c_compiler: cl
-          #  cpp-compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+            #- os: windows-latest
+            #  c_compiler: cl
+            #  cpp-compiler: cl
+            #- os: ubuntu-latest
+            #c_compiler: gcc
+            #cpp_compiler: g++
+            #- os: ubuntu-latest
+            #c_compiler: clang
+            #cpp_compiler: clang++
         exclude:
           - os: windows-latest
             c_compiler: clang
