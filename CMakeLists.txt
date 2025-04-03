@@ -53,16 +53,16 @@ if(WIN32)
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
     )
 
-    add_library(fftw STATIC IMPORTED)
+    add_library(FFTW3_LIBRARIES STATIC IMPORTED)
     set(lib_fftw_name
     ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set_target_properties(fftw PROPERTIES IMPORTED_LOCATION
+    set_target_properties(FFTW3_LIBRARIES PROPERTIES IMPORTED_LOCATION
     ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
 
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
 
     #TARGET_LINK_LIBRARIES(SMIP fftw)
-    link_libraries(${fftw})
+    #link_libraries(${FFTW3_LIBRARIES})
 else()
     ADD_DEFINITIONS(-flto)
     find_package(PkgConfig REQUIRED)
@@ -123,7 +123,7 @@ add_subdirectory(tests)
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
- #${FFTW3_LIBRARIES}
+ ${FFTW3_LIBRARIES}
 )
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
