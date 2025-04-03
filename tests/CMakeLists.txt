@@ -39,4 +39,5 @@ set(ALL_FILES
 TARGET_LINK_LIBRARIES(smip_tests
     pthread
     ${OpenCV_LIBS}
+    ${fftw}
 )
