@@ -60,7 +60,7 @@ jobs:
       id: build
       shell: bash
       run: |
-      #echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+        #echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         
     #- name: Set build dir (Linux)
