@@ -8,7 +8,7 @@ include(GNUInstallDirs)
 
 #The following lines are required to use Dart
 ENABLE_TESTING()
-#INCLUDE(Dart)
+#INCLUDE(CTest)
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
@@ -123,7 +123,7 @@ add_subdirectory(tests)
 TARGET_LINK_LIBRARIES(smip
  pthread
  ${OpenCV_LIBS}
- ${fftw}
+ fftw
 )
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
