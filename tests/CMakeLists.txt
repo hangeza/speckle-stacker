@@ -13,8 +13,16 @@ set (TestsToRun
 
 create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
+set(EXT_SOURCE_FILES
+    "${CMAKE_SOURCE_DIR}/videoio.cpp"
+    "${CMAKE_SOURCE_DIR}/phasemap.cpp"
+    "${CMAKE_SOURCE_DIR}/phasereco.cpp"
+    "${CMAKE_SOURCE_DIR}/log.cpp"
+    "${CMAKE_SOURCE_DIR}/utility.cpp"
+)
+
 # add the executable
-add_executable (smip_tests ${Tests})
+add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
 
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
