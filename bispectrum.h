@@ -93,7 +93,9 @@ private:
     extents m_dimsizes { 0, 0, 0, 0 };
 };
 
-// *** implementation part ***
+// *************************************************
+// Member definitions / implementation part
+// *************************************************
 
 template <typename T>
 Bispectrum<T>::Bispectrum()
@@ -282,6 +284,7 @@ void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
     const int min4 = std::max(fft.min_sindices()[1], min_indices()[3]);
     const int max1 = std::min(fft.max_sindices()[0], max_indices()[0]);
     const int max2 = std::min(fft.max_sindices()[1], max_indices()[1]);
+    // max3 is not used due to hermitian symmetry
     //   int max3 = std::min(fft.xindex_hi(),index3_hi());
     const int max4 = std::min(fft.max_sindices()[1], max_indices()[3]);
 
@@ -460,13 +463,12 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
 {
     std::size_t addr { calc_offset(indices) };
     if (addr >= base_size()) {
-        throw ElementOutOfBounds("trying to access bispectrum element out of range");
         /*
         cerr<<"error: trying to access element out of range"<<endl;
         cerr<<"Bispectrum::PutElement(int,int,int,int)"<<endl;
         cerr<<"size="<<_size<<"  Indices="<<i<<";"<<j<<";"<<k<<";"<<l<<endl;
-        exit(-1);
         */
+        throw ElementOutOfBounds("trying to access bispectrum element out of range");
     }
     Array_base<T>::data().get()[addr] = value;
 }
@@ -483,7 +485,6 @@ Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
     std::transform(std::begin(sizes), std::end(sizes), std::begin(mins),
         [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
     return mins;
-    //     return { -static_cast<int>(sizes()[0] / 2), -static_cast<int>(sizes()[1] / 2), -static_cast<int>(sizes()[2] / 2), -static_cast<int>(sizes()[3] / 2) };
 }
 
 template <typename T>
@@ -498,7 +499,6 @@ Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
     maxes += min_indices();
     maxes -= 1;
     return maxes;
-    //     return { mins[0] + static_cast<int>(sizes()[0]) - 1, mins[1] + static_cast<int>(sizes()[1]) - 1, mins[2] + static_cast<int>(sizes()[2]) - 1, mins[3] + static_cast<int>(sizes()[3]) - 1 };
 }
 
 } // namespace smip

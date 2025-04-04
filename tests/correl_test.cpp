@@ -14,7 +14,6 @@ int correl_test(int /*argc*/, char* /*argv*/[])
     assert(gaus.size() == xsize * ysize);
     std::cout << "arr:\n";
     gaus.print();
-    //     std::cout << arr << "\n";
 
     std::vector<smip::DimVector<double, 2>> gausparams { { 1., 1. }, { 0.5 * xsize, 0.5 * ysize }, { sigma, sigma } };
 
