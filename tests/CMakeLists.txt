@@ -8,6 +8,7 @@ set (TestsToRun
     array2_test.cpp
     array3_test.cpp
     correl_test.cpp
+    opencv_test.cpp
     smip_test.cpp
 )
 
