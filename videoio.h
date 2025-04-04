@@ -168,7 +168,7 @@ cv::Mat Array2Mat(const Array2<T>& arr,
 }
 
 // Function to map a double (range [0.0, 1.0]) to RGB values
-// modified based on source ChatGPT
+// modified based on proposal from ChatGPT
 template <concept_arithmetic T>
 RGB<T> mapToColor(double value)
 {
@@ -187,13 +187,13 @@ RGB<T> mapToColor(double value)
         color.g = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 1)); // Green increases as value increases
         color.b = static_cast<T>(std::numeric_limits<T>::max() * (2 - 4 * value)); // Blue decreases as value increases
     } else if (value < 0.75) {
-        color.r = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 2)); // Red increases after 0.67
-        color.g = static_cast<T>(std::numeric_limits<T>::max() * (3 - 4 * value)); // Green decreases after 0.67
+        color.r = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 2)); // Red increases
+        color.g = static_cast<T>(std::numeric_limits<T>::max() * (3 - 4 * value)); // Green decreases
         color.b = 0;
     } else {
-        color.r = 255; // Red stays constant after 0.67
+        color.r = static_cast<T>(std::numeric_limits<T>::max()); // Red stays constant after 0.75
         color.g = 0;
-        color.b = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 3)); // Green decreases after 0.67
+        color.b = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 3)); // blue increases
     }
     return color;
 }
