@@ -349,7 +349,8 @@ Array2<T>& Array2<T>::operator=(const Array2<U>& src)
     if (this->size() != src.size()) {
         assert(this->resize(src.size()));
     }
-    std::copy(src.begin(), src.end(), this->begin());
+    std::transform(src.begin(), src.end(), this->begin(),
+        [](const U& x) { return static_cast<T>(x); });
     return *this;
 }
 
