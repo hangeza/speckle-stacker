@@ -163,11 +163,10 @@ private:
 
 template <typename T>
 Array2<T>::Array2(const Array2<T>& src)
-    : Array_base<T>(src.m_xsize*src.m_ysize)
+    : Array_base<T>(src)
     , m_xsize(src.m_xsize)
     , m_ysize(src.m_ysize)
 {
-    std::copy(src.begin(), src.end(), this->begin());
 }
 
 template <typename T>
