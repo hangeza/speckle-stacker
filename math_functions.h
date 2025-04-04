@@ -7,13 +7,15 @@
 #include <complex>
 #include <type_traits>
 #include <vector>
+#include <valarray>
 
 namespace smip {
 
-template <concept_arithmetic T>
-T sqr(T x)
+template <typename T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
+constexpr T sqr(T x)
 {
-//     static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+    //static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
     return x * x;
 }
 
@@ -47,7 +49,7 @@ F Gauss(const DimVector<X, 2>& x, const std::vector<DimVector<F, 2>>& params)
     DimVector<F, 2> p2 = params[2];
     DimVector<F, 2> f_xy { xf - p1 };
     f_xy *= -f_xy;
-    f_xy /= p2 * p2 * 2;
+    f_xy /= sqr(p2) * 2;
     f_xy = std::exp(f_xy);
     f_xy /= p2 * c_sqrt_2pi;
     f_xy *= p0;
