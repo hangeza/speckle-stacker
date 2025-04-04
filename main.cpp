@@ -35,9 +35,6 @@
 #include "videoio.h"
 #include "window_function.h"
 
-typedef std::complex<double> complex_t;
-typedef std::complex<float> bispec_complex_t;
-
 using namespace smip;
 
 void Usage(const char* progname)
