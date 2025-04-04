@@ -33,16 +33,9 @@ set(ALL_FILES
     "${TESTFILES}" PARENT_SCOPE
 )
 
-if(WIN32)
-    TARGET_LINK_LIBRARIES(smip_tests
-        ${OpenCV_LIBS}
-        ${lib_fftw_name}
-    )
-    add_dependencies(smip_tests project_fftw)
-else()
-    TARGET_LINK_LIBRARIES(smip_tests
-        pthread
-        ${OpenCV_LIBS}
-    )
-endif()
+TARGET_LINK_LIBRARIES(smip_tests
+    pthread
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
+)
 

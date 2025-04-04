@@ -38,28 +38,28 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # Add support for FFTW3 on Windows
 if(WIN32)
-    include(ExternalProject)
+    # Look for the environment variables we set in the GitHub Actions workflow
+    if(DEFINED ENV{FFTW3_INCLUDE_DIR} AND DEFINED ENV{FFTW3_LIBRARY_DIR})
+        message(STATUS "Found FFTW3 in environment")
+        
+        # Include the FFTW3 headers
+        include_directories("$ENV{FFTW3_INCLUDE_DIR}")
+        message(STATUS "FFTW3_INCLUDE_DIR=$ENV{FFTW3_INCLUDE_DIR}")
+        message(STATUS "FFTW3_LIBRARY_DIR=$ENV{FFTW3_LIBRARY_DIR}")
+        message(STATUS "FFTW3_LIBRARIES=$ENV{FFTW3_LIBRARIES}")
 
-    MESSAGE(STATUS "Trying to install fftw...")
-
-    ExternalProject_Add(project_fftw
-        #GIT_REPOSITORY  https://github.com/FFTW/fftw3
-        URL http://www.fftw.org/fftw-3.3.10.tar.gz
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
-        CMAKE_ARGS
-            -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/fftw/install -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-        INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
-    )
-
-    add_library(fftw STATIC IMPORTED)
-    set(lib_fftw_name
-    ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3.dll${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set_target_properties(fftw PROPERTIES IMPORTED_LOCATION
-    ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
-
-    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
-    link_directories(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib)
-    #link_libraries(${fftw})
+        SET(NEW_LIB_PATH "$ENV{FFTW3_LIBRARY_DIR}")
+        string(REPLACE "\\" "/" NEW_LIB_PATH "${NEW_LIB_PATH}")
+        # Link the FFTW3 libraries
+        link_directories(${NEW_LIB_PATH})
+        # Optionally, you can specify the exact library (e.g., if it's located in the lib folder)
+        
+        SET(NEW_LIB "$ENV{FFTW3_LIBRARIES}")
+        string(REPLACE "\\" "/" NEW_LIB "${NEW_LIB}")
+        set(FFTW3_LIBRARIES ${NEW_LIB})  # Adjust the library name if necessary (check for the correct file name)
+    else()
+        message(WARNING "FFTW3 not found in environment, skipping FFTW3 support")
+    endif()
 else()
     ADD_DEFINITIONS(-flto)
     find_package(PkgConfig REQUIRED)
@@ -111,26 +111,11 @@ set(ALL_FILES
     "${HEADER_FILES}"
 )
 
-if(WIN32)
-    TARGET_LINK_LIBRARIES(smip
-        ${OpenCV_LIBS}
-        ${lib_fftw_name}
-    )
-    add_dependencies(smip project_fftw)
-    # Copy the DLL to the Windows system32 directory after the library is built
-    MESSAGE(STATUS "copy library to system dir")
-    add_custom_command(TARGET smip POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_BINARY_DIR}/fftw/install/bin/libfftw3.dll"
-        "C:/Windows/System32/"
-        COMMENT "Copying libfftw3.dll to system folder"
-    )
-else()
-    TARGET_LINK_LIBRARIES(smip
-        pthread
-        ${OpenCV_LIBS}
-    )
-endif()
+TARGET_LINK_LIBRARIES(smip
+    pthread
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
+)
 
 add_subdirectory(tests)
 

@@ -72,7 +72,31 @@ jobs:
         # Install required compilers using Chocolatey
         choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
-
+    - name: Install FFTW3 (Windows)
+      if: runner.os == 'Windows' && matrix.name
+      id: fftw
+      run: |
+        # Download and extract FFTW3 for Windows (64-bit) from GitHub
+        echo "Downloading FFTW3 for Windows..."
+        Invoke-WebRequest -Uri "https://fftw.org/pub/fftw/fftw-3.3.5-dll64.zip" -OutFile "$env:Temp\fftw3.zip"
+        # Check if the download was successful
+        if (-Not (Test-Path "$env:Temp\fftw3.zip")) {
+          Write-Error "FFTW3 download failed!"
+          exit 1
+        }
+        # Extract the zip file
+        Expand-Archive -Path "$env:Temp\fftw3.zip" -DestinationPath "$env:Temp\fftw3"
+        # Set up environment variables for FFTW3
+        # Set the paths for FFTW3 as outputs
+        echo "fftw3_include=$env:Temp\fftw3" >> $env:GITHUB_OUTPUT
+        echo "fftw3_libdir=$env:Temp\fftw3" >> $env:GITHUB_OUTPUT
+        echo "fftw3_lib=$env:Temp\fftw3\libfftw3-3.dll" >> $env:GITHUB_OUTPUT
+        # Display the environment variables
+        echo "FFTW3_INCLUDE_DIR = $env:Temp\fftw3"
+        echo "FFTW3_LIBRARY_DIR = $env:Temp\fftw3"
+        echo "FFTW3_LIBRARIES = $env:Temp\fftw3\libfftw3-3.dll"
+        Copy-Item -Path "$env:Temp\fftw3\libfftw3-3.dll" -Destination "C:\Windows\System32" -Force
+        echo "FFTW3 installed and environment variables set."
     - name: Install build system (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
@@ -80,6 +104,10 @@ jobs:
     - name: Configure CMake (Windows)
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      env:
+        FFTW3_INCLUDE_DIR: "${{ steps.fftw.outputs.fftw3_include }}"
+        FFTW3_LIBRARY_DIR: "${{ steps.fftw.outputs.fftw3_libdir }}"
+        FFTW3_LIBRARIES: "${{ steps.fftw.outputs.fftw3_lib }}"
       if: runner.os == 'Windows' && matrix.name
       run: |
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
