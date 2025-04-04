@@ -173,9 +173,7 @@ Array_base<T>::Array_base(std::shared_ptr<T[]> data, std::size_t a_size)
 template <typename T>
 Array_base<T>::~Array_base()
 {
-    if (!_isReference && _size) {
-        _mem.reset();
-    }
+    _mem.reset();
 }
 
 template <typename T>
