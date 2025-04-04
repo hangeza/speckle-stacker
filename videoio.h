@@ -178,18 +178,22 @@ RGB<T> mapToColor(double value)
     RGB<T> color {};
 
     // Simple heatmap-like color mapping (Blue to Red)
-    if (value < 0.333) {
+    if (value < 0.25) {
         color.r = 0;
         color.g = 0;
-        color.b = static_cast<T>(std::numeric_limits<T>::max() * (3 * value)); // Blue increases as value increases
-    } else if (value < 0.667) {
+        color.b = static_cast<T>(std::numeric_limits<T>::max() * (4 * value)); // Blue increases as value increases
+    } else if (value < 0.5) {
         color.r = 0;
-        color.g = static_cast<T>(std::numeric_limits<T>::max() * (3 * value - 1)); // Green increases as value increases
-        color.b = static_cast<T>(std::numeric_limits<T>::max() * (2 - 3 * value)); // Blue decreases as value increases
-    } else {
-        color.r = static_cast<T>(std::numeric_limits<T>::max() * (3 * value - 2)); // Red increases after 0.67
-        color.g = static_cast<T>(std::numeric_limits<T>::max() * (3 - 3 * value)); // Green decreases after 0.67
+        color.g = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 1)); // Green increases as value increases
+        color.b = static_cast<T>(std::numeric_limits<T>::max() * (2 - 4 * value)); // Blue decreases as value increases
+    } else if (value < 0.75) {
+        color.r = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 2)); // Red increases after 0.67
+        color.g = static_cast<T>(std::numeric_limits<T>::max() * (3 - 4 * value)); // Green decreases after 0.67
         color.b = 0;
+    } else {
+        color.r = 255; // Red stays constant after 0.67
+        color.g = 0;
+        color.b = static_cast<T>(std::numeric_limits<T>::max() * (4 * value - 3)); // Green decreases after 0.67
     }
     return color;
 }
