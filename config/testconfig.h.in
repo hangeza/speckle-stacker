@@ -1,0 +1,9 @@
+#pragma once
+
+namespace smip::test {
+// clang-format off
+constexpr const char* datafile {"@TEST_DATAFILE@"};
+// clang-format on
+
+} // namespace smip::test
+

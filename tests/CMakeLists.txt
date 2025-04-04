@@ -2,6 +2,9 @@
 
 include_directories(${SMIP_INCLUDE_DIR})
 
+set(TEST_DATAFILE "${PROJECT_DATA_DIR}/testdata.gif")
+configure_file("${PROJECT_CONFIG_DIR}/testconfig.h.in" "${PROJECT_TEST_SRC_DIR}/testconfig.h")
+
 # create the testing file and list of tests
 set (TestsToRun
     array1_test.cpp
@@ -15,11 +18,11 @@ set (TestsToRun
 create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
 set(EXT_SOURCE_FILES
-    "${CMAKE_SOURCE_DIR}/videoio.cpp"
-    "${CMAKE_SOURCE_DIR}/phasemap.cpp"
-    "${CMAKE_SOURCE_DIR}/phasereco.cpp"
-    "${CMAKE_SOURCE_DIR}/log.cpp"
-    "${CMAKE_SOURCE_DIR}/utility.cpp"
+    "${PROJECT_SRC_DIR}/videoio.cpp"
+    "${PROJECT_SRC_DIR}/phasemap.cpp"
+    "${PROJECT_SRC_DIR}/phasereco.cpp"
+    "${PROJECT_SRC_DIR}/log.cpp"
+    "${PROJECT_SRC_DIR}/utility.cpp"
 )
 
 # add the executable
