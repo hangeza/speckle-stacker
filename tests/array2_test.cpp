@@ -1,6 +1,6 @@
 #include "array2.h"
 
-int array2_test(int argc, char* argv[])
+int array2_test(int /*argc*/, char* /*argv*/[])
 {
     smip::Array2<int> arr { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
     arr.print();

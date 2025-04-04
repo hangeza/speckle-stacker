@@ -1,6 +1,6 @@
 #include "array2.h"
 
-int array1_test(int argc, char* argv[])
+int array1_test(int /*argc*/, char* /*argv*/[])
 {
     constexpr std::size_t xsize { 10 };
     constexpr std::size_t ysize { 9 };
