@@ -131,8 +131,8 @@ Array_base<T>::Array_base(const Array_base<U>& src)
     auto temp = std::make_unique<T[]>(_size);
     //std::shared_ptr<T> buf(nullptr, [](T* p) { delete[] p; });
     _mem.reset(temp.release());
-    //_mem=new T[_size];
-    std::copy(src.begin(), src.end(), this->begin());
+    std::transform(src.begin(), src.end(), this->begin(),
+        [](const U& x) { return static_cast<T>(x); });
 }
 
 template <typename T>
