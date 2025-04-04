@@ -42,6 +42,8 @@ public:
     Array_base(std::shared_ptr<const T[]> data, std::size_t a_size);
     ~Array_base();
 
+    template <concept_arithmetic U>
+    Array_base<T>& operator=(const Array_base<U>& other);
     Array_base<T>& operator=(Array_base<T>&& other);
 
     iterator begin() { return _mem.get(); }
@@ -192,6 +194,22 @@ Array_base<T>& Array_base<T>::operator=(Array_base<T>&& other)
         other._size = 0;
         other._isReference = false;
     }
+    return *this;
+}
+
+template <typename T>
+template <concept_arithmetic U>
+Array_base<T>& Array_base<T>::operator=(const Array_base<U>& other)
+{
+    if (this == &other) return *this;
+    if (this->_size != other._size) {
+        _mem.reset();
+        _size = other._size;
+    }
+    auto temp = std::make_unique<T[]>(_size);
+    _mem.reset(temp.release());
+    std::transform(other.begin(), other.end(), this->begin(),
+        [](const U& x) { return static_cast<T>(x); });
     return *this;
 }
 
