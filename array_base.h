@@ -193,7 +193,8 @@ template <typename T>
 template <concept_arithmetic U>
 Array_base<T>& Array_base<T>::operator=(const Array_base<U>& other)
 {
-    if (this == &other) return *this;
+    if (this == &other)
+        return *this;
     if (this->_size != other._size) {
         _mem.reset();
         _size = other._size;

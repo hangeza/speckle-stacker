@@ -172,7 +172,7 @@ Array2<T>::Array2(const Array2<T>& src)
 template <typename T>
 template <concept_arithmetic U>
 Array2<T>::Array2(const Array2<U>& src)
-    : Array_base<T>(src.m_xsize*src.m_ysize)
+    : Array_base<T>(src.m_xsize * src.m_ysize)
     , m_xsize(src.m_xsize)
     , m_ysize(src.m_ysize)
 {
