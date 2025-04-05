@@ -53,14 +53,6 @@ message(STATUS "OpenCV_LINK_DIRECTORIES=${OpenCV_LINK_DIRECTORIES}")
 message(STATUS "OpenCV_LIBRARIES=${OpenCV_LIBRARIES}")
 message(STATUS "OpenCV_LIBRARY_DIR=${OpenCV_LIBRARY_DIR}")
 
-MACRO (COPY_DLL trgt libname)
-        ADD_CUSTOM_COMMAND (
-        TARGET ${trgt}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND}
-        ARGS -E copy "${OPENCVDIR/bin}/${libname}.dll" ${CMAKE_CURRENT_BINARY_DIR}
-    )
-ENDMACRO (COPY_DLL)
 # Add support for FFTW3 on Windows
 if(WIN32)
     # Look for the environment variables we set in the GitHub Actions workflow
