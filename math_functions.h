@@ -1,4 +1,5 @@
 #pragma once
+#include "constants.h"
 #include "dimvector.h"
 #include "types.h"
 #include "utility.h"
@@ -6,8 +7,8 @@
 #include <cmath>
 #include <complex>
 #include <type_traits>
-#include <vector>
 #include <valarray>
+#include <vector>
 
 namespace smip {
 
@@ -35,7 +36,7 @@ F Gauss(const X& x, const std::vector<F>& params)
     const F& p0 = params[0];
     const F& p1 = params[1];
     const F& p2 = params[2];
-    F f_x { std::exp(-sqr(static_cast<F>(x) - p1) / (sqr(p2) * 2)) / (c_sqrt_2pi * p2) };
+    F f_x { std::exp(-sqr(static_cast<F>(x) - p1) / (sqr(p2) * 2)) / (constants::c_sqrt_2pi<double> * p2) };
     return f_x;
 }
 
@@ -51,7 +52,7 @@ F Gauss(const DimVector<X, 2>& x, const std::vector<DimVector<F, 2>>& params)
     f_xy *= -f_xy;
     f_xy /= sqr(p2) * 2;
     f_xy = std::exp(f_xy);
-    f_xy /= p2 * c_sqrt_2pi;
+    f_xy /= p2 * constants::c_sqrt_2pi<double>;
     f_xy *= p0;
     return f_xy.product();
 }

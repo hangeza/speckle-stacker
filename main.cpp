@@ -40,7 +40,10 @@ using namespace smip;
 void Usage(const char* progname)
 {
     using namespace std;
-    cout << "Speckle Masking Image Processing v1.0" << endl;
+    cout << "Speckle Masking Image Processing v" 
+        << Version::major << "." 
+        << Version::minor << "." 
+        << Version::patch << endl;
     cout << "2002-2012, 2025 HG Zaunick <hg.zaunick@gmx.de>" << endl;
     cout << endl;
     cout << "   Usage :  " << std::string(progname) << " [nrpbcvh?] <source root>" << endl;

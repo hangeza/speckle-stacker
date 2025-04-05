@@ -115,6 +115,8 @@ set(HEADER_FILES
     "${PROJECT_HEADER_DIR}/types.h"
     "${PROJECT_HEADER_DIR}/utility.h"
     "${PROJECT_HEADER_DIR}/math_functions.h"
+    "${PROJECT_HEADER_DIR}/units.h"
+    "${PROJECT_HEADER_DIR}/constants.h"
 )
 
 # tell cmake to build our executable
