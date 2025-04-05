@@ -1,6 +1,10 @@
 #pragma once
 #include <cmath>
 
+/**
+ * @brief Point class to store 2d point coordinates
+ * @tparam T the data type of the coordniates
+ */
 template <typename T>
 struct Point {
     T x {};
