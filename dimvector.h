@@ -13,8 +13,12 @@
 
 namespace smip {
 
-/*
- *! class DimVector
+/**
+ * @brief DimVector class for fixed size array storage of arithmetic values.
+ * @tparam T value type
+ * @tparam NrDims fixed size of array
+ * The DimVector class is a fixed size array derived from std::valarray.
+ * The type of the elements is constrained to be of arithmetic nature.
  */
 template <concept_arithmetic T, std::size_t NrDims>
 class DimVector : public std::valarray<T> {
@@ -43,7 +47,15 @@ public:
     [[nodiscard]] DimVector<T, NrDims - 1> removed_back();
     [[nodiscard]] DimVector<T, NrDims - 1> removed_front();
 
+    /**
+    * @brief fill all elemts of object with value
+    * @param value value of type T to be assigned to all elements
+    */
     void fill(T value);
+    /**
+    * @brief calculate product of all array elements
+    * @return product of all array elements
+    */
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
 };
 
