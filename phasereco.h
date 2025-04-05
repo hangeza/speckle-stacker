@@ -75,8 +75,6 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
             }
             if (con_count > 0)
                 con /= static_cast<double>(con_count);
-            else
-                con = 0.;
             //std::cout << "r=" << old_r << " consistency=" << con << " count=" << con_count << std::endl;
         }
         if (!((i < pm.min_sindices()[0])
