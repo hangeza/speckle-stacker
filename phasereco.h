@@ -55,30 +55,7 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     int i { 0 }, j { 0 };
 
     while (r <= reco_radius) {
-        double old_r { r };
         NextRecoIndex(r, phi, i, j);
-        if (r != old_r) {
-            double temp_r { old_r };
-            double temp_phi { 0. };
-            double con { 0. };
-            std::size_t con_count { 0 };
-            int temp_i { 0 }, temp_j { 0 };
-            while (temp_r <= old_r) {
-                if (!((temp_i < pm.min_sindices()[0])
-                        || (temp_i > pm.max_sindices()[0])
-                        || (temp_j < pm.min_sindices()[1])
-                        || (temp_j > pm.max_sindices()[1]))) {
-                    con += pm.at({ temp_i, temp_j }).consistency;
-                    con_count++;
-                }
-                NextRecoIndex(temp_r, temp_phi, temp_i, temp_j);
-            }
-            if (con_count > 0)
-                con /= static_cast<double>(con_count);
-            else
-                con = 0.;
-            //std::cout << "r=" << old_r << " consistency=" << con << " count=" << con_count << std::endl;
-        }
         if (!((i < pm.min_sindices()[0])
                 || (i > pm.max_sindices()[0])
                 || (j < pm.min_sindices()[1])

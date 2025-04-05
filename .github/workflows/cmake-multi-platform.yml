@@ -72,6 +72,8 @@ jobs:
         # Install required compilers using Chocolatey
         choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
+        echo "PATH=$PATH;C:\OpenCV4.10.0\x64\mingw\bin" >> $GITHUB_ENV
+   
     - name: Install FFTW3 (Windows)
       if: runner.os == 'Windows' && matrix.name
       id: fftw
@@ -99,7 +101,9 @@ jobs:
         echo "FFTW3 installed and environment variables set."
     - name: Install build system (Linux)
       if: runner.os == 'Linux'
-      run: sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
+      run: |
+        sudo apt update && sudo apt full-upgrade
+        sudo apt-get install ${{ matrix.compiler }} libopencv-dev libfftw3-dev
 
     - name: Configure CMake (Windows)
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

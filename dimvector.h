@@ -29,6 +29,7 @@ public:
     using std::valarray<T>::operator*=;
     using std::valarray<T>::operator/=;
     using std::valarray<T>::size;
+    using std::valarray<T>::sum;
 
     DimVector();
     DimVector(const DimVector<T, NrDims>& x);

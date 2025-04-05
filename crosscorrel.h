@@ -134,9 +134,9 @@ void CrossCorrelation<T>::calculate_displacement()
 {
     if (m_readiness == readiness::correl) {
         auto max_it = std::max_element(m_correlation.begin(), m_correlation.end());
-        auto dist = std::distance(m_correlation.begin(), max_it);
-        auto stride { m_correlation.xsize() };
-        m_shift = { static_cast<int>(dist % stride), static_cast<int>(dist / stride) };
+        auto dist { static_cast<int>(std::distance(m_correlation.begin(), max_it)) };
+        auto stride { static_cast<int>(m_correlation.xsize()) };
+        m_shift = { dist % stride, dist / stride };
         m_shift[0] -= (m_shift[0] < static_cast<int>(m_correlation.ncols() + 1) / 2) ? 0 : m_correlation.ncols();
         m_shift[1] -= (m_shift[1] < static_cast<int>(m_correlation.nrows() + 1) / 2) ? 0 : m_correlation.nrows();
         m_readiness = readiness::shift;

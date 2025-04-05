@@ -120,7 +120,7 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
 }
 
 template <typename T>
-Bispectrum<T>::extents Bispectrum<T>::sizes() const
+typename Bispectrum<T>::extents Bispectrum<T>::sizes() const
 {
     // true sizes of ux,uy,vx,vy dimensions
     extents vec { m_dimsizes / 2 };
@@ -130,7 +130,7 @@ Bispectrum<T>::extents Bispectrum<T>::sizes() const
 }
 
 template <typename T>
-Bispectrum<T>::extents Bispectrum<T>::base_sizes() const
+typename Bispectrum<T>::extents Bispectrum<T>::base_sizes() const
 {
     // reduced sizes of ux,uy,vx,vy dimensions
     extents vec = { this->sizes() };
@@ -224,7 +224,7 @@ Bispectrum<T>& Bispectrum<T>::operator/=(const T& c)
 }
 
 template <typename T>
-Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) const
+typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) const
 {
     assert(addr < base_size());
     std::size_t temp { base_size() / base_sizes()[0] };
@@ -474,7 +474,7 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
 }
 
 template <typename T>
-Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
+typename Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
 {
     s_indices mins {};
     //     std::cout << "s_indices Bispectrum<T>::min_indices() const : \n";
@@ -488,7 +488,7 @@ Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
 }
 
 template <typename T>
-Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
+typename Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
 {
     s_indices maxes {};
     extents sizes = this->sizes();
