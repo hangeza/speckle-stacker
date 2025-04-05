@@ -31,8 +31,9 @@ add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
   get_filename_component (TName ${test} NAME_WE)
-  add_test (NAME ${TName} COMMAND smip_tests ${TName}
-  )
+  add_test (NAME ${TName} COMMAND smip_tests ${TName})
+  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
+                     "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:$<TARGET_FILE_DIR:${OpenCV_LIBS}>>")
 endforeach ()
 
 foreach (test ${TestsToRun})
