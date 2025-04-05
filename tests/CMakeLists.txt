@@ -27,7 +27,7 @@ set(EXT_SOURCE_FILES
 
 # add the executable
 add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
-#C:\OpenCV4.10.0\x64\mingw\bin
+
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
   get_filename_component (TName ${test} NAME_WE)
