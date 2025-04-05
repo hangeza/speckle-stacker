@@ -70,9 +70,9 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       run: |
         # Install required compilers using Chocolatey
-        choco install ${{ matrix.name }} libopencv-dev
+        choco install ${{ matrix.name }} opencv libopencv-dev
         #choco install libopencv-dev
-        [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";C:\OpenCV4.10.0\x64\mingw\bin", [System.EnvironmentVariableTarget]::Machine)
+        [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";C:\OpenCV4.10.0\x64\mingw\bin;C:\OpenCV4.10.0\x64\mingw\lib", [System.EnvironmentVariableTarget]::User)
    
     - name: Install FFTW3 (Windows)
       if: runner.os == 'Windows' && matrix.name
