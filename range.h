@@ -3,6 +3,9 @@
 #include <limits>
 #include <type_traits>
 #include <stdexcept>
+#include <valarray>
+#include <tuple>
+#include <ranges>
 
 #include "types.h"
 
@@ -43,7 +46,7 @@ public:
     requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
     class iterator {
     private:
-        T m_current, m_high;
+        T m_current, m_low, m_high;
     public:
         using iterator_category = std::input_iterator_tag;
         using value_type = T;
@@ -52,21 +55,21 @@ public:
         using reference = T&;
 
         iterator() = default;
-        iterator(T current, T high) : m_current(current), m_high(high) {}
+        iterator(T current, T low, T high) : m_current(current), m_low(low), m_high(high) {}
         value_type operator*() const { return m_current; }
         // Prefix increment
-        iterator& operator++() { if (m_current<m_high) ++m_current; return *this; }
+        iterator& operator++(); /*{ if (m_current<m_high) ++m_current; return *this; }*/
         // Postfix increment
         iterator operator++(int) { iterator temp = *this; ++(*this); return temp; }
-        bool operator==(const iterator& other) const { return m_current == other.m_current; }
-        bool operator!=(const iterator& other) const { return m_current != other.m_current; }
+        bool operator==(const iterator& other) const;
+        bool operator!=(const iterator& other) const;
     };
     template <typename U = T>
     requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
-    iterator<U> begin() const { return iterator<U>(low, high); }
+    iterator<U> begin() const { return iterator<U>(low, low, high); }
     template <typename U = T>
     requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
-    iterator<U> end() const { return iterator<U>(high, high); }
+    iterator<U> end() const { return iterator<U>(high+1, low, high); }
 
 };
 
@@ -125,6 +128,69 @@ auto Range<T>::extent() const -> T
         return std::abs(high - low) + val_type(1);
     }
     throw std::invalid_argument("using Range<T>::extent with invalid template type");
+}
+
+template <typename T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
+template <typename U>
+requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+Range<T>::iterator<U>& Range<T>::iterator<U>::operator++()
+{
+    if constexpr (concept_arithmetic<T>) {
+        if (m_current<m_high) ++m_current;
+        return *this;
+    } else if constexpr (concept_valarray_of_arithmetic<T>) {
+        // go through each dimension and increment if not at upper bound
+        // Using std::ranges::zip to iterate over multiple containers simultaneously
+        auto pos = std::begin(m_current);
+        auto low = std::begin(m_low);
+        auto high = std::begin(m_high);
+        bool at_end { false };
+        // Loop through containers using iterators
+        // from C++23 on the following range-for loop is possible:
+        // for (auto& [pos, low, high] : zip(m_current, m_low, m_high)) {
+        for (;pos != std::end(m_current) && low != std::end(m_low) && high != std::end(m_high); ++pos, ++low, ++high) {
+            if (*pos < *high) { 
+                (*pos)++;
+                at_end = false;
+                break;
+            } else {
+                *pos = *low;
+                at_end = true;
+            }
+        }
+        if (at_end) m_current = m_high + 1;
+        return *this;
+    }
+    throw std::invalid_argument("using Range<T>::iterator::operator++() with invalid template type");
+}
+
+template <typename T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
+template <typename U>
+requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+bool Range<T>::iterator<U>::operator==(const iterator& other) const
+{
+    if constexpr (concept_arithmetic<T>) {
+        return (m_current == other.m_current);
+    } else if constexpr (concept_valarray_of_arithmetic<T>) {
+        return (m_current == other.m_current).min();
+    }
+    throw std::invalid_argument("using Range<T>::iterator::operator++() with invalid template type");
+}
+
+template <typename T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
+template <typename U>
+requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+bool Range<T>::iterator<U>::operator!=(const iterator& other) const
+{
+    if constexpr (concept_arithmetic<T>) {
+        return (m_current != other.m_current);
+    } else if constexpr (concept_valarray_of_arithmetic<T>) {
+        return !(m_current == other.m_current).min();
+    }
+    throw std::invalid_argument("using Range<T>::iterator::operator++() with invalid template type");
 }
 
 template <typename T>
