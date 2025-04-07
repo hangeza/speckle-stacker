@@ -9,10 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
+#include <ranges>
 
 #include "array_base.h"
 #include "dimvector.h"
 #include "rect.h"
+#include "range.h"
 
 namespace smip {
 template <typename T>
@@ -36,6 +38,9 @@ class Array2 : public Array_base<T> {
     using Array_base<T>::_size;
 
 public:
+    using Array_base<T>::begin;
+    using Array_base<T>::end;
+
     typedef DimVector<std::size_t, 2> extents;
     typedef DimVector<int, 2> s_indices;
     typedef DimVector<std::size_t, 2> u_indices;
@@ -132,6 +137,10 @@ public:
             -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
         };
     }
+
+    Range<DimVector<int,2>> ranges() const {
+        return Range<DimVector<int,2>> { min_sindices, max_sindices };
+    };
 
     void print() const;
 
