@@ -92,7 +92,7 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
     fftw_destroy_plan(p2);
 
     // execute element-wise conj(fft1) * fft2 for power spectrum
-    std::transform(fft1.cbegin(), fft1.cend(), fft2.cbegin(), fft1.begin(),
+    std::transform(fft1.begin(), fft1.end(), fft2.begin(), fft1.begin(),
         [](const std::complex<double>& a, const std::complex<double>& b) {
             return std::conj(a) * b;
         });
