@@ -2,9 +2,6 @@
 
 #include <typeinfo>
 #include <vector>
-//#include <climits>
-//#include <algorithm>
-//#include <functional>
 #include <cassert>
 #include <cstdarg>
 #include <initializer_list>
