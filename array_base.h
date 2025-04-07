@@ -12,22 +12,28 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <ranges>
+#include <algorithm>
+#include <type_traits>
 
 #include "types.h"
 
 namespace smip {
 
-//! Container class for general (1-dim) Arrays
-/*!
- * ...
-*/
+/**
+ * @brief Container class for general (1-dim) Arrays
+ *
+ */
 template <typename T>
 class Array_base {
 public:
+    class iterator;
+    // Provide an iterator type
+    using iterator = typename Array_base<T>::iterator;
+    // Provide a const_iterator type as well
+    using const_iterator = const typename Array_base<T>::iterator;
     typedef T value_type;
     typedef T* ptr_type;
-    typedef T* iterator;
-    typedef const T* const_iterator;
     typedef T& reference;
     typedef const T& const_reference;
 
@@ -47,12 +53,12 @@ public:
     Array_base<T>& operator=(const Array_base<U>& other);
     Array_base<T>& operator=(Array_base<T>&& other);
 
-    iterator begin() { return _mem.get(); }
-    const_iterator begin() const { return data().get(); }
-    const_iterator cbegin() const { return data().get(); }
-    iterator end() { return _mem.get() + _size; }
-    const_iterator end() const { return data().get() + _size; }
-    const_iterator cend() const { return data().get() + _size; }
+    // Begin and end iterators
+    iterator begin() { return iterator(_mem.get()); }
+    iterator end() { return iterator(_mem.get() + _size); }
+    // Const begin and end iterators
+    const_iterator begin() const { return const_iterator(_mem.get()); }
+    const_iterator end() const { return const_iterator(_mem.get() + _size); }
 
     std::shared_ptr<T[]>& data() { return _mem; }
     std::shared_ptr<const T[]> data() const { return std::const_pointer_cast<const T[]>(_mem); }
@@ -76,19 +82,46 @@ public:
 public:
     std::size_t size() const { return _size; }
     std::size_t typesize() const { return sizeof(T); }
-
     void set_at(std::shared_ptr<T[]> data, std::size_t a_size);
     bool resize(std::size_t new_size);
 
-    bool resize(std::size_t new_size)
-    {
-        if (_isReference)
-            return false;
-        auto temp = std::make_unique<T[]>(new_size);
-        _mem.reset(temp.release());
-        _size = new_size;
-        return (_mem != nullptr);
-    }
+    // Iterator types
+    class iterator {
+    private:
+        T* ptr;
+    public:
+        using iterator_category = std::contiguous_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
+
+        iterator() = default;
+        explicit iterator(T* p) : ptr(p) {}
+        reference operator*() const { return *ptr; }
+        pointer operator->() const { return ptr; }
+        // Prefix increment
+        iterator& operator++() { ++ptr; return *this; }
+        // Postfix increment
+        iterator operator++(int) { iterator temp = *this; ++(*this); return temp; }
+        // Prefix decrement
+        iterator& operator--() { --ptr; return *this; }
+        // Postfix decrement
+        iterator operator--(int) { iterator temp = *this; --(*this); return temp; }
+        // Random access operations (contiguous)
+        iterator& operator+=(difference_type n) { ptr += n; return *this; }
+        iterator operator+(difference_type n) const { return iterator(ptr + n); }
+        iterator& operator-=(difference_type n) { ptr -= n; return *this; }
+        iterator operator-(difference_type n) const { return iterator(ptr - n); }
+        reference operator[](difference_type n) const { return ptr[n]; }
+        difference_type operator-(const iterator& other) const { return ptr - other.ptr; }
+        bool operator==(const iterator& other) const { return ptr == other.ptr; }
+        bool operator!=(const iterator& other) const { return ptr != other.ptr; }
+        bool operator<(const iterator& other) const { return ptr < other.ptr; }
+        bool operator<=(const iterator& other) const { return ptr <= other.ptr; }
+        bool operator>(const iterator& other) const { return ptr > other.ptr; }
+        bool operator>=(const iterator& other) const { return ptr >= other.ptr; }
+    };
 
 protected:
     std::size_t _size { 0UL };
