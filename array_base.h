@@ -40,6 +40,7 @@ public:
     Array_base(size_t a_size, const T& def);
     Array_base(std::shared_ptr<T[]> data, std::size_t a_size);
     Array_base(std::shared_ptr<const T[]> data, std::size_t a_size);
+    Array_base(std::initializer_list<T> l);
     ~Array_base();
 
     template <concept_arithmetic U>
@@ -168,6 +169,19 @@ Array_base<T>::Array_base(std::shared_ptr<T[]> data, std::size_t a_size)
     : _size(a_size)
     , _mem(data)
 {
+}
+
+template <typename T>
+Array_base<T>::Array_base(std::initializer_list<T> l)
+    : _size(l.size())
+{
+    if (_size == 0) {
+        this->data().reset();
+        return;
+    }
+    auto temp = std::make_unique<T[]>(_size);
+    _mem.reset(temp.release());
+    std::copy(l.begin(), l.end(), this->begin());
 }
 
 template <typename T>
