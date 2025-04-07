@@ -22,5 +22,6 @@ int range_test(int /*argc*/, char* /*argv*/[])
     p = { -4, 11 };
     std::cout << p << " is in range of " << vec_range << " : " << vec_range.contains(p) << "\n";
     assert(!vec_range.contains(p));
+    std::cout << " vec_range.extent() = " << vec_range.extent() << "\n";
     return 0;
 }

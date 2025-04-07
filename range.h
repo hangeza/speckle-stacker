@@ -2,6 +2,8 @@
 #include <cmath>
 #include <limits>
 #include <type_traits>
+#include <stdexcept>
+
 #include "types.h"
 
 namespace smip {
@@ -12,29 +14,67 @@ namespace smip {
  */
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
-struct Range {
-    T start {};
-    T end {};
+class Range {
+public:
+    T low {};
+    T high {};
+
+    Range(T lo, T hi) : low(lo), high(hi) {}
+    /**
+    * @brief test if value is contained inside the range
+    * @param value value to check, T is of type arithmetic scalar or std::valarray (or derived) of arithmetic type
+    */
     bool contains(const T& value) const;
     /**
-    * @todo: still to be implemented for valarray-based types
+    * @brief get extent of the range for a single arithmetic range instance
     */
     template <typename U = T>
-    requires concept_floating<U>
+    requires concept_arithmetic<U>
     auto extent() const -> T;
     /**
-    * @todo: still to be implemented for valarray-based types
+    * @brief get extents of the ranges for a std::valarray range instance
     */
     template <typename U = T>
-    requires concept_integral<U>
+    requires concept_valarray_of_arithmetic<U>
     auto extent() const -> T;
+    
+    // Iterator types
+    template <typename U = T>
+    requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+    class iterator {
+    private:
+        T m_current, m_high;
+    public:
+        using iterator_category = std::input_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
+
+        iterator() = default;
+        iterator(T current, T high) : m_current(current), m_high(high) {}
+        value_type operator*() const { return m_current; }
+        // Prefix increment
+        iterator& operator++() { if (m_current<m_high) ++m_current; return *this; }
+        // Postfix increment
+        iterator operator++(int) { iterator temp = *this; ++(*this); return temp; }
+        bool operator==(const iterator& other) const { return m_current == other.m_current; }
+        bool operator!=(const iterator& other) const { return m_current != other.m_current; }
+    };
+    template <typename U = T>
+    requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+    iterator<U> begin() const { return iterator<U>(low, high); }
+    template <typename U = T>
+    requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
+    iterator<U> end() const { return iterator<U>(high, high); }
+
 };
 
 //********************
 // deduction guides
 //********************
 template <typename T>
-requires concept_arithmetic<T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 Range(T a, T b) -> Range<T>;
 
 //********************
@@ -46,33 +86,45 @@ requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 bool Range<T>::contains(const T& value) const
 {
     if constexpr (std::is_arithmetic_v<T>) {
-        return ((value >= start) && (value <= end));
+        return ((value >= low) && (value <= high));
     } else if constexpr (concept_valarray_of_arithmetic<T>) {
-        assert(value.size() == start.size());
+        assert(value.size() == low.size());
         for (auto it {std::begin(value)}; it != std::end(value); ++it) {
             auto pos { std::distance(std::begin(value), it) };
-            if ( *it < start[pos] || *it > end[pos] ) return false;
+            if ( *it < low[pos] || *it > high[pos] ) return false;
         }
         return true;
     }
+    throw std::invalid_argument("calling Range<T>::contains() with invalid template type");
 }
 
 template <typename T>
-requires concept_arithmetic<T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
-requires concept_floating<U>
+requires concept_arithmetic<U>
 auto Range<T>::extent() const -> T
 {
-    return static_cast<T>(std::abs(end - start) + std::numeric_limits<T>::epsilon());
+    if constexpr ( std::is_floating_point_v<U> ) {
+        return static_cast<T>(std::abs(high - low) + std::numeric_limits<T>::epsilon());
+    } else if constexpr ( std::is_integral_v<U> ) {
+        return static_cast<T>(std::abs(high - low) + T(1));
+    }
+    throw std::invalid_argument("using Range<T>::extent with invalid template type");
 }
 
 template <typename T>
-requires concept_arithmetic<T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
-requires concept_integral<U>
+requires concept_valarray_of_arithmetic<U>
 auto Range<T>::extent() const -> T
 {
-    return static_cast<T>(std::abs(end - start) + T(1));
+    using val_type = typename std::decay_t<U>::value_type;
+    if constexpr ( std::is_floating_point_v<val_type> ) {
+        return std::abs(high - low) + std::numeric_limits<val_type>::epsilon();
+    } else if constexpr ( std::is_integral_v<val_type> ) {
+        return std::abs(high - low) + val_type(1);
+    }
+    throw std::invalid_argument("using Range<T>::extent with invalid template type");
 }
 
 template <typename T>
@@ -80,7 +132,7 @@ requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 std::ostream& operator<<(std::ostream& os, const Range<T>& obj)
 {
     // write obj to stream
-    os << "(" << obj.start << "," << obj.end << ")";
+    os << "(" << obj.low << "," << obj.high << ")";
     return os;
 }
 
