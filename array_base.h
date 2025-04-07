@@ -63,11 +63,10 @@ public:
     std::shared_ptr<T[]>& data() { return _mem; }
     std::shared_ptr<const T[]> data() const { return std::const_pointer_cast<const T[]>(_mem); }
 
-    reference operator[](std::size_t i) { return _mem.get()[i]; }
-    const_reference operator[](std::size_t i) const
-    {
-        return std::const_pointer_cast<const T[]>(_mem).get()[i];
-    }
+    // Provide access to the underlying data
+    reference operator[](std::size_t index) { return _mem[index]; }
+    const_reference operator[](std::size_t index) const { return _mem[index]; }
+
     reference at(std::size_t i)
     {
         assert(i < _size);
