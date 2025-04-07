@@ -21,7 +21,7 @@ template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    int wx, int wy);
+    DimVector<int,2> w);
 
 //********************
 // implementation part
@@ -62,7 +62,7 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
                 || (j > pm.max_sindices()[1]))) {
             //      if ((abs(complex_t(i,j))<=min(bispec->size1,bispec->size2)/2))
             if (!pm.at({ i, j }).flag) {
-                calc_phase(bispec, phases, pm, i, j);
+                calc_phase(bispec, phases, pm, {i, j});
                 //std::cout<<"calc_phase: i="<<i<<" j="<<j<<"\n";
             }
         }
@@ -78,18 +78,15 @@ template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    int wx, int wy)
+    DimVector<int,2> w)
 {
     constexpr double c_epsilon { 1e-25 };
-    if (((wx == 0) && (wy == 0))
-        || ((wx == 1) && (wy == 0))
-        || ((wx == 0) && (wy == 1))
-        || ((wx == -1) && (wy == 0))
-        || ((wx == 0) && (wy == -1))
-        || (wx < bispec.min_indices()[0])
-        || (wx > bispec.max_indices()[0])
-        || (wy < bispec.min_indices()[1])
-        || (wy > bispec.max_indices()[1]))
+
+    if ( std::abs(w).sum() <= 1 
+        || (w[0] < bispec.min_indices()[0])
+        || (w[0] > bispec.max_indices()[0])
+        || (w[1] < bispec.min_indices()[1])
+        || (w[1] > bispec.max_indices()[1]))
         return;
 
     int x_lo = pm.min_sindices()[0];
@@ -101,8 +98,8 @@ void calc_phase(const Bispectrum<U>& bispec,
 
     for (int ux = x_lo; ux <= x_hi; ux++) {
         for (int uy = y_lo; uy <= y_hi; uy++) {
-            int vx = wx - ux;
-            int vy = wy - uy;
+            int vx = w[0] - ux;
+            int vy = w[1] - uy;
 
             if ((vx >= bispec.min_indices()[2]) && (vx <= bispec.max_indices()[2])
                 && (vy >= bispec.min_indices()[3]) && (vy <= bispec.max_indices()[3])
@@ -126,15 +123,15 @@ void calc_phase(const Bispectrum<U>& bispec,
 
     T mean_phase { std::accumulate(phaselist.begin(), phaselist.end(), T {}, std::plus<T>()) };
     if (!phaselist.empty()) {
-        pm.at({ wx, wy }).flag = true;
+        pm.at(w).flag = true;
         mean_phase /= static_cast<double>(phaselist.size());
         //         std::cout<<"wx="<<wx<<" wy="<<wy<<" multipl="<<phaselist.size()<<" mean phase="<<mean_phase<<" consis="<<std::abs(mean_phase)<<std::endl;
         const double abs_phase { std::abs(mean_phase) };
-        pm.at({ wx, wy }).consistency = abs_phase;
+        pm.at(w).consistency = abs_phase;
         if (abs_phase > c_epsilon) {
-            phases.at({ wx, wy }) = mean_phase / abs_phase;
+            phases.at(w) = mean_phase / abs_phase;
         } else {
-            phases.at({ wx, wy }) = T { 0 };
+            phases.at(w) = T { 0 };
         }
     }
 }
