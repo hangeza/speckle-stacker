@@ -78,6 +78,7 @@ public:
     std::size_t typesize() const { return sizeof(T); }
 
     void set_at(std::shared_ptr<T[]> data, std::size_t a_size);
+    bool resize(std::size_t new_size);
 
     bool resize(std::size_t new_size)
     {
@@ -226,6 +227,17 @@ void Array_base<T>::set_at(std::shared_ptr<T[]> data, size_t a_size)
     _size = a_size;
     _mem = data;
     _isReference = true;
+}
+
+template <typename T>
+bool Array_base<T>::resize(std::size_t new_size)
+{
+    if (_isReference)
+        return false;
+    auto temp = std::make_unique<T[]>(new_size);
+    _mem.reset(temp.release());
+    _size = new_size;
+    return (_mem != nullptr);
 }
 
 } // namespace smip
