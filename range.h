@@ -41,7 +41,7 @@ public:
     requires concept_valarray_of_arithmetic<U>
     auto extent() const -> T;
     
-    // Iterator types
+    // Range::iterator class
     template <typename U = T>
     requires concept_integral<U> || ( concept_valarray_of_arithmetic<U> && concept_integral<typename std::decay_t<U>::value_type> )
     class iterator {
