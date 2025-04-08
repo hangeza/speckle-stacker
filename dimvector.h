@@ -121,7 +121,6 @@ DimVector<T, NrDims>::DimVector(std::initializer_list<T> l)
     if (l.size() == NrDims) {
         std::copy(l.begin(), l.end(), std::begin(*this));
     }
-    //     assert(l.size() == NrDims);
 }
 
 template <concept_arithmetic T, std::size_t NrDims>

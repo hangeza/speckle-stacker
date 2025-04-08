@@ -45,7 +45,9 @@ public:
     requires concept_valarray_of_arithmetic<U>
     auto extent() const -> T;
 
-    // Range::iterator class
+    /**
+    * @brief iterator class for Range
+    */
     template <typename U = T>
     requires(std::integral<U> || (concept_valarray_of_arithmetic<U> && std::integral<typename std::decay_t<U>::value_type>)) class iterator {
     private:
@@ -67,7 +69,7 @@ public:
         }
         value_type operator*() const { return m_current; }
         // Prefix increment
-        iterator& operator++(); /*{ if (m_current<m_high) ++m_current; return *this; }*/
+        iterator& operator++();
         // Postfix increment
         iterator operator++(int)
         {
@@ -78,9 +80,15 @@ public:
         bool operator==(const iterator& other) const;
         bool operator!=(const iterator& other) const;
     };
+    /**
+    * @brief iterator to point to the beginning of the array.
+    */
     template <typename U = T>
     requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
         iterator<U> begin() const { return iterator<U>(low, low, high); }
+    /**
+    * @brief iterator to point after the last element of the array.
+    */
     template <typename U = T>
     requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
         iterator<U> end() const { return iterator<U>(high + 1, low, high); }
@@ -156,15 +164,15 @@ requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<t
             ++m_current;
         return *this;
     } else if constexpr (concept_valarray_of_arithmetic<T>) {
-        // go through each dimension and increment if not at upper bound
-        // Using std::ranges::zip to iterate over multiple containers simultaneously
         auto pos = std::begin(m_current);
         auto low = std::begin(m_low);
         auto high = std::begin(m_high);
         bool at_end { false };
         // Loop through containers using iterators
-        // from C++23 on the following range-for loop is possible:
-        // for (auto& [pos, low, high] : zip(m_current, m_low, m_high)) {
+        // go through each dimension and increment if not at upper bound
+        /// @note: from C++23 onwards the following range-for loop using std::ranges::zip to iterate
+        /// over multiple containers simultaneously is also possible:
+        /// for (auto& [pos, low, high] : std::ranges::zip(m_current, m_low, m_high)) {
         for (; pos != std::end(m_current) && low != std::end(m_low) && high != std::end(m_high); ++pos, ++low, ++high) {
             if (*pos < *high) {
                 (*pos)++;

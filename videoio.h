@@ -59,7 +59,9 @@ cv::Mat Array2Mat(const Array2<T>& arr,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
 
+//********************
 // implementation part
+//********************
 
 template <typename T>
 Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
