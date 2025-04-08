@@ -64,6 +64,10 @@ public:
 };
 
 //********************
+// deduction guides
+//********************
+
+//********************
 // implementation part
 //********************
 template <concept_arithmetic T, std::size_t NrDims>
