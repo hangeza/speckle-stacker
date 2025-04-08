@@ -139,7 +139,7 @@ public:
     }
 
     Range<DimVector<int,2>> ranges() const {
-        return Range<DimVector<int,2>> { min_sindices, max_sindices };
+        return std::move(Range<DimVector<int,2>>(min_sindices(), max_sindices()));
     };
 
     void print() const;
