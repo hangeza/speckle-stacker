@@ -58,6 +58,9 @@ public:
     * @return product of all array elements
     */
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
+
+    template <std::size_t OtherNrDims>
+    static auto merge(const DimVector<T, NrDims>& a, const DimVector<T, OtherNrDims>& b) -> DimVector<T, NrDims+OtherNrDims>;
 };
 
 //********************
@@ -139,6 +142,23 @@ template <concept_arithmetic T, std::size_t NrDims>
 void DimVector<T, NrDims>::fill(T value)
 {
     *this = value;
+}
+
+// *************************************************
+// static member definitions
+// *************************************************
+
+template <concept_arithmetic T, std::size_t NrDims>
+template <std::size_t OtherNrDims>
+auto DimVector<T, NrDims>::merge(const DimVector<T, NrDims>& a, const DimVector<T, OtherNrDims>& b) -> DimVector<T, NrDims+OtherNrDims>
+{
+    // Create a new valarray that can hold both arrays
+    DimVector<T, NrDims+OtherNrDims> result(a.size() + b.size());
+    // Copy elements from a into result
+    std::copy(std::begin(a), std::end(a), std::begin(result));
+    // Copy elements from b into result
+    std::copy(std::begin(b), std::end(b), std::begin(result) + a.size());
+    return result;
 }
 
 // *************************************************
