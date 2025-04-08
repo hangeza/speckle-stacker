@@ -14,8 +14,34 @@ namespace smip {
 template <typename T>
 class Array2;
 
-// the partial specialization with concept selects only floating point types
-template <concept_floating T>
+/**
+ * @brief CrossCorrelation class for fast calculation of cross correlation between two Array2 objects
+ * @tparam T array element value type, constrained to floating point types
+ * @details This class provides the fast calculation of the 2d cross correlation of two objects of type Array2<T>,
+ * where T is constrained to floating point types (float, double, long double, and special types recognized
+ * by the std library through the concept std::floating_point.
+ * The reference frame is passed by reference on object construction through the only constructor
+ * {@link #CrossCorrelation(const Array2<T>&) CrossCorrelation}.
+ * This class provides two functionalities. First, the 2d cross correlation array is calculated by 
+ * {@link #correlate(const Array2<T>&)} and afterwards accessed through the 
+ * {@link #get_correlation_array()} method.
+ * Second, the position of the maximum of the computed distribution can be accessed through 
+ * {@link #get_displacement()} in order to obtain the mutual displacement between the two
+ * frames. The return value of this method is a 2d {@link DimVector<int,2>} object containing 
+ * the displacement vector in x and y coordinates, respectively.
+ * There are two recommended access methods to retrieve the displacement vector for a given Array2
+ * object wrt. the reference frame supplied to the constructor. First is the non-static 
+ * {@link #operator()(const Array2<T>&) operator()} member and the other one the 
+ * static {@link #get_displacement(const Array2<T>&, const Array2<T>&)} function. 
+ * The latter can be called without object and therefore needs to be supplied with the reference frame 
+ * as the first argument.
+ * @note: Calling {@link #get_correlation_array()} or {@link #get_displacement()} without a previous
+ * call to {@link #correlate(const Array2<T>&)} or {@link #operator()(const Array2<T>&) operator()} 
+ * in order to provide the second argument required for the computation of the cross correlation
+ * throws a std::invalid_argument error.
+ */
+template <typename T>
+requires std::floating_point<T>
 class CrossCorrelation {
 public:
     CrossCorrelation() = delete;
@@ -50,19 +76,24 @@ private:
 //********************
 // deduction guides
 //********************
-template <concept_floating T>
+
+template <typename T>
+requires std::floating_point<T>
 CrossCorrelation(const Array2<T>& ref) -> CrossCorrelation<T>;
 
 //********************
 // implementation part
 //********************
-template <concept_floating T>
+
+template <typename T>
+requires std::floating_point<T>
 CrossCorrelation<T>::CrossCorrelation(const Array2<T>& ref)
     : m_refframe(ref)
 {
 }
 
-template <concept_floating T>
+template <typename T>
+requires std::floating_point<T>
 void CrossCorrelation<T>::correlate(const Array2<T>& frame)
 {
     if ((frame.ncols() != m_refframe.ncols()) || (frame.nrows() != m_refframe.nrows())) {
@@ -110,7 +141,8 @@ void CrossCorrelation<T>::correlate(const Array2<T>& frame)
     m_readiness = readiness::correl;
 }
 
-template <concept_floating T>
+template <typename T>
+requires std::floating_point<T>
 auto CrossCorrelation<T>::get_correlation_array() -> const Array2<T>&
 {
     if (m_readiness < readiness::correl)
@@ -118,7 +150,8 @@ auto CrossCorrelation<T>::get_correlation_array() -> const Array2<T>&
     return m_correlation;
 }
 
-template <concept_floating T>
+template <typename T>
+requires std::floating_point<T>
 auto CrossCorrelation<T>::get_displacement() -> DimVector<int, 2>
 {
     if (m_readiness < readiness::correl)
@@ -129,7 +162,8 @@ auto CrossCorrelation<T>::get_displacement() -> DimVector<int, 2>
     return m_shift;
 }
 
-template <concept_floating T>
+template <typename T>
+requires std::floating_point<T>
 void CrossCorrelation<T>::calculate_displacement()
 {
     if (m_readiness == readiness::correl) {
@@ -143,7 +177,8 @@ void CrossCorrelation<T>::calculate_displacement()
     }
 }
 
-template <concept_floating T>
+template <typename T>
+requires std::floating_point<T>
 auto CrossCorrelation<T>::operator()(const Array2<T>& frame) -> DimVector<int, 2>
 {
     m_readiness = readiness::none;
