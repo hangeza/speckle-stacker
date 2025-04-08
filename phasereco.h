@@ -91,7 +91,7 @@ void calc_phase(const Bispectrum<U>& bispec,
         if (bispec_v_range.contains(v)
             && (pm.at(u).flag)
             && (pm.at(v).flag)) {
-            T temp { bispec.get_element(DimVector<int,2>::merge(u,v)) };
+            T temp { bispec.get_element(DimVector<int>::merge(u, v)) };
             // std::cout<<"bispec["<<ux<<","<<uy<<","<<vx<<","<<vy<<"]="<<temp<<"\n";
             T ph { phases.at(u) };
             // std::cout<<"phase["<<ux<<","<<uy<<"]="<<ph<<"\n";

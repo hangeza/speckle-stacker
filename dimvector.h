@@ -15,12 +15,12 @@ namespace smip {
 
 /**
  * @brief DimVector class for fixed size array storage of arithmetic values.
- * @tparam T value type
+ * @tparam T value type, constrained to arithmetic types
  * @tparam NrDims fixed size of array
  * The DimVector class is a fixed size array derived from std::valarray.
  * The type of the elements is constrained to be of arithmetic nature.
  */
-template <concept_arithmetic T, std::size_t NrDims>
+template <concept_arithmetic T, std::size_t NrDims = 0>
 class DimVector : public std::valarray<T> {
 public:
     using typename std::valarray<T>::value_type;
@@ -58,9 +58,35 @@ public:
     * @return product of all array elements
     */
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
+};
 
-    template <std::size_t OtherNrDims>
-    static auto merge(const DimVector<T, NrDims>& a, const DimVector<T, OtherNrDims>& b) -> DimVector<T, NrDims+OtherNrDims>;
+/**
+ * @brief DimVector<T> specialization proxy for providing static funtions not bound to the dimension parameter.
+ * @tparam T value type, constrained to arithmetic types
+ */
+template <concept_arithmetic T>
+class DimVector<T, 0> : public std::valarray<T> {
+public:
+    /**
+    * @brief merge two DimVectors
+    * @param a first DimVector object (size Dim1)
+    * @param b second DimVector object (size Dim2)
+    * @return merged DimVector with size Dim1 + Dim2
+    * @note: the resulting vector is a concatenation of the two arguments with following order:
+    * * first Dim1 elements - vector a
+    * * last Dim2 elements - vector b
+    */
+    template <std::size_t Dim1, std::size_t Dim2>
+    static auto merge(const DimVector<T, Dim1>& a, const DimVector<T, Dim2>& b) -> DimVector<T, Dim1 + Dim2>
+    {
+        // Create a new valarray that can hold both arrays
+        DimVector<T, Dim1 + Dim2> result(a.size() + b.size());
+        // Copy elements from a into result
+        std::copy(std::begin(a), std::end(a), std::begin(result));
+        // Copy elements from b into result
+        std::copy(std::begin(b), std::end(b), std::begin(result) + a.size());
+        return result;
+    }
 };
 
 //********************
@@ -151,19 +177,6 @@ void DimVector<T, NrDims>::fill(T value)
 // *************************************************
 // static member definitions
 // *************************************************
-
-template <concept_arithmetic T, std::size_t NrDims>
-template <std::size_t OtherNrDims>
-auto DimVector<T, NrDims>::merge(const DimVector<T, NrDims>& a, const DimVector<T, OtherNrDims>& b) -> DimVector<T, NrDims+OtherNrDims>
-{
-    // Create a new valarray that can hold both arrays
-    DimVector<T, NrDims+OtherNrDims> result(a.size() + b.size());
-    // Copy elements from a into result
-    std::copy(std::begin(a), std::end(a), std::begin(result));
-    // Copy elements from b into result
-    std::copy(std::begin(b), std::end(b), std::begin(result) + a.size());
-    return result;
-}
 
 // *************************************************
 // non-member definitions
