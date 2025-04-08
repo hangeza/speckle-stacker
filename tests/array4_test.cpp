@@ -23,23 +23,3 @@ int array4_test(int /*argc*/, char* /*argv*/[])
     std::cout << '\n';
     return 0;
 }
-
-// // A test function using ranges
-// void test_array() {
-//     Array<int> arr(5);
-// 
-//     // Fill the array with values
-//     for (std::size_t i = 0; i < arr.get_size(); ++i) {
-//         arr[i] = static_cast<int>(i + 1);
-//     }
-// 
-//     // Use ranges
-//     auto ref_view = std::ranges::ref_view(arr);
-//     for (auto& val : ref_view) {
-//         std::cout << val << " ";
-//     }
-//     std::cout << std::endl;
-// 
-//     // Apply a range algorithm
-//     std::ranges::for_each(ref_view, [](int val) { std::cout << val * 2 << " "; });
-// }
