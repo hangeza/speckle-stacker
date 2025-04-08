@@ -47,7 +47,7 @@ public:
 
     // Range::iterator class
     template <typename U = T>
-    requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)class iterator {
+    requires(std::integral<U> || (concept_valarray_of_arithmetic<U> && std::integral<typename std::decay_t<U>::value_type>)) class iterator {
     private:
         T m_current, m_low, m_high;
 
@@ -79,10 +79,10 @@ public:
         bool operator!=(const iterator& other) const;
     };
     template <typename U = T>
-    requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)
+    requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
         iterator<U> begin() const { return iterator<U>(low, low, high); }
     template <typename U = T>
-    requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)
+    requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
         iterator<U> end() const { return iterator<U>(high + 1, low, high); }
 };
 
@@ -148,7 +148,7 @@ auto Range<T>::extent() const -> T
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
-requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)
+requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
     Range<T>::iterator<U>& Range<T>::iterator<U>::operator++()
 {
     if constexpr (concept_arithmetic<T>) {
@@ -185,7 +185,7 @@ requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_inte
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
-requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)bool Range<T>::iterator<U>::operator==(const iterator& other) const
+requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)bool Range<T>::iterator<U>::operator==(const iterator& other) const
 {
     if constexpr (concept_arithmetic<T>) {
         return (m_current == other.m_current);
@@ -198,7 +198,7 @@ requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_inte
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
-requires concept_integral<U> ||(concept_valarray_of_arithmetic<U>&& concept_integral<typename std::decay_t<U>::value_type>)bool Range<T>::iterator<U>::operator!=(const iterator& other) const
+requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)bool Range<T>::iterator<U>::operator!=(const iterator& other) const
 {
     if constexpr (concept_arithmetic<T>) {
         return (m_current != other.m_current);
