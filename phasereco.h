@@ -21,7 +21,7 @@ template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    DimVector<int,2> w);
+    DimVector<int, 2> w);
 
 //********************
 // implementation part
@@ -52,7 +52,7 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
 
     double r { 0. };
     double phi { 0. };
-    DimVector<int,2> pm_indices {};
+    DimVector<int, 2> pm_indices {};
 
     while (r <= reco_radius) {
         NextRecoIndex(r, phi, pm_indices[0], pm_indices[1]);
@@ -74,13 +74,13 @@ template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    DimVector<int,2> w)
+    DimVector<int, 2> w)
 {
     constexpr double c_epsilon { 1e-25 };
-    const Range<DimVector<int,2>> bispec_u_range { bispec.min_indices()[std::slice(0,2,1)], bispec.max_indices()[std::slice(0,2,1)] };
-    const Range<DimVector<int,2>> bispec_v_range { bispec.min_indices()[std::slice(2,2,1)], bispec.max_indices()[std::slice(2,2,1)] };
-    
-    if ( std::abs(w).sum() <= 1 || ( !bispec_u_range.contains(w) ) ) {
+    const Range<DimVector<int, 2>> bispec_u_range { bispec.min_indices()[std::slice(0, 2, 1)], bispec.max_indices()[std::slice(0, 2, 1)] };
+    const Range<DimVector<int, 2>> bispec_v_range { bispec.min_indices()[std::slice(2, 2, 1)], bispec.max_indices()[std::slice(2, 2, 1)] };
+
+    if (std::abs(w).sum() <= 1 || (!bispec_u_range.contains(w))) {
         return;
     }
 

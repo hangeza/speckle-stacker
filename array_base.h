@@ -1,7 +1,6 @@
 #pragma once
 
-#include <typeinfo>
-#include <vector>
+#include <algorithm>
 #include <cassert>
 #include <cstdarg>
 #include <initializer_list>
@@ -10,8 +9,9 @@
 #include <memory>
 #include <numeric>
 #include <ranges>
-#include <algorithm>
 #include <type_traits>
+#include <typeinfo>
+#include <vector>
 
 #include "types.h"
 
@@ -85,6 +85,7 @@ public:
     class iterator {
     private:
         T* ptr;
+
     public:
         using iterator_category = std::contiguous_iterator_tag;
         using value_type = T;
@@ -93,21 +94,50 @@ public:
         using reference = T&;
 
         iterator() = default;
-        explicit iterator(T* p) : ptr(p) {}
+        explicit iterator(T* p)
+            : ptr(p)
+        {
+        }
         reference operator*() const { return *ptr; }
         pointer operator->() const { return ptr; }
         // Prefix increment
-        iterator& operator++() { ++ptr; return *this; }
+        iterator& operator++()
+        {
+            ++ptr;
+            return *this;
+        }
         // Postfix increment
-        iterator operator++(int) { iterator temp = *this; ++(*this); return temp; }
+        iterator operator++(int)
+        {
+            iterator temp = *this;
+            ++(*this);
+            return temp;
+        }
         // Prefix decrement
-        iterator& operator--() { --ptr; return *this; }
+        iterator& operator--()
+        {
+            --ptr;
+            return *this;
+        }
         // Postfix decrement
-        iterator operator--(int) { iterator temp = *this; --(*this); return temp; }
+        iterator operator--(int)
+        {
+            iterator temp = *this;
+            --(*this);
+            return temp;
+        }
         // Random access operations (contiguous)
-        iterator& operator+=(difference_type n) { ptr += n; return *this; }
+        iterator& operator+=(difference_type n)
+        {
+            ptr += n;
+            return *this;
+        }
         iterator operator+(difference_type n) const { return iterator(ptr + n); }
-        iterator& operator-=(difference_type n) { ptr -= n; return *this; }
+        iterator& operator-=(difference_type n)
+        {
+            ptr -= n;
+            return *this;
+        }
         iterator operator-(difference_type n) const { return iterator(ptr - n); }
         reference operator[](difference_type n) const { return ptr[n]; }
         difference_type operator-(const iterator& other) const { return ptr - other.ptr; }

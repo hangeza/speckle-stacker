@@ -20,9 +20,7 @@ concept concept_arithmetic = std::is_arithmetic_v<T>;
  * * a type derived from std::valarray<T> with T an arithmetic type
  */
 template <typename T>
-concept concept_valarray_of_arithmetic =
-    (std::is_same_v<T, std::valarray<typename std::decay_t<T>::value_type>> && std::is_arithmetic_v<typename std::decay_t<T>::value_type>) || 
-    (std::is_base_of_v<std::valarray<typename std::decay_t<T>::value_type>, T> && std::is_arithmetic_v<typename std::decay_t<T>::value_type>);
+concept concept_valarray_of_arithmetic = (std::is_same_v<T, std::valarray<typename std::decay_t<T>::value_type>> && std::is_arithmetic_v<typename std::decay_t<T>::value_type>) || (std::is_base_of_v<std::valarray<typename std::decay_t<T>::value_type>, T> && std::is_arithmetic_v<typename std::decay_t<T>::value_type>);
 
 typedef std::complex<double> complex_t;
 typedef std::complex<float> bispec_complex_t;

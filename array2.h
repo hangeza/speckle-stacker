@@ -6,15 +6,15 @@
 #include <cstring>
 #include <errno.h>
 #include <functional>
+#include <ranges>
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
-#include <ranges>
 
 #include "array_base.h"
 #include "dimvector.h"
-#include "rect.h"
 #include "range.h"
+#include "rect.h"
 
 namespace smip {
 template <typename T>
@@ -138,8 +138,9 @@ public:
         };
     }
 
-    Range<DimVector<int,2>> ranges() const {
-        return std::move(Range<DimVector<int,2>>(min_sindices(), max_sindices()));
+    Range<DimVector<int, 2>> ranges() const
+    {
+        return std::move(Range<DimVector<int, 2>>(min_sindices(), max_sindices()));
     };
 
     void print() const;

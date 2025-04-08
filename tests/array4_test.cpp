@@ -4,10 +4,11 @@
 
 int array4_test(int /*argc*/, char* /*argv*/[])
 {
-    smip::Array_base<int> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    smip::Array_base<int> arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     smip::Array2<int> arr2 { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
     arr2.print();
-    std::cout << "arr2:\n" << arr2 << "\n";
+    std::cout << "arr2:\n"
+              << arr2 << "\n";
     static_assert(std::ranges::range<smip::Array_base<int>>);
     static_assert(std::ranges::range<smip::Array2<int>>);
     // Use ranges
