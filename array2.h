@@ -34,8 +34,8 @@ namespace smip {
 */
 template <typename T>
 class Array2 : public Array_base<T> {
-    using Array_base<T>::_mem;
-    using Array_base<T>::_size;
+    using Array_base<T>::m_data;
+    using Array_base<T>::m_size;
 
 public:
     using Array_base<T>::begin;
