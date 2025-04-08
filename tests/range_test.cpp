@@ -27,5 +27,19 @@ int range_test(int /*argc*/, char* /*argv*/[])
         std::cout << dimrange << "; ";
     }
     std::cout << "\n";
+
+    smip::DimVector<int, 2> low1 { -1, -2 };
+    smip::DimVector<int, 2> hi1 { 2, 1 };
+    smip::DimVector<int, 2> low2 { -2, -1 };
+    smip::DimVector<int, 2> hi2 { 3, 2 };
+
+    auto low = smip::DimVector<int>::merge(low1, low2);
+    auto hi = smip::DimVector<int>::merge(hi1, hi2);
+
+    smip::Range<smip::DimVector<int, 4>> vec_range2 { low, hi };
+    for (auto dimrange : vec_range2) {
+        std::cout << dimrange << "; ";
+    }
+    std::cout << "\n";
     return 0;
 }
