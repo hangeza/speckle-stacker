@@ -129,19 +129,9 @@ public:
     std::size_t ysize() const { return m_ysize; }
     std::size_t ncols() const { return m_xsize; }
     std::size_t nrows() const { return m_ysize; }
-    s_indices min_sindices() const { return { -static_cast<int>(ncols() >> 1), -static_cast<int>(nrows() >> 1) }; }
-    s_indices max_sindices() const
-    {
-        return {
-            -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
-            -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
-        };
-    }
-
-    Range<DimVector<int, 2>> ranges() const
-    {
-        return std::move(Range<DimVector<int, 2>>(min_sindices(), max_sindices()));
-    };
+    s_indices min_sindices() const;
+    s_indices max_sindices() const;
+    Range<DimVector<int, 2>> range() const;
 
     void print() const;
 
@@ -653,6 +643,27 @@ template <concept_arithmetic U>
 Array2<T> Array2<T>::convert(const Array2<U>& src)
 {
     return std::move(Array2<T>(src));
+}
+
+template <typename T>
+Array2<T>::s_indices Array2<T>::min_sindices() const
+{
+    return { -static_cast<int>(ncols() >> 1), -static_cast<int>(nrows() >> 1) };
+}
+
+template <typename T>
+Array2<T>::s_indices Array2<T>::max_sindices() const
+{
+    return {
+        -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
+        -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
+    };
+}
+
+template <typename T>
+Range<DimVector<int, 2>> Array2<T>::range() const
+{
+    return std::move(Range<DimVector<int, 2>>(min_sindices(), max_sindices()));
 }
 
 template <typename T>
