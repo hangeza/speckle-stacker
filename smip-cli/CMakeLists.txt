@@ -15,3 +15,7 @@ TARGET_LINK_LIBRARIES(smip-cli
     #${PROJECT_INCLUDE_LIBS}
 )
 
+# Set the build RPATH to include the directory where the shared library is built
+set_target_properties(smip-cli PROPERTIES
+    BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+)
