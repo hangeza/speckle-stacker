@@ -1,7 +1,5 @@
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-include_directories(${SMIP_INCLUDE_DIR})
-
 set(TEST_DATAFILE "${PROJECT_DATA_DIR}/testdata.gif")
 configure_file("${PROJECT_CONFIG_DIR}/testconfig.h.in" "${PROJECT_TEST_SRC_DIR}/testconfig.h")
 
@@ -19,16 +17,12 @@ set (TestsToRun
 
 create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
-set(EXT_SOURCE_FILES
-    "${PROJECT_SRC_DIR}/videoio.cpp"
-    "${PROJECT_SRC_DIR}/phasemap.cpp"
-    "${PROJECT_SRC_DIR}/phasereco.cpp"
-    "${PROJECT_SRC_DIR}/log.cpp"
-    "${PROJECT_SRC_DIR}/utility.cpp"
+# add the executable
+add_executable(smip_tests
+    ${Tests}
 )
 
-# add the executable
-add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
+add_dependencies(smip_tests smip)
 
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
@@ -49,8 +43,6 @@ set(ALL_FILES
 )
 
 TARGET_LINK_LIBRARIES(smip_tests
-    pthread
-    ${OpenCV_LIBS}
-    ${FFTW3_LIBRARIES}
+    smip
 )
 

@@ -82,15 +82,16 @@ else()
     link_libraries(PkgConfig::FFTW)
 endif()
 
+set(PROJECT_INCLUDE_LIBS
+    pthread
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
+    )
+
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake")
 configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
-SET(SMIP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-
 set(SOURCE_FILES
-    "${PROJECT_SRC_DIR}/main.cpp"
     "${PROJECT_SRC_DIR}/videoio.cpp"
     "${PROJECT_SRC_DIR}/phasemap.cpp"
     "${PROJECT_SRC_DIR}/phasereco.cpp"
@@ -119,22 +120,17 @@ set(HEADER_FILES
     "${PROJECT_HEADER_DIR}/range.h"
 )
 
-# tell cmake to build our executable
-ADD_EXECUTABLE(smip
-    ${SOURCE_FILES}
-)
+add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
 
 set(ALL_FILES
     "${SOURCE_FILES}"
     "${HEADER_FILES}"
 )
 
-TARGET_LINK_LIBRARIES(smip
-    pthread
-    ${OpenCV_LIBS}
-    ${FFTW3_LIBRARIES}
-)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
+add_subdirectory(smip-cli)
 add_subdirectory(tests)
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
