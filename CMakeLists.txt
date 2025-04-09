@@ -31,6 +31,7 @@ include_directories(${PROJECT_HEADER_DIR} ${PROJECT_SRC_DIR})
 MESSAGE("Compiler is " ${CMAKE_CXX_COMPILER_ID})
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using Clang
+  # use lld linker when compiling with clang
   ADD_LINK_OPTIONS(-fuse-ld=lld)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   #MESSAGE("GNU")
@@ -40,8 +41,6 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # using Visual Studio C++
 endif()
-# uncomment to use lld linker when compiling with clang
-#ADD_LINK_OPTIONS(-fuse-ld=lld)
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
