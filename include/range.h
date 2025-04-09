@@ -49,7 +49,7 @@ public:
     * @brief iterator class for Range
     */
     template <typename U = T>
-    requires(std::integral<U> || (concept_valarray_of_arithmetic<U> && std::integral<typename std::decay_t<U>::value_type>)) class iterator {
+    requires std::integral<U> || (concept_valarray_of_arithmetic<U> && std::integral<typename std::decay_t<U>::value_type>) class iterator {
     private:
         T m_current, m_low, m_high;
 
@@ -157,29 +157,29 @@ template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
 template <typename U>
 requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)
-    Range<T>::iterator<U>& Range<T>::iterator<U>::operator++()
+    typename Range<T>::template iterator<U>& Range<T>::iterator<U>::operator++()
 {
     if constexpr (concept_arithmetic<T>) {
         if (m_current < m_high)
             ++m_current;
         return *this;
     } else if constexpr (concept_valarray_of_arithmetic<T>) {
-        auto pos = std::begin(m_current);
-        auto low = std::begin(m_low);
-        auto high = std::begin(m_high);
+        auto pos_it = std::begin(m_current);
+        auto low_it = std::begin(m_low);
+        auto high_it = std::begin(m_high);
         bool at_end { false };
         // Loop through containers using iterators
         // go through each dimension and increment if not at upper bound
         /// @note: from C++23 onwards the following range-for loop using std::ranges::zip to iterate
         /// over multiple containers simultaneously is also possible:
         /// for (auto& [pos, low, high] : std::ranges::zip(m_current, m_low, m_high)) {
-        for (; pos != std::end(m_current) && low != std::end(m_low) && high != std::end(m_high); ++pos, ++low, ++high) {
-            if (*pos < *high) {
-                (*pos)++;
+        for (; pos_it != std::end(m_current) && low_it != std::end(m_low) && high_it != std::end(m_high); ++pos_it, ++low_it, ++high_it) {
+            if (*pos_it < *high_it) {
+                (*pos_it)++;
                 at_end = false;
                 break;
             } else {
-                *pos = *low;
+                *pos_it = *low_it;
                 at_end = true;
             }
         }

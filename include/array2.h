@@ -651,13 +651,13 @@ Array2<T> Array2<T>::convert(const Array2<U>& src)
 }
 
 template <typename T>
-Array2<T>::s_indices Array2<T>::min_sindices() const
+typename Array2<T>::s_indices Array2<T>::min_sindices() const
 {
     return { -static_cast<int>(ncols() >> 1), -static_cast<int>(nrows() >> 1) };
 }
 
 template <typename T>
-Array2<T>::s_indices Array2<T>::max_sindices() const
+typename Array2<T>::s_indices Array2<T>::max_sindices() const
 {
     return {
         -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
@@ -668,7 +668,7 @@ Array2<T>::s_indices Array2<T>::max_sindices() const
 template <typename T>
 Range<DimVector<int, 2>> Array2<T>::range() const
 {
-    return std::move(Range<DimVector<int, 2>>(min_sindices(), max_sindices()));
+    return Range<DimVector<int, 2>>(min_sindices(), max_sindices());
 }
 
 template <typename T>
