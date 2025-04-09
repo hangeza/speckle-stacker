@@ -28,10 +28,15 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
 namespace smip {
 
-//! Container class for 2d arrays
-/*!
- * ...
-*/
+/**
+ * @brief Container class for 2d array storage
+ * @tparam T value type (unconstrained)
+ * @details The Array2 class is a general container for storage of data of type T. The data is organized such,
+ * that 2-dimensional access in columns rows or x,y coordinate indices is possible. 
+ * Internally, the data is managed via the base class in a sequential order for fast and efficient access.
+ * @note: Overloads for all basic mathematical operations are available which should be used only, if type T
+ * supports them. Otherwise, no error checking is performed and execution might be interrupted by exceptions.
+ */
 template <typename T>
 class Array2 : public Array_base<T> {
     using Array_base<T>::m_data;
