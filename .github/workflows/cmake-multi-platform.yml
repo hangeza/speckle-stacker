@@ -150,11 +150,10 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         copy ${{ steps.build.outputs.build-output-dir }}\libsmip.dll ${{ steps.build.outputs.build-output-dir }}\bin
-        copy ${{ steps.build.outputs.build-output-dir }}\libsmip.dll ${{ steps.build.outputs.build-output-dir }}
-        copy C:\Users\RUNNER~1\AppData\Local\Temp\fftw3\libfftw3-3.dll ${{ steps.build.outputs.build-output-dir }}\bin
-        copy C:\OpenCV4.10.0\x64\mingw\bin\*.dll ${{ steps.build.outputs.build-output-dir }}\bin
+        copy C:\Users\RUNNER~1\AppData\Local\Temp\fftw3\libfftw3-3.dll ${{ steps.build.outputs.build-output-dir }}
+        copy C:\OpenCV4.10.0\x64\mingw\bin\*.dll ${{ steps.build.outputs.build-output-dir }}
         $env:PATH = "${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;$env:PATH"
-        #echo "${{ steps.build.outputs.build-output-dir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "${{ steps.build.outputs.build-output-dir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         ctest --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
       shell: pwsh
    
