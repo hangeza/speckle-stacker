@@ -134,15 +134,15 @@ jobs:
 
     - name: Add build directory to PATH
       if: runner.os == 'Windows' && matrix.name
-      shell: bash
+      shell: pwsh
       run: |
         #echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
         #$dllDirectory = "${{ steps.build.outputs.build-output-dir }}"
         #[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$dllDirectory", [System.EnvironmentVariableTarget]::Process)
         #echo "PATH=$PATH;${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
         #echo "$env:GITHUB_PATH;${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib" >> $env:GITHUB_PATH
-        echo "${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
-
+        #echo "${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
+        Add-Content $env:GITHUB_PATH "${{ steps.build.outputs.build-output-dir }};${{ steps.build.outputs.build-output-dir }}\bin;${{ steps.build.outputs.build-output-dir }}\output\lib"
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
       working-directory: ${{ steps.build.outputs.build-output-dir }}
