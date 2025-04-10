@@ -67,6 +67,6 @@ if(WIN32)
 add_custom_command(TARGET smip_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:smip>
-    ${CMAKE_BINARY_DIR}/bin/
+    $<TARGET_FILE_DIR:smip_tests>
 )
 endif()
