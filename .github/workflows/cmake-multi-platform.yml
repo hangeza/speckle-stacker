@@ -132,6 +132,10 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
+    - name: Add build directory to PATH
+      if: runner.os == 'Windows' && matrix.name
+      run: echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
+
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
       working-directory: ${{ steps.build.outputs.build-output-dir }}
