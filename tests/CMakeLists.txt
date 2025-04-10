@@ -46,6 +46,7 @@ TARGET_LINK_LIBRARIES(smip_tests
     smip
 )
 
+message(STATUS "set BUILD_RPATH to ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 set_target_properties(smip_tests PROPERTIES
     BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 )
