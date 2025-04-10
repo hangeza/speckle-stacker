@@ -57,14 +57,16 @@ set_target_properties(smip_tests PROPERTIES
     BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 )
 
-message(STATUS "smip.dll: $<TARGET_FILE:smip>")
-message(STATUS "Output dir: $<TARGET_FILE_DIR:smip_tests>")
+add_custom_command(TARGET smip_tests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "smip.dll: $<TARGET_FILE:smip>"
+  COMMAND ${CMAKE_COMMAND} -E echo "Output dir: $<TARGET_FILE_DIR:smip_tests>"
+)
 
 if(WIN32)
 # Copy the DLL after build to the runtime directory
 add_custom_command(TARGET smip_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libsmip.dll"  # Full path to libsmip.dll
-    "${CMAKE_BINARY_DIR}/bin"  # Output dir of smip_tests.exe
+    $<TARGET_FILE:smip>
+    $<TARGET_FILE_DIR:smip_tests>
 )
 endif()
