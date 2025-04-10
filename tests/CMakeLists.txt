@@ -34,11 +34,11 @@ foreach (test ${TestsToRun})
 #  set_tests_properties(${TName} PROPERTIES
 #    ENVIRONMENT "PATH=$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>;${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${CMAKE_BINARY_DIR}/bin;${CMAKE_BINARY_DIR};$ENV{PATH}"
 #  )
-if(WIN32)
-  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
-    "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin;${FFTW3_LIBRARY_DIR};${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${CMAKE_BINARY_DIR}/bin;${CMAKE_BINARY_DIR}>"
-)
-endif()
+    if(WIN32)
+        set_tests_properties(${TName} PROPERTIES ENVIRONMENT
+            "PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin;${FFTW3_LIBRARY_DIR};${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${CMAKE_BINARY_DIR}/bin;${CMAKE_BINARY_DIR}"
+        )
+    endif()
 endforeach ()
 
 foreach (test ${TestsToRun})
