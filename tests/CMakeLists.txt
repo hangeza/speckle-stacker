@@ -36,7 +36,7 @@ foreach (test ${TestsToRun})
 #  )
     if(WIN32)
         set_tests_properties(${TName} PROPERTIES ENVIRONMENT
-            "PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin;${FFTW3_LIBRARY_DIR};${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${CMAKE_BINARY_DIR}/bin;${CMAKE_BINARY_DIR}"
+            "PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin\\;${FFTW3_LIBRARY_DIR}\\;${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;${CMAKE_BINARY_DIR}/bin\\;${CMAKE_BINARY_DIR}"
         )
     endif()
 endforeach ()
