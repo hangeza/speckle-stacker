@@ -28,8 +28,11 @@ add_dependencies(smip_tests smip)
 foreach (test ${TestsToRun})
   get_filename_component (TName ${test} NAME_WE)
   add_test (NAME ${TName} COMMAND smip_tests ${TName})
-  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
-                     "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>")
+  set_tests_properties(${TName} PROPERTIES
+    ENVIRONMENT "PATH=$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>;${CMAKE_LIBRARY_OUTPUT_DIRECTORY};$ENV{PATH}"
+  )
+#  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
+#                     "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>")
 endforeach ()
 
 foreach (test ${TestsToRun})
