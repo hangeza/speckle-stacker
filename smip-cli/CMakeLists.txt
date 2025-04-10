@@ -19,3 +19,10 @@ TARGET_LINK_LIBRARIES(smip-cli
 set_target_properties(smip-cli PROPERTIES
     BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 )
+
+# Copy the DLL after build to the runtime directory
+add_custom_command(TARGET smip-cli POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "$<TARGET_FILE:smip>"  # Full path to libsmip.dll
+    "$<TARGET_FILE_DIR:smip-cli>"  # Output dir of smip_tests.exe
+)
