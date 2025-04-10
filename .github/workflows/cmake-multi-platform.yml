@@ -134,7 +134,11 @@ jobs:
 
     - name: Add build directory to PATH
       if: runner.os == 'Windows' && matrix.name
-      run: echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
+      shell: pwsh
+      run: |
+        #echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
+        $dllDirectory = "${{ steps.build.outputs.build-output-dir }}"
+        [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$dllDirectory", [System.EnvironmentVariableTarget]::Process)
 
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
