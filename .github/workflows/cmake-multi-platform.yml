@@ -132,10 +132,20 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
-    - name: Test
+    - name: Test (Windows)
+      if: runner.os == 'Windows' && matrix.name
+      working-directory: ${{ steps.build.outputs.build-output-dir }}
+      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: |
+        $env:PATH = "C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;$env:PATH"
+        ctest --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
+      shell: pwsh
+   
+    - name: Test (Linux)
+      if: runner.os == 'Linux'
       working-directory: ${{ steps.build.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         ctest --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
-   
