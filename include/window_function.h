@@ -1,13 +1,15 @@
 #pragma once
 #include <stdexcept>
 
+#include "smip_export.h"
+
 namespace smip {
 
 template <typename T>
 class Array2;
 
 template <typename T>
-class WindowFunction : public Array2<T> {
+class SMIP_EXPORT WindowFunction : public Array2<T> {
 public:
     WindowFunction() = delete;
     WindowFunction(std::size_t a_xsize, std::size_t a_ysize, double window_aperture)
@@ -25,7 +27,7 @@ protected:
 };
 
 template <typename T>
-class GeneralHamming : public WindowFunction<T> {
+class SMIP_EXPORT GeneralHamming : public WindowFunction<T> {
 public:
     GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, double window_aperture, double a_alpha);
 
@@ -34,7 +36,7 @@ protected:
 };
 
 template <typename T>
-class Hann : public GeneralHamming<T> {
+class SMIP_EXPORT Hann : public GeneralHamming<T> {
 public:
     Hann(std::size_t a_xsize, std::size_t a_ysize, double window_aperture)
         : GeneralHamming<T>(a_xsize, a_ysize, window_aperture, 0.5)
@@ -43,7 +45,7 @@ public:
 };
 
 template <typename T>
-class Hamming : public GeneralHamming<T> {
+class SMIP_EXPORT Hamming : public GeneralHamming<T> {
 public:
     Hamming(std::size_t a_xsize, std::size_t a_ysize, double window_aperture)
         : GeneralHamming<T>(a_xsize, a_ysize, window_aperture, 0.54)
@@ -52,7 +54,7 @@ public:
 };
 
 template <typename T, std::size_t xsize, std::size_t ysize>
-class GeneralWindowFunction : public Array2<T> {
+class SMIP_EXPORT GeneralWindowFunction : public Array2<T> {
 public:
     GeneralWindowFunction()
         : Array2<T>(xsize, ysize)

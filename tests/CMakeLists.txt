@@ -1,7 +1,5 @@
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-include_directories(${SMIP_INCLUDE_DIR})
-
 set(TEST_DATAFILE "${PROJECT_DATA_DIR}/testdata.gif")
 configure_file("${PROJECT_CONFIG_DIR}/testconfig.h.in" "${PROJECT_TEST_SRC_DIR}/testconfig.h")
 
@@ -10,6 +8,8 @@ set (TestsToRun
     array1_test.cpp
     array2_test.cpp
     array3_test.cpp
+    array4_test.cpp
+    range_test.cpp
     correl_test.cpp
     opencv_test.cpp
     smip_test.cpp
@@ -17,23 +17,28 @@ set (TestsToRun
 
 create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
 
-set(EXT_SOURCE_FILES
-    "${PROJECT_SRC_DIR}/videoio.cpp"
-    "${PROJECT_SRC_DIR}/phasemap.cpp"
-    "${PROJECT_SRC_DIR}/phasereco.cpp"
-    "${PROJECT_SRC_DIR}/log.cpp"
-    "${PROJECT_SRC_DIR}/utility.cpp"
+# add the executable
+add_executable(smip_tests
+    ${Tests}
 )
 
-# add the executable
-add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
+add_dependencies(smip_tests smip)
+set_target_properties(smip_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
 # Add all the ADD_TEST for each test
 foreach (test ${TestsToRun})
   get_filename_component (TName ${test} NAME_WE)
   add_test (NAME ${TName} COMMAND smip_tests ${TName})
-  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
-                     "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>")
+#  set_tests_properties(${TName} PROPERTIES
+#    ENVIRONMENT "PATH=$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>;${CMAKE_LIBRARY_OUTPUT_DIRECTORY};${CMAKE_BINARY_DIR}/bin;${CMAKE_BINARY_DIR};$ENV{PATH}"
+#  )
+    if(WIN32)
+        set_tests_properties(${TName} PROPERTIES ENVIRONMENT
+            "PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin\\;${FFTW3_LIBRARY_DIR}\\;${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;${CMAKE_BINARY_DIR}/bin\\;${CMAKE_BINARY_DIR}"
+        )
+    endif()
 endforeach ()
 
 foreach (test ${TestsToRun})
@@ -47,8 +52,24 @@ set(ALL_FILES
 )
 
 TARGET_LINK_LIBRARIES(smip_tests
-    pthread
-    ${OpenCV_LIBS}
-    ${FFTW3_LIBRARIES}
+    smip
 )
 
+message(STATUS "set BUILD_RPATH to ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+set_target_properties(smip_tests PROPERTIES
+    BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+)
+
+add_custom_command(TARGET smip_tests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "smip.dll: $<TARGET_FILE:smip>"
+  COMMAND ${CMAKE_COMMAND} -E echo "Output dir: $<TARGET_FILE_DIR:smip_tests>"
+)
+
+if(WIN32)
+# Copy the DLL after build to the runtime directory
+add_custom_command(TARGET smip_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:smip>
+    $<TARGET_FILE_DIR:smip_tests>
+)
+endif()
