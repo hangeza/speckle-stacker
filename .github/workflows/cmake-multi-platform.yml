@@ -132,7 +132,9 @@ jobs:
     - name: Build (Windows)
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       if: runner.os == 'Windows' && matrix.name
-      run: cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: |
+        cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        nm -gD ${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll
 
     - name: Build (Linux)
       if: runner.os == 'Linux'

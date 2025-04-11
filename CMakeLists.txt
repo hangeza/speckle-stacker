@@ -11,6 +11,8 @@ SET(CMAKE_VERBOSE_MAKEFILE OFF)
 ENABLE_TESTING()
 #INCLUDE(CTest)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
 if (CMAKE_BUILD_TYPE STREQUAL Release)
     set(SMIP_IS_RELEASE ON)
 else()
@@ -82,8 +84,6 @@ else()
     link_libraries(PkgConfig::FFTW)
 endif()
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-
 set(PROJECT_INCLUDE_LIBS
     pthread
     ${OpenCV_LIBS}
@@ -124,6 +124,10 @@ set(HEADER_FILES
 
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
+if(WIN32)
+#    target_link_options(smip PRIVATE "-Wl,-E")
+    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
+endif()
 
 set(ALL_FILES
     "${SOURCE_FILES}"
