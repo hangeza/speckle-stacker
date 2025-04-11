@@ -23,6 +23,7 @@ add_executable(smip_tests
 )
 
 add_dependencies(smip_tests smip)
+
 set_target_properties(smip_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
@@ -51,7 +52,7 @@ set(ALL_FILES
     "${TESTFILES}" PARENT_SCOPE
 )
 
-TARGET_LINK_LIBRARIES(smip_tests
+TARGET_LINK_LIBRARIES(smip_tests PRIVATE 
     smip
 )
 

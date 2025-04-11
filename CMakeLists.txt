@@ -127,27 +127,28 @@ set(HEADER_FILES
     "${PROJECT_HEADER_DIR}/range.h"
 )
 
-
 # add libsmip library as target
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
-if(WIN32)
-#    target_link_options(smip PRIVATE "-Wl,-E")
-#    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
-endif()
 
 # generate smip_export.h header for definition of the library export
 generate_export_header(smip
     EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/smip_export.h
 )
 
-#set_target_properties(smip PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-
-# Make sure the export header is available to your code
+# Include the generated header for the DLL build
 target_include_directories(smip
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For smip_export.h
 )
+
+target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
+#if(WIN32)
+#    target_link_options(smip PRIVATE "-Wl,-E")
+#    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
+#endif()
+
+#set_target_properties(smip PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 
 set(ALL_FILES
@@ -159,5 +160,8 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(smip-cli)
 add_subdirectory(tests)
+
+# This defines SMIP_EXPORTS only for the smip target
+target_compile_definitions(smip PRIVATE SMIP_EXPORTS)
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})

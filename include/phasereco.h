@@ -30,7 +30,7 @@ void calc_phase(const Bispectrum<U>& bispec,
 //********************
 
 template <typename T, typename U>
-Array2<T> SMIP_EXPORT reconstruct_phases(const Bispectrum<U>& bispec,
+Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     std::size_t xsize, std::size_t ysize,
     double reco_radius,
     PhaseMap* phasemap)

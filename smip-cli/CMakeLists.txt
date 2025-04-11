@@ -10,7 +10,7 @@ ADD_EXECUTABLE(smip-cli
 
 add_dependencies(smip-cli smip)
 
-TARGET_LINK_LIBRARIES(smip-cli
+TARGET_LINK_LIBRARIES(smip-cli PRIVATE 
     smip
     #${PROJECT_INCLUDE_LIBS}
 )

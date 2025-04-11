@@ -66,7 +66,7 @@ cv::Mat SMIP_EXPORT Array2Mat(const Array2<T>& arr,
 //********************
 
 template <typename T>
-Array2<T> SMIP_EXPORT Mat2Array(cv::Mat& mat, color_channel_t channel)
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);
@@ -93,7 +93,7 @@ Array2<T> SMIP_EXPORT Mat2Array(cv::Mat& mat, color_channel_t channel)
 }
 
 template <typename T, typename U>
-cv::Mat SMIP_EXPORT Array2Mat(const Array2<T>& arr,
+cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter,
     int cv_datatype,
     bool signed_symmetry)
@@ -174,7 +174,7 @@ cv::Mat SMIP_EXPORT Array2Mat(const Array2<T>& arr,
 // Function to map a double (range [0.0, 1.0]) to RGB values
 // modified based on proposal from ChatGPT
 template <concept_arithmetic T>
-RGB<T> SMIP_EXPORT mapToColor(double value)
+RGB<T> mapToColor(double value)
 {
     // Ensure the value is clamped between 0 and 1
     value = std::clamp(value, 0., 1.);
