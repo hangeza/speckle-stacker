@@ -82,6 +82,8 @@ else()
     link_libraries(PkgConfig::FFTW)
 endif()
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
 set(PROJECT_INCLUDE_LIBS
     pthread
     ${OpenCV_LIBS}
