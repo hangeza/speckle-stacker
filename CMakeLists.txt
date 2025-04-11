@@ -12,7 +12,7 @@ ENABLE_TESTING()
 #INCLUDE(CTest)
 
 # setting the CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS does not seem to work with Windows+mingw
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 # instead, we use CMake's generate_export_header functionality
 include(GenerateExportHeader)
 
@@ -140,6 +140,8 @@ endif()
 generate_export_header(smip
     EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/smip_export.h
 )
+
+#set_target_properties(smip PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 # Make sure the export header is available to your code
 target_include_directories(smip
