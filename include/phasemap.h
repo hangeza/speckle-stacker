@@ -1,11 +1,13 @@
 #pragma once
 
+#include "smip_export.h"
+
 namespace smip {
 
 template <typename T>
 class Array2;
 
-struct PhaseMapElement {
+struct SMIP_EXPORT PhaseMapElement {
     PhaseMapElement() = default;
     PhaseMapElement(bool a_flag);
     PhaseMapElement(bool a_flag, double a_consistency);

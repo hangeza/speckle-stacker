@@ -11,6 +11,8 @@
 #include "types.h"
 #include "utility.h"
 
+#include "smip_export.h"
+
 namespace smip {
 
 // clang-format off
@@ -24,14 +26,14 @@ enum color_channel_t : std::uint8_t {
 // clang-format on
 
 template <concept_arithmetic T>
-struct RGB {
+struct SMIP_EXPORT RGB {
     T r, g, b;
 };
 
 template <concept_arithmetic T>
-RGB<T> mapToColor(double value);
+RGB<T> SMIP_EXPORT mapToColor(double value);
 
-class FrameExtractor {
+class SMIP_EXPORT FrameExtractor {
 public:
     FrameExtractor() = delete;
     FrameExtractor(const std::string& filename);
@@ -50,11 +52,11 @@ private:
     std::size_t m_frameindex { 0 };
 };
 
-void save_frame(const cv::Mat& frame, const std::string& outfilename);
+void SMIP_EXPORT save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
-Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
+Array2<T> SMIP_EXPORT Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
-cv::Mat Array2Mat(const Array2<T>& arr,
+cv::Mat SMIP_EXPORT Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter = std::fabs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);

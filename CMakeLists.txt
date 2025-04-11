@@ -11,7 +11,12 @@ SET(CMAKE_VERBOSE_MAKEFILE OFF)
 ENABLE_TESTING()
 #INCLUDE(CTest)
 
+# setting the CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS does not seem to work with Windows+mingw
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+# instead, we use CMake's generate_export_header functionality
+include(GenerateExportHeader)
+
+set(SMIP_COMPILING ON)
 
 if (CMAKE_BUILD_TYPE STREQUAL Release)
     set(SMIP_IS_RELEASE ON)
@@ -122,12 +127,26 @@ set(HEADER_FILES
     "${PROJECT_HEADER_DIR}/range.h"
 )
 
+
+# add libsmip library as target
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
 if(WIN32)
-    target_link_options(smip PRIVATE "-Wl,-E")
-    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
+#    target_link_options(smip PRIVATE "-Wl,-E")
+#    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
 endif()
+
+# generate smip_export.h header for definition of the library export
+generate_export_header(smip
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/smip_export.h
+)
+
+# Make sure the export header is available to your code
+target_include_directories(smip
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
+
 
 set(ALL_FILES
     "${SOURCE_FILES}"

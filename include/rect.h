@@ -5,6 +5,8 @@
 #include <limits>
 #include <type_traits>
 
+#include "smip_export.h"
+
 namespace smip {
 
 /**
@@ -13,7 +15,7 @@ namespace smip {
  */
 template <typename T>
 requires concept_arithmetic<T>
-struct Rect {
+struct SMIP_EXPORT Rect {
     Point<T> topleft {};
     Point<T> bottomright {};
     Rect() = default;

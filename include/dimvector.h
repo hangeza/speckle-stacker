@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <valarray>
 
+#include "smip_export.h"
+
 namespace smip {
 
 /**
@@ -21,7 +23,7 @@ namespace smip {
  * The type of the elements is constrained to be of arithmetic nature.
  */
 template <concept_arithmetic T, std::size_t NrDims = 0>
-class DimVector : public std::valarray<T> {
+class SMIP_EXPORT DimVector : public std::valarray<T> {
 public:
     using typename std::valarray<T>::value_type;
     using std::valarray<T>::valarray;
