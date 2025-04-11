@@ -15,7 +15,7 @@
 
 #include "array2.h"
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 
@@ -23,7 +23,7 @@ namespace smip {
 /*! ...
  */
 template <typename T>
-class SMIP_EXPORT Bispectrum : public Array_base<T> {
+class Bispectrum : public Array_base<T> {
 public:
     typedef DimVector<std::size_t, 4> extents;
     typedef DimVector<int, 4> s_indices;

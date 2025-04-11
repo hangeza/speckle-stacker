@@ -12,12 +12,12 @@ template <typename T>
 class Array2;
 
 template <typename T, typename U>
-Array2<T> SMIP_EXPORT reconstruct_phases(const Bispectrum<U>& bispec,
+Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     std::size_t xsize, std::size_t ysize,
     double reco_radius,
     PhaseMap* phasemap = nullptr);
 
-void NextRecoIndex(double& r, double& phi, int& i, int& j);
+void SMIP_EXPORT NextRecoIndex(double& r, double& phi, int& i, int& j);
 
 template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,

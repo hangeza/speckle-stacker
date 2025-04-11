@@ -10,22 +10,22 @@
 #include <valarray>
 #include <vector>
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
-constexpr T SMIP_EXPORT sqr(T x)
+constexpr T sqr(T x)
 {
     //static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
     return x * x;
 }
 
 template <concept_floating F, concept_arithmetic X>
-F SMIP_EXPORT Gauss(const X& x, const std::vector<F>& params);
+F Gauss(const X& x, const std::vector<F>& params);
 template <concept_floating F, concept_arithmetic X>
-F SMIP_EXPORT Gauss(const DimVector<X, 2>& x, const std::vector<DimVector<F, 2>>& params);
+F Gauss(const DimVector<X, 2>& x, const std::vector<DimVector<F, 2>>& params);
 
 //********************
 // implementation part

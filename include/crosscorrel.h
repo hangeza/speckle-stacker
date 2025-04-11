@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 
@@ -44,7 +44,7 @@ class Array2;
  */
 template <typename T>
 requires std::floating_point<T>
-class SMIP_EXPORT CrossCorrelation {
+class CrossCorrelation {
 public:
     CrossCorrelation() = delete;
     CrossCorrelation(const Array2<T>& ref);

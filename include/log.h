@@ -54,7 +54,7 @@ private:
 };
 
 template <Level L>
-class SMIP_EXPORT logger {
+class logger {
 public:
     template <typename T>
     auto operator<<(T content) -> logger<L>&

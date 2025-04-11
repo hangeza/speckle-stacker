@@ -9,7 +9,7 @@
 
 #include "types.h"
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 
@@ -19,7 +19,7 @@ namespace smip {
  */
 template <typename T>
 requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
-class SMIP_EXPORT Range {
+class Range {
 public:
     T low {};
     T high {};

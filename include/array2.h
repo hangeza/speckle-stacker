@@ -16,7 +16,7 @@
 #include "range.h"
 #include "rect.h"
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 template <typename T>
@@ -40,7 +40,7 @@ namespace smip {
  * supports them. Otherwise, no error checking is performed and execution might be interrupted by exceptions.
  */
 template <typename T>
-class SMIP_EXPORT Array2 : public Array_base<T> {
+class Array2 : public Array_base<T> {
     using Array_base<T>::m_data;
     using Array_base<T>::m_size;
 

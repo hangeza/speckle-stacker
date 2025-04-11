@@ -2,7 +2,7 @@
 #include <cmath>
 #include "types.h"
 
-#include "smip_export.h"
+// #include "smip_export.h"
 
 namespace smip {
 
@@ -12,7 +12,7 @@ namespace smip {
  */
 template <typename T>
 requires concept_arithmetic<T>
-struct SMIP_EXPORT Point {
+struct Point {
     T x {};
     T y {};
     Point<T>& operator+=(const Point<T>& other);

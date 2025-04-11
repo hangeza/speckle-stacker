@@ -26,12 +26,12 @@ enum color_channel_t : std::uint8_t {
 // clang-format on
 
 template <concept_arithmetic T>
-struct SMIP_EXPORT RGB {
+struct RGB {
     T r, g, b;
 };
 
 template <concept_arithmetic T>
-RGB<T> SMIP_EXPORT mapToColor(double value);
+RGB<T> mapToColor(double value);
 
 class SMIP_EXPORT FrameExtractor {
 public:
@@ -54,9 +54,9 @@ private:
 
 void SMIP_EXPORT save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
-Array2<T> SMIP_EXPORT Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
-cv::Mat SMIP_EXPORT Array2Mat(const Array2<T>& arr,
+cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter = std::fabs<U>,
     int cv_datatype = CV_8U,
     bool signed_symmetry = true);
