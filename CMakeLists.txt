@@ -125,7 +125,7 @@ set(HEADER_FILES
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
 if(WIN32)
-#    target_link_options(smip PRIVATE "-Wl,-E")
+    target_link_options(smip PRIVATE "-Wl,-E")
     target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
 endif()
 
