@@ -135,8 +135,7 @@ jobs:
       run: |
         cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
         nm -gD ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
-        objdump -p ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
-
+        objdump -T ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll | grep "Export"
 
     - name: Build (Linux)
       if: runner.os == 'Linux'
