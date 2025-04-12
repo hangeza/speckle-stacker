@@ -2,7 +2,7 @@
 #include "array2.h"
 #include "phasemap.h"
 
-#include "smip_export.h"
+#include "global.h"
 
 namespace smip {
 
@@ -17,7 +17,7 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     double reco_radius,
     PhaseMap* phasemap = nullptr);
 
-void SMIP_EXPORT NextRecoIndex(double& r, double& phi, int& i, int& j);
+void SMIP_PUBLIC NextRecoIndex(double& r, double& phi, int& i, int& j);
 
 template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,

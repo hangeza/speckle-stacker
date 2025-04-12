@@ -16,8 +16,6 @@ ENABLE_TESTING()
 # instead, we use CMake's generate_export_header functionality
 include(GenerateExportHeader)
 
-set(SMIP_COMPILING ON)
-
 if (CMAKE_BUILD_TYPE STREQUAL Release)
     set(SMIP_IS_RELEASE ON)
 else()
@@ -96,6 +94,7 @@ set(PROJECT_INCLUDE_LIBS
     )
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake")
+set(SMIP_COMPILING ON)
 configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
 set(SOURCE_FILES

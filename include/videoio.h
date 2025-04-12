@@ -11,7 +11,8 @@
 #include "types.h"
 #include "utility.h"
 
-#include "smip_export.h"
+// #include "smip_export.h"
+#include "global.h"
 
 namespace smip {
 
@@ -33,7 +34,7 @@ struct RGB {
 template <concept_arithmetic T>
 RGB<T> mapToColor(double value);
 
-class SMIP_EXPORT FrameExtractor {
+class SMIP_PUBLIC FrameExtractor {
 public:
     FrameExtractor() = delete;
     FrameExtractor(const std::string& filename);
@@ -52,7 +53,7 @@ private:
     std::size_t m_frameindex { 0 };
 };
 
-void SMIP_EXPORT save_frame(const cv::Mat& frame, const std::string& outfilename);
+void SMIP_PUBLIC save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
 Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
 template <typename T, typename U>
