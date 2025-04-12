@@ -6,13 +6,17 @@
 #include <cstring>
 #include <errno.h>
 #include <functional>
+#include <ranges>
 #include <stdio.h>
 #include <stdlib.h>
 #include <typeinfo>
 
 #include "array_base.h"
 #include "dimvector.h"
+#include "range.h"
 #include "rect.h"
+
+// #include "smip_export.h"
 
 namespace smip {
 template <typename T>
@@ -26,16 +30,24 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& v);
 
 namespace smip {
 
-//! Container class for 2d arrays
-/*!
- * ...
-*/
+/**
+ * @brief Container class for 2d array storage
+ * @tparam T value type (unconstrained)
+ * @details The Array2 class is a general container for storage of data of type T. The data is organized such,
+ * that 2-dimensional access in columns rows or x,y coordinate indices is possible. 
+ * Internally, the data is managed via the base class in a sequential order for fast and efficient access.
+ * @note: Overloads for all basic mathematical operations are available which should be used only, if type T
+ * supports them. Otherwise, no error checking is performed and execution might be interrupted by exceptions.
+ */
 template <typename T>
 class Array2 : public Array_base<T> {
-    using Array_base<T>::_mem;
-    using Array_base<T>::_size;
+    using Array_base<T>::m_data;
+    using Array_base<T>::m_size;
 
 public:
+    using Array_base<T>::begin;
+    using Array_base<T>::end;
+
     typedef DimVector<std::size_t, 2> extents;
     typedef DimVector<int, 2> s_indices;
     typedef DimVector<std::size_t, 2> u_indices;
@@ -124,14 +136,9 @@ public:
     std::size_t ysize() const { return m_ysize; }
     std::size_t ncols() const { return m_xsize; }
     std::size_t nrows() const { return m_ysize; }
-    s_indices min_sindices() const { return { -static_cast<int>(ncols() >> 1), -static_cast<int>(nrows() >> 1) }; }
-    s_indices max_sindices() const
-    {
-        return {
-            -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
-            -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
-        };
-    }
+    s_indices min_sindices() const;
+    s_indices max_sindices() const;
+    Range<DimVector<int, 2>> range() const;
 
     void print() const;
 
@@ -643,6 +650,27 @@ template <concept_arithmetic U>
 Array2<T> Array2<T>::convert(const Array2<U>& src)
 {
     return std::move(Array2<T>(src));
+}
+
+template <typename T>
+typename Array2<T>::s_indices Array2<T>::min_sindices() const
+{
+    return { -static_cast<int>(ncols() >> 1), -static_cast<int>(nrows() >> 1) };
+}
+
+template <typename T>
+typename Array2<T>::s_indices Array2<T>::max_sindices() const
+{
+    return {
+        -static_cast<int>(ncols()) / 2 + static_cast<int>(ncols()) - 1,
+        -static_cast<int>(nrows()) / 2 + static_cast<int>(nrows()) - 1
+    };
+}
+
+template <typename T>
+Range<DimVector<int, 2>> Array2<T>::range() const
+{
+    return Range<DimVector<int, 2>>(min_sindices(), max_sindices());
 }
 
 template <typename T>

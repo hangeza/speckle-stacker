@@ -11,15 +11,20 @@ SET(CMAKE_VERBOSE_MAKEFILE OFF)
 ENABLE_TESTING()
 #INCLUDE(CTest)
 
+# setting the CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS does not seem to work with Windows+mingw
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+# instead, we use CMake's generate_export_header functionality
+include(GenerateExportHeader)
+
 if (CMAKE_BUILD_TYPE STREQUAL Release)
     set(SMIP_IS_RELEASE ON)
 else()
     set(SMIP_IS_RELEASE OFF)
 endif()
 
-set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_TEST_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-set(PROJECT_HEADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PROJECT_HEADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 #set(PROJECT_DETAIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/detail")
 set(PROJECT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config")
 set(PROJECT_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
@@ -31,6 +36,7 @@ include_directories(${PROJECT_HEADER_DIR} ${PROJECT_SRC_DIR})
 MESSAGE("Compiler is " ${CMAKE_CXX_COMPILER_ID})
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using Clang
+  # use lld linker when compiling with clang
   ADD_LINK_OPTIONS(-fuse-ld=lld)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   #MESSAGE("GNU")
@@ -40,8 +46,6 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # using Visual Studio C++
 endif()
-# uncomment to use lld linker when compiling with clang
-#ADD_LINK_OPTIONS(-fuse-ld=lld)
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
@@ -83,20 +87,23 @@ else()
     link_libraries(PkgConfig::FFTW)
 endif()
 
+set(PROJECT_INCLUDE_LIBS
+    pthread
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
+    )
+
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake")
+set(SMIP_COMPILING ON)
 configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
-SET(SMIP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-
 set(SOURCE_FILES
-    "${PROJECT_SRC_DIR}/main.cpp"
     "${PROJECT_SRC_DIR}/videoio.cpp"
     "${PROJECT_SRC_DIR}/phasemap.cpp"
     "${PROJECT_SRC_DIR}/phasereco.cpp"
     "${PROJECT_SRC_DIR}/log.cpp"
     "${PROJECT_SRC_DIR}/utility.cpp"
+    "${PROJECT_SRC_DIR}/smip_export_test.cpp"
 )
 
 set(HEADER_FILES
@@ -117,24 +124,44 @@ set(HEADER_FILES
     "${PROJECT_HEADER_DIR}/math_functions.h"
     "${PROJECT_HEADER_DIR}/units.h"
     "${PROJECT_HEADER_DIR}/constants.h"
+    "${PROJECT_HEADER_DIR}/range.h"
 )
 
-# tell cmake to build our executable
-ADD_EXECUTABLE(smip
-    ${SOURCE_FILES}
+# add libsmip library as target
+add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
+
+# generate smip_export.h header for definition of the library export
+generate_export_header(smip
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/smip_export.h
 )
+
+# Include the generated header for the DLL build
+target_include_directories(smip
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For smip_export.h
+)
+
+target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
+#if(WIN32)
+#    target_link_options(smip PRIVATE "-Wl,-E")
+#    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
+#endif()
+
+#set_target_properties(smip PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
 
 set(ALL_FILES
     "${SOURCE_FILES}"
     "${HEADER_FILES}"
 )
 
-TARGET_LINK_LIBRARIES(smip
-    pthread
-    ${OpenCV_LIBS}
-    ${FFTW3_LIBRARIES}
-)
+#SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
+add_subdirectory(smip-cli)
 add_subdirectory(tests)
+
+# This defines SMIP_EXPORTS only for the smip target
+target_compile_definitions(smip PRIVATE smip_EXPORTS)
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})

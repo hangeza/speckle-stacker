@@ -15,6 +15,8 @@
 
 #include "array2.h"
 
+// #include "smip_export.h"
+
 namespace smip {
 
 //! 4-dim Container for handling a complex Bispectrum

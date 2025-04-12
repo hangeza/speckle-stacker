@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 
+#include "global.h"
+
 namespace smip::log {
 
 // clang-format off
@@ -26,7 +28,7 @@ enum Level : std::uint8_t {
  * @brief The system class
  * Initialisation and logging system configuration
  */
-class system {
+class SMIP_PUBLIC system {
 public:
     /**
      * @brief
@@ -114,20 +116,20 @@ private:
     }
 };
 
-[[nodiscard]] auto debug(const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC debug(const std::string& component = {})
     -> logger<Level::Debug>;
-[[nodiscard]] auto info(const std::string& component = {}) -> logger<Level::Info>;
-[[nodiscard]] auto notice(const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC info(const std::string& component = {}) -> logger<Level::Info>;
+[[nodiscard]] auto SMIP_PUBLIC notice(const std::string& component = {})
     -> logger<Level::Notice>;
-[[nodiscard]] auto warning(const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC warning(const std::string& component = {})
     -> logger<Level::Warning>;
-[[nodiscard]] auto error(const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC error(const std::string& component = {})
     -> logger<Level::Error>;
-[[nodiscard]] auto critical(int exit_code = 1, const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC critical(int exit_code = 1, const std::string& component = {})
     -> logger<Level::Critical>;
-[[nodiscard]] auto alert(int exit_code = 1, const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC alert(int exit_code = 1, const std::string& component = {})
     -> logger<Level::Alert>;
-[[nodiscard]] auto emergency(int exit_code = 1, const std::string& component = {})
+[[nodiscard]] auto SMIP_PUBLIC emergency(int exit_code = 1, const std::string& component = {})
     -> logger<Level::Emergency>;
 
 } // namespace smip::log

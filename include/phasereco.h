@@ -2,6 +2,8 @@
 #include "array2.h"
 #include "phasemap.h"
 
+#include "global.h"
+
 namespace smip {
 
 template <typename T>
@@ -15,13 +17,13 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     double reco_radius,
     PhaseMap* phasemap = nullptr);
 
-void NextRecoIndex(double& r, double& phi, int& i, int& j);
+void SMIP_PUBLIC NextRecoIndex(double& r, double& phi, int& i, int& j);
 
 template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    int wx, int wy);
+    DimVector<int, 2> w);
 
 //********************
 // implementation part
@@ -52,22 +54,18 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
 
     double r { 0. };
     double phi { 0. };
-    int i { 0 }, j { 0 };
+    DimVector<int, 2> pm_indices {};
 
     while (r <= reco_radius) {
-        NextRecoIndex(r, phi, i, j);
-        if (!((i < pm.min_sindices()[0])
-                || (i > pm.max_sindices()[0])
-                || (j < pm.min_sindices()[1])
-                || (j > pm.max_sindices()[1]))) {
+        NextRecoIndex(r, phi, pm_indices[0], pm_indices[1]);
+        if (pm.range().contains(pm_indices)) {
             //      if ((abs(complex_t(i,j))<=min(bispec->size1,bispec->size2)/2))
-            if (!pm.at({ i, j }).flag) {
-                calc_phase(bispec, phases, pm, i, j);
+            if (!pm.at(pm_indices).flag) {
+                calc_phase(bispec, phases, pm, pm_indices);
                 //std::cout<<"calc_phase: i="<<i<<" j="<<j<<"\n";
             }
         }
     }
-    //    phases.print();
     if (phasemap != nullptr) {
         *phasemap = pm;
     }
@@ -78,63 +76,49 @@ template <typename T, typename U>
 void calc_phase(const Bispectrum<U>& bispec,
     Array2<T>& phases,
     PhaseMap& pm,
-    int wx, int wy)
+    DimVector<int, 2> w)
 {
     constexpr double c_epsilon { 1e-25 };
-    if (((wx == 0) && (wy == 0))
-        || ((wx == 1) && (wy == 0))
-        || ((wx == 0) && (wy == 1))
-        || ((wx == -1) && (wy == 0))
-        || ((wx == 0) && (wy == -1))
-        || (wx < bispec.min_indices()[0])
-        || (wx > bispec.max_indices()[0])
-        || (wy < bispec.min_indices()[1])
-        || (wy > bispec.max_indices()[1]))
+    const Range<DimVector<int, 2>> bispec_u_range { bispec.min_indices()[std::slice(0, 2, 1)], bispec.max_indices()[std::slice(0, 2, 1)] };
+    const Range<DimVector<int, 2>> bispec_v_range { bispec.min_indices()[std::slice(2, 2, 1)], bispec.max_indices()[std::slice(2, 2, 1)] };
+
+    if (std::abs(w).sum() <= 1 || (!bispec_u_range.contains(w))) {
         return;
+    }
 
-    int x_lo = pm.min_sindices()[0];
-    int y_lo = pm.min_sindices()[1];
-    int x_hi = pm.max_sindices()[0];
-    int y_hi = pm.max_sindices()[1];
+    std::vector<T> phaselist {};
 
-    std::vector<T> phaselist;
-
-    for (int ux = x_lo; ux <= x_hi; ux++) {
-        for (int uy = y_lo; uy <= y_hi; uy++) {
-            int vx = wx - ux;
-            int vy = wy - uy;
-
-            if ((vx >= bispec.min_indices()[2]) && (vx <= bispec.max_indices()[2])
-                && (vy >= bispec.min_indices()[3]) && (vy <= bispec.max_indices()[3])
-                && (pm.at({ ux, uy }).flag)
-                && (pm.at({ vx, vy }).flag)) {
-                T temp { bispec.get_element({ ux, uy, vx, vy }) };
-                //                 std::cout<<"bispec["<<ux<<","<<uy<<","<<vx<<","<<vy<<"]="<<temp<<"\n";
-                T ph { phases.at({ ux, uy }) };
-                //                 std::cout<<"phase["<<ux<<","<<uy<<"]="<<ph<<"\n";
-                ph *= phases.at({ vx, vy });
-                if (std::abs(temp) > c_epsilon) {
-                    temp /= abs(temp);
-                    temp = std::conj(temp);
-                    ph *= temp;
-                    phaselist.push_back(ph / std::abs(ph));
-                    //                     std::cout<<"phaselist entry="<<phaselist.back()<<std::endl;
-                }
+    for (auto u : pm.range()) {
+        DimVector<int, 2> v { w - u };
+        if (bispec_v_range.contains(v)
+            && (pm.at(u).flag)
+            && (pm.at(v).flag)) {
+            T temp { bispec.get_element(DimVector<int>::merge(u, v)) };
+            // std::cout<<"bispec["<<ux<<","<<uy<<","<<vx<<","<<vy<<"]="<<temp<<"\n";
+            T ph { phases.at(u) };
+            // std::cout<<"phase["<<ux<<","<<uy<<"]="<<ph<<"\n";
+            ph *= phases.at(v);
+            if (std::abs(temp) > c_epsilon) {
+                temp /= abs(temp);
+                temp = std::conj(temp);
+                ph *= temp;
+                phaselist.push_back(ph / std::abs(ph));
+                // std::cout<<"phaselist entry="<<phaselist.back()<<std::endl;
             }
         }
     }
 
     T mean_phase { std::accumulate(phaselist.begin(), phaselist.end(), T {}, std::plus<T>()) };
     if (!phaselist.empty()) {
-        pm.at({ wx, wy }).flag = true;
+        pm.at(w).flag = true;
         mean_phase /= static_cast<double>(phaselist.size());
         //         std::cout<<"wx="<<wx<<" wy="<<wy<<" multipl="<<phaselist.size()<<" mean phase="<<mean_phase<<" consis="<<std::abs(mean_phase)<<std::endl;
         const double abs_phase { std::abs(mean_phase) };
-        pm.at({ wx, wy }).consistency = abs_phase;
+        pm.at(w).consistency = abs_phase;
         if (abs_phase > c_epsilon) {
-            phases.at({ wx, wy }) = mean_phase / abs_phase;
+            phases.at(w) = mean_phase / abs_phase;
         } else {
-            phases.at({ wx, wy }) = T { 0 };
+            phases.at(w) = T { 0 };
         }
     }
 }
