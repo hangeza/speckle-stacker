@@ -135,6 +135,7 @@ jobs:
       run: |
         cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
         nm -gD ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
+        nm -gD ${{ steps.win-build.outputs.build-output-dir }}\output\lib\libsmip.dll
 
     - name: Build (Linux)
       if: runner.os == 'Linux'

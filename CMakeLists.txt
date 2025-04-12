@@ -104,6 +104,7 @@ set(SOURCE_FILES
     "${PROJECT_SRC_DIR}/phasereco.cpp"
     "${PROJECT_SRC_DIR}/log.cpp"
     "${PROJECT_SRC_DIR}/utility.cpp"
+    "${PROJECT_SRC_DIR}/smip_export_test.cpp"
 )
 
 set(HEADER_FILES
@@ -156,12 +157,12 @@ set(ALL_FILES
     "${HEADER_FILES}"
 )
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+#SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(smip-cli)
 add_subdirectory(tests)
 
 # This defines SMIP_EXPORTS only for the smip target
-target_compile_definitions(smip PRIVATE SMIP_EXPORTS)
+target_compile_definitions(smip PRIVATE smip_EXPORTS)
 
 add_custom_target(clangformat COMMAND clang-format -style=WebKit -i ${ALL_FILES})
