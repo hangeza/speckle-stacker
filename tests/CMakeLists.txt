@@ -27,7 +27,7 @@ add_executable(smip_tests
 add_dependencies(smip_tests smip)
 
 set_target_properties(smip_tests PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
 # Add all the ADD_TEST for each test

@@ -163,7 +163,7 @@ jobs:
       run: |
         $Env:PATH += ";${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;C:\OpenCV4.10.0\x64\mingw\lib"
         echo "PATH = $env:PATH"
-        ctest --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
+        ctest -V --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
    
     - name: Test (Linux)
       if: runner.os == 'Linux'
