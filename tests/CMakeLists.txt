@@ -44,7 +44,7 @@ foreach (test ${TestsToRun})
             #"PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin\\;${FFTW3_LIBRARY_DIR}\\;${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;${CMAKE_BINARY_DIR}/bin\\;${CMAKE_BINARY_DIR}"
         #)
         set_tests_properties(${TName} PROPERTIES ENVIRONMENT
-            "PATH=$ENV{PATH};C:/OpenCV4.10.0/x64/mingw/bin;;D:/a/speckle-stacker/speckle-stacker/build/output/lib;D:/a/speckle-stacker/speckle-stacker/build/bin;D:/a/speckle-stacker/speckle-stacker/build"
+            "PATH=$ENV{PATH};C:\OpenCV4.10.0\x64\mingw\bin;D:\a\speckle-stacker\speckle-stacker\build\output\lib;D:\a\speckle-stacker\speckle-stacker\build\bin;D:\a\speckle-stacker\speckle-stacker\build"
         )
     endif()
 endforeach ()
