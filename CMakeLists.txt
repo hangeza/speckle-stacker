@@ -94,8 +94,6 @@ set(PROJECT_INCLUDE_LIBS
     )
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake")
-set(SMIP_COMPILING ON)
-configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
 set(SOURCE_FILES
     "${PROJECT_SRC_DIR}/videoio.cpp"
@@ -129,6 +127,9 @@ set(HEADER_FILES
 
 # add libsmip library as target
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
+#target_compile_definitions(smip PRIVATE SMIP_COMPILING)
+set(SMIP_COMPILING ON)
+configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
 # generate smip_export.h header for definition of the library export
 generate_export_header(smip

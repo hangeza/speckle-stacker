@@ -9,20 +9,17 @@
 //  Microsoft
     #ifdef __GNUC__
         #define EXPORT __attribute__((dllexport))
-        #define IMPORT __attribute__((dllimport))
-        #pragma warning Win+MINGW build
+        #define IMPORT
     #else
     //_MSC_VER
         #define EXPORT __declspec(dllexport)
         #define IMPORT __declspec(dllimport)
-        #pragma warning Win+MSVC build
     #endif
 #elif defined(__GNUC__)
 //  GCC
     #define EXPORT __attribute__((visibility("default")))
     #define IMPORT
     #define HIDDEN __attribute__((visibility("hidden")))
-    #pragma warning GNUC build
 #else
 //  do nothing and hope for the best?
     #define EXPORT
