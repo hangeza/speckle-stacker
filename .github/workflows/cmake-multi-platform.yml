@@ -143,6 +143,7 @@ jobs:
         nm -gD "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll"
         objdump -p "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep "Export"
         strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep test_export || echo "test_export not found"
+        strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep FrameExtractor || echo "FrameExtractor not found"
     
     - name: Build (Linux)
       if: runner.os == 'Linux'
