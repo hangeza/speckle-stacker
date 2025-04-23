@@ -140,9 +140,9 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       shell: bash
       run: |
-        nm -gD ${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll
-        objdump -p ${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll | grep "Export"
-        strings "${{ steps.win-build.outputs.build-output-dir }}"/libsmip.dll | grep test_export || echo "test_export not found"
+        nm -gD "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll"
+        objdump -p "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep "Export"
+        strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep test_export || echo "test_export not found"
     
     - name: Build (Linux)
       if: runner.os == 'Linux'
