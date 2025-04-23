@@ -2,7 +2,7 @@
 #include "phasemap.h"
 
 #if defined _WIN32
-extern "C" void __attribute__((dllexport)) test_export() {}
+extern "C" void __declspec(dllexport) test_export() {}
 #endif
 
 namespace smip {
