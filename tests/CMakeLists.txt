@@ -46,6 +46,9 @@ foreach (test ${TestsToRun})
         set_tests_properties(${TName} PROPERTIES ENVIRONMENT
             "PATH=$ENV{PATH};C:\\OpenCV4.10.0\\x64\\mingw\\bin;C:\\OpenCV4.10.0\\x64\\mingw\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\output\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\bin;D:\\a\\speckle-stacker\\speckle-stacker\\build;C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\fftw3"
         )
+        set_tests_properties(${TName} PROPERTIES 
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+        )
     endif()
 endforeach ()
 
