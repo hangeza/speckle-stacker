@@ -173,7 +173,7 @@ jobs:
       shell: pwsh
       run: |
         $env:PATH="C:\OpenCV4.10.0\x64\mingw\bin;D:\a\speckle-stacker\speckle-stacker\build\output\lib;D:\a\speckle-stacker\speckle-stacker\build\bin;D:\a\speckle-stacker\speckle-stacker\build;$env:PATH"
-        D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe "array1_test"
+        & "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
 
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
