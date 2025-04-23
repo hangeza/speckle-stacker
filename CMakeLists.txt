@@ -129,6 +129,10 @@ set(HEADER_FILES
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
 #target_compile_definitions(smip PRIVATE SMIP_COMPILING)
 set(SMIP_COMPILING ON)
+if(MINGW)
+    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
+    message(STATUS "setting --export-all-symbols linker flag")
+endif()
 configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
 # generate smip_export.h header for definition of the library export
