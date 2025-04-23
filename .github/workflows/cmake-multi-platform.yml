@@ -134,11 +134,16 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       run: |
         cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-        nm -gD ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
-        objdump -p ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll | grep "Export"
         #objdump -T ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll | grep "Export"
         #dumpbin /exports ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
-
+    - name: Check for exported symbols
+      if: runner.os == 'Windows' && matrix.name
+      shell: bash
+      run: |
+        nm -gD ${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll
+        objdump -p ${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll | grep "Export"
+        strings "${{ steps.win-build.outputs.build-output-dir }}"/libsmip.dll | grep test_export || echo "test_export not found"
+    
     - name: Build (Linux)
       if: runner.os == 'Linux'
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
