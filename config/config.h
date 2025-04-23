@@ -5,11 +5,16 @@
 #include <memory>
 #include <string>
 
-#ifdef _WIN32
-//#ifdef _MSC_VER
+#if defined _WIN32 || defined __CYGWIN__
 //  Microsoft
-    #define EXPORT __declspec(dllexport)
-    #define IMPORT __declspec(dllimport)
+    #ifdef __GNUC__
+        #define EXPORT __attribute__((dllexport))
+        #define IMPORT __attribute__((dllimport))
+    #else
+    //_MSC_VER
+        #define EXPORT __declspec(dllexport)
+        #define IMPORT __declspec(dllimport)
+    #endif
 #elif defined(__GNUC__)
 //  GCC
     #define EXPORT __attribute__((visibility("default")))
