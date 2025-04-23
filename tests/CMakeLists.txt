@@ -44,7 +44,7 @@ foreach (test ${TestsToRun})
         #    "PATH=$ENV{PATH};${OpenCV_DIR}/x64/mingw/bin\\;$ENV{FFTW3_LIBRARY_DIR}\\;${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\\;${EXECUTABLE_OUTPUT_PATH}\\;${CMAKE_BINARY_DIR}"
         #)
         set_tests_properties(${TName} PROPERTIES ENVIRONMENT
-            "PATH=$ENV{PATH};C:\\OpenCV4.10.0\\x64\\mingw\\bin;C:\\OpenCV4.10.0\\x64\\mingw\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\output\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\bin;D:\\a\\speckle-stacker\\speckle-stacker\\build;C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\fftw3"
+            "PATH=$ENV{PATH};C:\\OpenCV4.10.0\\x64\\mingw\\bin;C:\\OpenCV4.10.0\\x64\\mingw\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\output\\lib;D:\\a\\speckle-stacker\\speckle-stacker\\build\\bin;D:\\a\\speckle-stacker\\speckle-stacker\\build;D:\\a\\speckle-stacker\\speckle-stacker\\build\\tests;C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\fftw3"
         )
         #set_tests_properties(${TName} PROPERTIES 
             #WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
