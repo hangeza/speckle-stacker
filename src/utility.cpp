@@ -1,7 +1,9 @@
 #include "utility.h"
 #include "phasemap.h"
 
-extern "C" SMIP_PUBLIC void test_export() {}
+#if defined _WIN32
+extern "C" void __attribute__((dllexport)) test_export() {}
+#endif
 
 namespace smip {
 
