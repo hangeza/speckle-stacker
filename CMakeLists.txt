@@ -162,7 +162,7 @@ set(ALL_FILES
     "${HEADER_FILES}"
 )
 
-#SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(smip-cli)
 add_subdirectory(tests)
