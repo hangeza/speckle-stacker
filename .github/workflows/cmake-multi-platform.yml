@@ -167,6 +167,7 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/tests"
+        cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/bin"
 
     - name: Manually run test exe with full PATH
       if: runner.os == 'Windows'
@@ -194,7 +195,9 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
+        echo "Current directory: $PWD"
         dir
+        & "bin\smip_tests.exe" "smip_test"
         $Env:PATH += ";${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.win-build.outputs.build-output-dir }}\tests;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;C:\OpenCV4.10.0\x64\mingw\lib"
         echo "PATH = $env:PATH"
         ctest -V --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
