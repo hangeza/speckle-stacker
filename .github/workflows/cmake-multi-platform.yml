@@ -179,6 +179,7 @@ jobs:
         & "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
 
     - name: Debug DLL environment
+      if: runner.os == 'Windows'
       working-directory: ${{ steps.win-build.outputs.build-output-dir }}\bin
       run: |
         echo "Current directory: $PWD"
@@ -187,6 +188,26 @@ jobs:
         dir
         echo "PATH = $env:PATH"
         & "smip_tests.exe" "smip_test"
+
+        
+    - name: Run tests dynamically (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ${{ steps.win-build.outputs.build-output-dir }}
+      run: |
+        echo "Current directory: $PWD"
+        $ctestOutput = & ctest -N
+        $tests = $ctestOutput | Select-String "Test #[0-9]+: (.+)" | ForEach-Object {
+            ($_ -replace ".*Test #[0-9]+: ", "").Trim()
+        }
+        foreach ($test in $tests) {
+            Write-Host "Running test $test..."
+            & .\bin\smip_tests.exe $test
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Test $test failed!"
+                exit 1
+            }
+        }
+        Write-Host "All tests passed!"
 
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
@@ -200,7 +221,7 @@ jobs:
         & "bin\smip_tests.exe" "smip_test"
         $env:PATH = "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.win-build.outputs.build-output-dir }}\tests;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;C:\OpenCV4.10.0\x64\mingw\lib;$env:PATH"
         echo "PATH = $env:PATH"
-        ctest -V --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
+        ##ctest -V --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
         #ls -lah
         #export PATH="${{ steps.win-build.outputs.build-output-dir }}:$PATH"
         #export PATH="${{ steps.win-build.outputs.build-output-dir }}/output/lib:$PATH"
