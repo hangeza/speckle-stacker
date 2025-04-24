@@ -23,7 +23,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
         include:
@@ -34,12 +34,12 @@ jobs:
             #- os: windows-latest
             #  c_compiler: cl
             #  cpp-compiler: cl
-          #- os: ubuntu-latest
-          #  c_compiler: gcc
-          #  cpp_compiler: g++
-          #- os: ubuntu-latest
-          #  c_compiler: clang
-          #  cpp_compiler: clang++
+          - os: ubuntu-latest
+           c_compiler: gcc
+           cpp_compiler: g++
+          - os: ubuntu-latest
+           c_compiler: clang
+           cpp_compiler: clang++
         exclude:
           - os: windows-latest
             c_compiler: clang
@@ -134,16 +134,13 @@ jobs:
       if: runner.os == 'Windows' && matrix.name
       run: |
         cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-        #objdump -T ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll | grep "Export"
-        #dumpbin /exports ${{ steps.win-build.outputs.build-output-dir }}\libsmip.dll
-    - name: Check for exported symbols
+    - name: Check for exported symbols (Windows)
       if: runner.os == 'Windows' && matrix.name
       shell: bash
       run: |
         nm -gD "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll"
         objdump -p "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep "Export"
         strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep test_export || echo "test_export not found"
-        #strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep FrameExtractor || echo "FrameExtractor not found"
     
     - name: Build (Linux)
       if: runner.os == 'Linux'
@@ -157,44 +154,33 @@ jobs:
         #echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
         #$dllDirectory = "${{ steps.win-build.outputs.build-output-dir }}"
         #[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$dllDirectory", [System.EnvironmentVariableTarget]::Process)
-        echo "PATH=$PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
+        #echo "PATH=$PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
         #echo "$env:GITHUB_PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $env:GITHUB_PATH
         #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
         Add-Content $env:GITHUB_PATH "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib"
-        echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Copy DLL next to test executable
-      if: runner.os == 'Windows'
-      run: |
-        cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/tests"
-        cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/bin"
+        #- name: Copy DLL next to test executable
+        #if: runner.os == 'Windows'
+        #run: |
+            #cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/tests"
+            #cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/bin"
 
-    - name: Manually run test exe with full PATH
-      if: runner.os == 'Windows'
-      working-directory: ${{ steps.win-build.outputs.build-output-dir }}/bin
-      shell: pwsh
-      run: |
-        dir
-        $env:PATH="C:\OpenCV4.10.0\x64\mingw\bin;D:\a\speckle-stacker\speckle-stacker\build\output\lib;D:\a\speckle-stacker\speckle-stacker\build\bin;D:\a\speckle-stacker\speckle-stacker\build;$env:PATH"
-        & "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
+        #- name: Manually run test exe with full PATH
+        #if: runner.os == 'Windows'
+        #working-directory: ${{ steps.win-build.outputs.build-output-dir }}/bin
+        #shell: pwsh
+        #run: |
+            #dir
+            #$env:PATH="C:\OpenCV4.10.0\x64\mingw\bin;D:\a\speckle-stacker\speckle-stacker\build\output\lib;D:\a\speckle-stacker\speckle-stacker\build\bin;D:\a\speckle-stacker\speckle-stacker\build;$env:PATH"
+            #& "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
 
-    - name: Debug DLL environment
-      if: runner.os == 'Windows'
-      working-directory: ${{ steps.win-build.outputs.build-output-dir }}\bin
-      run: |
-        echo "Current directory: $PWD"
-        #dir build\bin
-        #dir build\tests
-        dir
-        echo "PATH = $env:PATH"
-        & "smip_tests.exe" "smip_test"
-
-        
     - name: Run tests dynamically (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{ steps.win-build.outputs.build-output-dir }}
       run: |
         echo "Current directory: $PWD"
+        echo "PATH = $env:PATH"
         $ctestOutput = & ctest -N
         $tests = $ctestOutput | Select-String "Test #[0-9]+: (.+)" | ForEach-Object {
             ($_ -replace ".*Test #[0-9]+: ", "").Trim()
@@ -209,27 +195,6 @@ jobs:
         }
         Write-Host "All tests passed!"
 
-    - name: Test (Windows)
-      if: runner.os == 'Windows' && matrix.name
-      working-directory: ${{ steps.win-build.outputs.build-output-dir }}
-      shell: pwsh
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: |
-        echo "Current directory: $PWD"
-        dir
-        & "bin\smip_tests.exe" "smip_test"
-        $env:PATH = "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.win-build.outputs.build-output-dir }}\tests;C:\Users\RUNNER~1\AppData\Local\Temp\fftw3;C:\OpenCV4.10.0\x64\mingw\bin;C:\OpenCV4.10.0\x64\mingw\lib;$env:PATH"
-        echo "PATH = $env:PATH"
-        ##ctest -V --rerun-failed --output-on-failure --build-config ${{ matrix.build_type }}
-        #ls -lah
-        #export PATH="${{ steps.win-build.outputs.build-output-dir }}:$PATH"
-        #export PATH="${{ steps.win-build.outputs.build-output-dir }}/output/lib:$PATH"
-        #export PATH="${{ steps.win-build.outputs.build-output-dir }}/bin:$PATH"
-        #echo "PATH=$PATH"
-        #ctest -V --rerun-failed --output-on-failure 
-        # --build-config ${{ matrix.build_type }}
-   
     - name: Test (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{ steps.linux-build.outputs.build-output-dir }}
