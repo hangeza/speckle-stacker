@@ -1,4 +1,4 @@
-#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 #set(SMIP_COMPILING OFF)
@@ -67,8 +67,8 @@ set(ALL_FILES
 TARGET_LINK_LIBRARIES(smip_tests PRIVATE 
     smip
     #pthread
-    #${OpenCV_LIBS}
-    #${FFTW3_LIBRARIES}
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
 )
 
 message(STATUS "set BUILD_RPATH to ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
@@ -88,4 +88,18 @@ add_custom_command(TARGET smip_tests POST_BUILD
     $<TARGET_FILE:smip>
     $<TARGET_FILE_DIR:smip_tests>
 )
+
+message(STATUS "FFTW libs = ${FFTW3_LIBRARIES}")
+add_custom_command(TARGET smip_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FFTW3_LIBRARIES}"
+    $<TARGET_FILE_DIR:smip_tests>
+)
 endif()
+#message(STATUS "OpenCV libs = ${OpenCV_LIBRARIES}")
+#add_custom_command(TARGET smip_tests POST_BUILD
+    #COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #"${OpenCV_LIBRARIES}"
+    #$<TARGET_FILE_DIR:smip_tests>
+#)
+
