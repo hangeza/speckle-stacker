@@ -73,7 +73,7 @@ jobs:
         # Install required compilers using Chocolatey
         choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
-        echo "PATH=$PATH;C:\OpenCV4.10.0\x64\mingw\bin" >> $GITHUB_ENV
+        #echo "PATH=$PATH;C:\OpenCV4.10.0\x64\mingw\bin" >> $GITHUB_ENV
    
     - name: Install FFTW3 (Windows)
       if: runner.os == 'Windows' && matrix.name
@@ -157,8 +157,9 @@ jobs:
         #echo "PATH=$PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
         #echo "$env:GITHUB_PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $env:GITHUB_PATH
         #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
-        Add-Content $env:GITHUB_PATH "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib"
-        echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }};C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        #Add-Content $env:GITHUB_PATH "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib"
+        #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }};C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
         #- name: Copy DLL next to test executable
         #if: runner.os == 'Windows'
