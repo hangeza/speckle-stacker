@@ -184,7 +184,7 @@ jobs:
         dir build\bin
         dir build\tests
         echo "PATH = $env:PATH"
-        & "${{ steps.win-build.outputs.build-output-dir }}\bin\smip_tests.exe" "smip_test"
+        & "smip_tests.exe" "smip_test"
 
     - name: Test (Windows)
       if: runner.os == 'Windows' && matrix.name
