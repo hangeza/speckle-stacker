@@ -66,6 +66,9 @@ set(ALL_FILES
 
 TARGET_LINK_LIBRARIES(smip_tests PRIVATE 
     smip
+    pthread
+    ${OpenCV_LIBS}
+    ${FFTW3_LIBRARIES}
 )
 
 message(STATUS "set BUILD_RPATH to ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
