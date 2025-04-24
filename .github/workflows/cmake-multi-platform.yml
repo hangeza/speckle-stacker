@@ -178,6 +178,7 @@ jobs:
         & "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
 
     - name: Debug DLL environment
+      working-directory: ${{ steps.win-build.outputs.build-output-dir }}\bin
       run: |
         echo "Current directory: $PWD"
         dir build\bin
