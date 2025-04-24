@@ -89,9 +89,9 @@ else()
 endif()
 
 set(PROJECT_INCLUDE_LIBS
-    pthread
     ${OpenCV_LIBS}
     ${FFTW3_LIBRARIES}
+    #pthread
     )
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cmake")
@@ -130,10 +130,12 @@ set(HEADER_FILES
 add_library(smip SHARED ${SOURCE_FILES} ${HEADER_FILES})
 #target_compile_definitions(smip PRIVATE SMIP_COMPILING)
 set(SMIP_COMPILING ON)
+
 if(MINGW)
     target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
     message(STATUS "setting --export-all-symbols linker flag")
 endif()
+
 configure_file("${PROJECT_CONFIG_DIR}/config.h" "${PROJECT_HEADER_DIR}/global.h")
 
 # generate smip_export.h header for definition of the library export
@@ -148,11 +150,7 @@ target_include_directories(smip
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For smip_export.h
 )
 
-target_link_libraries(smip ${PROJECT_INCLUDE_LIBS})
-#if(WIN32)
-#    target_link_options(smip PRIVATE "-Wl,-E")
-#    target_link_options(smip PRIVATE "-Wl,--export-all-symbols")
-#endif()
+target_link_libraries(smip PUBLIC ${PROJECT_INCLUDE_LIBS})
 
 #set_target_properties(smip PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
