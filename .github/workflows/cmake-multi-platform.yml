@@ -74,6 +74,25 @@ jobs:
         choco install ${{ matrix.name }} libopencv-dev
         #choco install libopencv-dev
         #echo "PATH=$PATH;C:\OpenCV4.10.0\x64\mingw\bin" >> $GITHUB_ENV
+
+    - name: Add OpenCV to PATH dynamically (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $opencvDir = Get-ChildItem -Path 'C:\OpenCV*' -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $opencvDir) {
+        Write-Error "OpenCV base directory not found!"
+        exit 1
+        }
+
+        $opencvBin = Get-ChildItem -Path "$($opencvDir.FullName)\*" -Directory -Recurse | Where-Object { $_.Name -eq "bin" -and (Test-Path "$($_.FullName)\*.dll") } | Select-Object -First 1
+        if (-not $opencvBin) {
+        Write-Error "OpenCV bin folder with DLLs not found!"
+        exit 1
+        }
+
+        Write-Host "Using OpenCV bin folder: $($opencvBin.FullName)"
+        echo "$($opencvBin.FullName)" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
    
     - name: Install FFTW3 (Windows)
       if: runner.os == 'Windows' && matrix.name
