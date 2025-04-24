@@ -50,21 +50,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set build dir (Windows)
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      if: runner.os == 'Windows'
-      id: win-build
+    - name: Set build dir
+      id: build-dir
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
-        
-    - name: Set build dir (Linux)
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      if: runner.os == 'Linux'
-      id: linux-build
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+        echo "build-output-dir=${GITHUB_WORKSPACE}\\build" >> "$GITHUB_OUTPUT"
+        else
+        echo "build-output-dir=${GITHUB_WORKSPACE}/build" >> "$GITHUB_OUTPUT"
+        fi
     
     # Setup C++ build toolchain + dependencies
     - name: Install build system (Windows)
@@ -137,12 +131,12 @@ jobs:
         #echo "FFTW3_INCLUDE_DIR = $env:FFTW3_INCLUDE_DIR"
         #echo "FFTW3_LIBRARY_DIR = $env:FFTW3_LIBRARY_DIR"
         #echo "FFTW3_LIBRARIES = $env:FFTW3_LIBRARIES"
-        cmake -B ${{ steps.win-build.outputs.build-output-dir }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "Ninja"
+        cmake -B ${{ steps.build-dir.outputs.build-output-dir }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }} -G "Ninja"
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux' || (runner.os == 'Windows' && !matrix.name)
       run: >
-        cmake -B ${{ steps.linux-build.outputs.build-output-dir }}
+        cmake -B ${{ steps.build-dir.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -152,52 +146,37 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       if: runner.os == 'Windows' && matrix.name
       run: |
-        cmake --build ${{ steps.win-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        cmake --build ${{ steps.build-dir.outputs.build-output-dir }} --config ${{ matrix.build_type }}
     - name: Check for exported symbols (Windows)
       if: runner.os == 'Windows' && matrix.name
       shell: bash
       run: |
-        nm -gD "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll"
-        objdump -p "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep "Export"
-        strings "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" | grep test_export || echo "test_export not found"
+        nm -gD "${{ steps.build-dir.outputs.build-output-dir }}/libsmip.dll"
+        objdump -p "${{ steps.build-dir.outputs.build-output-dir }}/libsmip.dll" | grep "Export"
+        strings "${{ steps.build-dir.outputs.build-output-dir }}/libsmip.dll" | grep test_export || echo "test_export not found"
     
     - name: Build (Linux)
       if: runner.os == 'Linux'
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.linux-build.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.build-dir.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Add build directory to PATH
       if: runner.os == 'Windows' && matrix.name
       shell: pwsh
       run: |
         #echo "PATH=$(pwd)/build:$PATH" >> $GITHUB_ENV
-        #$dllDirectory = "${{ steps.win-build.outputs.build-output-dir }}"
+        #$dllDirectory = "${{ steps.build-dir.outputs.build-output-dir }}"
         #[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$dllDirectory", [System.EnvironmentVariableTarget]::Process)
-        #echo "PATH=$PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
-        #echo "$env:GITHUB_PATH;${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $env:GITHUB_PATH
-        #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
-        #Add-Content $env:GITHUB_PATH "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib"
-        #echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }};C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        echo "${{ steps.win-build.outputs.build-output-dir }};${{ steps.win-build.outputs.build-output-dir }}\bin;${{ steps.win-build.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-        #- name: Copy DLL next to test executable
-        #if: runner.os == 'Windows'
-        #run: |
-            #cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/tests"
-            #cp "${{ steps.win-build.outputs.build-output-dir }}/libsmip.dll" "${{ steps.win-build.outputs.build-output-dir }}/bin"
-
-        #- name: Manually run test exe with full PATH
-        #if: runner.os == 'Windows'
-        #working-directory: ${{ steps.win-build.outputs.build-output-dir }}/bin
-        #shell: pwsh
-        #run: |
-            #dir
-            #$env:PATH="C:\OpenCV4.10.0\x64\mingw\bin;D:\a\speckle-stacker\speckle-stacker\build\output\lib;D:\a\speckle-stacker\speckle-stacker\build\bin;D:\a\speckle-stacker\speckle-stacker\build;$env:PATH"
-            #& "D:\a\speckle-stacker\speckle-stacker\build\bin\smip_tests.exe" "array1_test"
+        #echo "PATH=$PATH;${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib" >> $GITHUB_ENV
+        #echo "$env:GITHUB_PATH;${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib" >> $env:GITHUB_PATH
+        #echo "${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib" >> $GITHUB_PATH
+        #Add-Content $env:GITHUB_PATH "${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib"
+        #echo "${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }};C:\OpenCV4.10.0\x64\mingw\bin\" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "${{ steps.build-dir.outputs.build-output-dir }};${{ steps.build-dir.outputs.build-output-dir }}\bin;${{ steps.build-dir.outputs.build-output-dir }}\output\lib;${{ steps.fftw.outputs.fftw3_libdir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Run tests dynamically (Windows)
       if: runner.os == 'Windows'
-      working-directory: ${{ steps.win-build.outputs.build-output-dir }}
+      working-directory: ${{ steps.build-dir.outputs.build-output-dir }}
       run: |
         echo "Current directory: $PWD"
         dir
@@ -218,7 +197,7 @@ jobs:
 
     - name: Test (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{ steps.linux-build.outputs.build-output-dir }}
+      working-directory: ${{ steps.build-dir.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
