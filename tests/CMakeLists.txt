@@ -93,7 +93,7 @@ message(STATUS "FFTW libs = ${FFTW3_LIBRARIES}")
 add_custom_command(TARGET smip_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${FFTW3_LIBRARIES}"
-    $<TARGET_FILE_DIR:smip_tests>
+    "${CMAKE_BINARY_DIR}"
 )
 endif()
 #message(STATUS "OpenCV libs = ${OpenCV_LIBRARIES}")
