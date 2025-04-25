@@ -10,6 +10,8 @@
 #include <valarray>
 #include <vector>
 
+// #include "smip_export.h"
+
 namespace smip {
 
 template <typename T>

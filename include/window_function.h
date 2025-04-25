@@ -1,6 +1,8 @@
 #pragma once
 #include <stdexcept>
 
+// #include "smip_export.h"
+
 namespace smip {
 
 template <typename T>

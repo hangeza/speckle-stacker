@@ -1,54 +1,78 @@
-#SET(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-include_directories(${SMIP_INCLUDE_DIR})
+# Output binary directory
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
+# Configure test header
 set(TEST_DATAFILE "${PROJECT_DATA_DIR}/testdata.gif")
 configure_file("${PROJECT_CONFIG_DIR}/testconfig.h.in" "${PROJECT_TEST_SRC_DIR}/testconfig.h")
 
-# create the testing file and list of tests
-set (TestsToRun
+# Define tests
+set(TestsToRun
     array1_test.cpp
     array2_test.cpp
     array3_test.cpp
+    array4_test.cpp
+    range_test.cpp
     correl_test.cpp
     opencv_test.cpp
     smip_test.cpp
 )
 
-create_test_sourcelist (Tests smip_tests.cpp ${TestsToRun})
+# Generate main test runner
+create_test_sourcelist(Tests smip_tests.cpp ${TestsToRun})
 
-set(EXT_SOURCE_FILES
-    "${PROJECT_SRC_DIR}/videoio.cpp"
-    "${PROJECT_SRC_DIR}/phasemap.cpp"
-    "${PROJECT_SRC_DIR}/phasereco.cpp"
-    "${PROJECT_SRC_DIR}/log.cpp"
-    "${PROJECT_SRC_DIR}/utility.cpp"
+# Add executable target
+add_executable(smip_tests ${Tests})
+add_dependencies(smip_tests smip)
+
+set_target_properties(smip_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
+    BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 )
 
-# add the executable
-add_executable (smip_tests ${Tests} ${EXT_SOURCE_FILES})
-
-# Add all the ADD_TEST for each test
-foreach (test ${TestsToRun})
-  get_filename_component (TName ${test} NAME_WE)
-  add_test (NAME ${TName} COMMAND smip_tests ${TName})
-  set_tests_properties(${TName} PROPERTIES ENVIRONMENT_MODIFICATION
-                     "PATH=path_list_prepend:$<$<BOOL:${WIN32}>:${OpenCV_DIR}/x64/mingw/bin>")
-endforeach ()
-
-foreach (test ${TestsToRun})
-  set(TESTFILES "${TESTFILES};${CMAKE_CURRENT_SOURCE_DIR}/${test}")
-endforeach ()
-message(STATUS "TESTFILES=${TESTFILES}")
-
-set(ALL_FILES
-    "${ALL_FILES}"
-    "${TESTFILES}" PARENT_SCOPE
-)
-
-TARGET_LINK_LIBRARIES(smip_tests
-    pthread
+# Link required libraries
+target_link_libraries(smip_tests PRIVATE
+    smip
     ${OpenCV_LIBS}
     ${FFTW3_LIBRARIES}
 )
 
+# Add tests individually with optional Windows environment overrides
+foreach(test ${TestsToRun})
+    get_filename_component(TName ${test} NAME_WE)
+    add_test(NAME ${TName} COMMAND smip_tests ${TName})
+    
+    if(WIN32)
+        set_tests_properties(${TName} PROPERTIES
+            ENVIRONMENT "PATH=$ENV{PATH};${CMAKE_BINARY_DIR}/output/lib;${EXECUTABLE_OUTPUT_PATH};${CMAKE_BINARY_DIR}/tests;C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\fftw3"
+            WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
+        )
+    endif()
+endforeach()
+
+# Collect test source files (for packaging, linting, etc.)
+foreach(test ${TestsToRun})
+    list(APPEND TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/${test}")
+endforeach()
+set(ALL_FILES ${ALL_FILES} ${TESTFILES} PARENT_SCOPE)
+
+# Post-build actions (e.g., DLL copies for Windows)
+add_custom_command(TARGET smip_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "smip.dll: $<TARGET_FILE:smip>"
+    COMMAND ${CMAKE_COMMAND} -E echo "Output dir: $<TARGET_FILE_DIR:smip_tests>"
+)
+
+if(WIN32)
+    # Copy smip.dll and FFTW3 to test runtime dir
+    add_custom_command(TARGET smip_tests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:smip>
+        $<TARGET_FILE_DIR:smip_tests>
+    )
+    add_custom_command(TARGET smip_tests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${FFTW3_LIBRARIES}"
+        "${CMAKE_BINARY_DIR}"
+    )
+endif()
