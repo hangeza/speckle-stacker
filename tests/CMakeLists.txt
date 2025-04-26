@@ -13,6 +13,7 @@ set(TestsToRun
     array2_test.cpp
     array3_test.cpp
     array4_test.cpp
+    array5_test.cpp
     range_test.cpp
     correl_test.cpp
     opencv_test.cpp
