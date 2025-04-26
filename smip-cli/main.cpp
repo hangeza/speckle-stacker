@@ -40,11 +40,11 @@ using namespace smip;
 void Usage(const char* progname)
 {
     using namespace std;
-    cout << "Speckle Masking Image Processing v"
-         << Version::major << "."
-         << Version::minor << "."
-         << Version::patch << endl;
-    cout << "2002-2012, 2025 HG Zaunick <hg.zaunick@gmx.de>" << endl;
+//     cout << "Speckle Masking Image Processing v"
+//          << Version::major << "."
+//          << Version::minor << "."
+//          << Version::patch << endl;
+//     cout << "(c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)" << endl;
     cout << endl;
     cout << "   Usage :  " << std::string(progname) << " [nrpbcvh?] <source root>" << endl;
     cout << "    available options:" << endl;
@@ -80,8 +80,11 @@ int main(int argc, char* argv[])
         [](int c) { exit(c); },
         std::cerr);
 
-    log::info() << "Speckle Masking Image Processing";
-    log::info() << "v1.0 (c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
+    log::info() << "Speckle Masking Image Processing v"
+        << Version::major << "."
+        << Version::minor << "."
+        << Version::patch;
+    log::info() << "(c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
 
     std::size_t max_frames { 10000 };
     std::size_t ref_frame { 0 };
@@ -205,7 +208,11 @@ int main(int argc, char* argv[])
     }
 
     if (swShowVersion) {
-        //         log::info() << "v1.0";
+        //         log::info() << 
+        std::cout << "Speckle Masking Image Processing v"
+         << Version::major << "."
+         << Version::minor << "."
+         << Version::patch << std::endl;
         exit(0);
     };
 
