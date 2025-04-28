@@ -179,9 +179,9 @@ Array2<T>::Array2(const Array2<T>& src)
 template <typename T>
 template <concept_arithmetic U>
 Array2<T>::Array2(const Array2<U>& src)
-    : Array_base<T>(src.m_xsize * src.m_ysize)
-    , m_xsize(src.m_xsize)
-    , m_ysize(src.m_ysize)
+    : Array_base<T>(src.xsize() * src.ysize())
+    , m_xsize(src.xsize())
+    , m_ysize(src.ysize())
 {
     std::transform(src.begin(), src.end(), this->begin(),
         [](const U& x) { return static_cast<T>(x); });
@@ -619,8 +619,8 @@ template <typename T>
 template <concept_arithmetic U>
 void Array2<T>::import(const Array2<U>& src)
 {
-    m_xsize = src.m_xsize;
-    m_ysize = src.m_ysize;
+    m_xsize = src.xsize();
+    m_ysize = src.ysize();
     if (this->size() != src.size()) {
         assert(this->resize(src.size()));
     }
