@@ -273,10 +273,10 @@ TYPED_TEST(Array2Test, ConvertMethod)
         auto b = Array2<float>::convert<TypeParam>(a);
         TEST_EQUAL(b.ncols(), 2);
         TEST_EQUAL(b.nrows(), 2);
-        TEST_NEAR(b(0, 0), 1.0f, 1e-12);
-        TEST_NEAR(b(1, 0), 2.0f, 1e-12);
-        TEST_NEAR(b(0, 1), 3.0f, 1e-12);
-        TEST_NEAR(b(1, 1), 4.0f, 1e-12);
+        TEST_EQUAL_OR_NEAR(b(0, 0), 1.0f);
+        TEST_EQUAL_OR_NEAR(b(1, 0), 2.0f);
+        TEST_EQUAL_OR_NEAR(b(0, 1), 3.0f);
+        TEST_EQUAL_OR_NEAR(b(1, 1), 4.0f);
     } else {
         // You can optionally print that the test was skipped:
         std::cout << "[SKIPPED] Array2 Convert for non-arithmetic type: " << type_name<TypeParam>() << "\n";
