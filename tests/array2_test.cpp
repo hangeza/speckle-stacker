@@ -14,7 +14,7 @@ struct Array2Test {
 };
 
 // Define the type list
-using TestTypes = type_list<int, std::size_t, float, double, std::complex<double>>;
+using TestTypes = type_list<int, std::size_t, float, double, std::complex<float>, std::complex<double>>;
 
 // Register the fixture with the types
 TYPED_TEST_SUITE(Array2Test, TestTypes);
