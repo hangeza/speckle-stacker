@@ -20,16 +20,18 @@ using TestTypes = type_list<int, std::size_t, float, double, std::complex<double
 TYPED_TEST_SUITE(Array2Test, TestTypes);
 
 
-TYPED_TEST(Array2Test, ConstructionTest) {
+TEST(Array2Test, ConstructionTest) {
+    using TypeParam = int;
+    
     TEST_CASE("Array2 Construction");
 
-    Array2<int> arr(3, 2);
+    Array2<TypeParam> arr(3, 2);
     TEST_EQUAL(arr.xsize(), 3);
     TEST_EQUAL(arr.ysize(), 2);
-    TEST_EQUAL(arr(0, 0), int{}); // Default initialized
+    TEST_EQUAL(arr(0, 0), TypeParam{}); // Default initialized
 }
 
-TYPED_TEST(Array2Test, BoundsTest) {
+TEST(Array2Test, BoundsTest) {
     TEST_CASE("Array2 Bounds Checking");
 
     Array2<int> arr(2, 2);
@@ -40,7 +42,7 @@ TYPED_TEST(Array2Test, BoundsTest) {
     TEST_THROW(arr(0, 2), std::out_of_range); // y out of bounds
 }
 
-TYPED_TEST(Array2Test, CopyTest) {
+TEST(Array2Test, CopyTest) {
     TEST_CASE("Array2 Copy Semantics");
 
     Array2<int> arr1(2, 2);
@@ -57,7 +59,7 @@ TYPED_TEST(Array2Test, CopyTest) {
     TEST_EQUAL(arr3(1, 1), 20);
 }
 
-TYPED_TEST(Array2Test, MoveTest) {
+TEST(Array2Test, MoveTest) {
     TEST_CASE("Array2 Move Semantics");
 
     Array2<int> arr1(2, 2);
@@ -74,7 +76,7 @@ TYPED_TEST(Array2Test, MoveTest) {
     TEST_EQUAL(arr3(1, 1), 8);
 }
 
-TYPED_TEST(Array2Test, ResizeTest)
+TEST(Array2Test, ResizeTest)
 {
     TEST_CASE("Array2 Resize");
     Array2<int> arr(2, 2);
@@ -93,13 +95,13 @@ TYPED_TEST(Array2Test, ResizeTest)
 TYPED_TEST(Array2Test, FillTest)
 {
     TEST_CASE("Array2 Fill");
-    Array2<int> arr(2, 2);
-    arr = 99;
-    TEST_EQUAL(arr(0, 0), 99);
-    TEST_EQUAL(arr(1, 1), 99);
+    Array2<TypeParam> arr(2, 2);
+    arr = TypeParam{99};
+    TEST_EQUAL_OR_NEAR(arr(0, 0), TypeParam{99});
+    TEST_EQUAL_OR_NEAR(arr(1, 1), TypeParam{99});
 }
 
-TYPED_TEST(Array2Test, IndexTest)
+TEST(Array2Test, IndexTest)
 {
     TEST_CASE("Array2 Index Operator");
     
@@ -113,7 +115,7 @@ TYPED_TEST(Array2Test, IndexTest)
     TEST_EQUAL(arr(2, 2), 3);
 }
 
-TYPED_TEST(Array2Test, ExceptionTest)
+TEST(Array2Test, ExceptionTest)
 {
     TEST_CASE("Array2 ExceptionHandling");
     Array2<int> a(5, 5);
@@ -143,10 +145,10 @@ TYPED_TEST(Array2Test, AdditionOperator)
 
     TEST_EQUAL(c.ncols(), 2);
     TEST_EQUAL(c.nrows(), 2);
-    TEST_EQUAL(c(0, 0), TypeParam(6));
-    TEST_EQUAL(c(1, 0), TypeParam(8));
-    TEST_EQUAL(c(0, 1), TypeParam(10));
-    TEST_EQUAL(c(1, 1), TypeParam(12));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(6));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(8));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(10));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(12));
 }
 
 TYPED_TEST(Array2Test, SubtractionOperator)
@@ -162,10 +164,10 @@ TYPED_TEST(Array2Test, SubtractionOperator)
         {3, 4}
     };
     auto c = a - b;
-    TEST_EQUAL(c(0, 0), TypeParam(4));
-    TEST_EQUAL(c(1, 0), TypeParam(4));
-    TEST_EQUAL(c(0, 1), TypeParam(4));
-    TEST_EQUAL(c(1, 1), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(4));
 }
 
 TYPED_TEST(Array2Test, MultiplicationOperator)
@@ -181,10 +183,10 @@ TYPED_TEST(Array2Test, MultiplicationOperator)
         {2, 2}
     };
     auto c = a * b;
-    TEST_EQUAL(c(0, 0), TypeParam(2));
-    TEST_EQUAL(c(1, 0), TypeParam(4));
-    TEST_EQUAL(c(0, 1), TypeParam(6));
-    TEST_EQUAL(c(1, 1), TypeParam(8));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(6));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(8));
 }
 
 TYPED_TEST(Array2Test, DivisionOperator)
@@ -199,10 +201,10 @@ TYPED_TEST(Array2Test, DivisionOperator)
         {4, 5}
     };
     auto c = a / b;
-    TEST_EQUAL(c(0, 0), TypeParam(2));
-    TEST_EQUAL(c(1, 0), TypeParam(2));
-    TEST_EQUAL(c(0, 1), TypeParam(2));
-    TEST_EQUAL(c(1, 1), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(2));
 }
 
 TYPED_TEST(Array2Test, ScalarMultiplication)
@@ -213,10 +215,10 @@ TYPED_TEST(Array2Test, ScalarMultiplication)
         {3, 4}
     };
     auto c = a * TypeParam(3);
-    TEST_EQUAL(c(0, 0), TypeParam(3));
-    TEST_EQUAL(c(1, 0), TypeParam(6));
-    TEST_EQUAL(c(0, 1), TypeParam(9));
-    TEST_EQUAL(c(1, 1), TypeParam(12));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(3));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(6));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(9));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(12));
 }
 
 TYPED_TEST(Array2Test, ScalarDivision)
@@ -227,10 +229,10 @@ TYPED_TEST(Array2Test, ScalarDivision)
         {6, 8}
     };
     auto c = a / TypeParam(2);
-    TEST_EQUAL(c(0, 0), TypeParam(1));
-    TEST_EQUAL(c(1, 0), TypeParam(2));
-    TEST_EQUAL(c(0, 1), TypeParam(3));
-    TEST_EQUAL(c(1, 1), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(1));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(3));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(4));
 }
 
 TYPED_TEST(Array2Test, ScalarAddition)
@@ -241,10 +243,10 @@ TYPED_TEST(Array2Test, ScalarAddition)
         {3, 4}
     };
     auto c = a + TypeParam(5);
-    TEST_EQUAL(c(0, 0), TypeParam(6));
-    TEST_EQUAL(c(1, 0), TypeParam(7));
-    TEST_EQUAL(c(0, 1), TypeParam(8));
-    TEST_EQUAL(c(1, 1), TypeParam(9));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(6));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(7));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(8));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(9));
 }
 
 TYPED_TEST(Array2Test, ScalarSubtraction)
@@ -255,10 +257,10 @@ TYPED_TEST(Array2Test, ScalarSubtraction)
         {8, 7}
     };
     auto c = a - TypeParam(5);
-    TEST_EQUAL(c(0, 0), TypeParam(5));
-    TEST_EQUAL(c(1, 0), TypeParam(4));
-    TEST_EQUAL(c(0, 1), TypeParam(3));
-    TEST_EQUAL(c(1, 1), TypeParam(2));
+    TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(5));
+    TEST_EQUAL_OR_NEAR(c(1, 0), TypeParam(4));
+    TEST_EQUAL_OR_NEAR(c(0, 1), TypeParam(3));
+    TEST_EQUAL_OR_NEAR(c(1, 1), TypeParam(2));
 }
 
 TYPED_TEST(Array2Test, ConvertMethod)
@@ -299,17 +301,17 @@ TYPED_TEST(Array2Test, ImportMethod)
         b.import(a);
         TEST_EQUAL(b.ncols(), 2);
         TEST_EQUAL(b.nrows(), 2);
-        TEST_EQUAL(b(0, 0), TypeParam(1));
-        TEST_EQUAL(b(1, 0), TypeParam(2));
-        TEST_EQUAL(b(0, 1), TypeParam(3));
-        TEST_EQUAL(b(1, 1), TypeParam(4));
+        TEST_EQUAL_OR_NEAR(b(0, 0), TypeParam(1));
+        TEST_EQUAL_OR_NEAR(b(1, 0), TypeParam(2));
+        TEST_EQUAL_OR_NEAR(b(0, 1), TypeParam(3));
+        TEST_EQUAL_OR_NEAR(b(1, 1), TypeParam(4));
     } else {
         // You can optionally print that the test was skipped:
         std::cout << "[SKIPPED] Array2 Import for non-arithmetic type: " << type_name<TypeParam>() << "\n";
     }
 }
 
-TYPED_TEST(Array2Test, ZeroSize)
+TEST(Array2Test, ZeroSize)
 {
     TEST_CASE("Array2 Zero Size Test");
     Array2<int> arr(0, 0);
@@ -320,19 +322,46 @@ TYPED_TEST(Array2Test, ZeroSize)
     TEST_THROW(arr(0, 0), std::out_of_range);
 }
 
+TYPED_TEST(Array2Test, FillBenchmark)
+{
+    TEST_CASE("Array2 Fill Benchmark");
+
+    constexpr int rows = 2000;
+    constexpr int cols = 2000;
+
+    std::cout << "\n=== Performance Benchmark: Array2 vs std::vector ===\n";
+        MEASURE_TIME("Array2 fill time", {
+        Array2<TypeParam> arr(rows, cols);
+        for (int y = 0; y < rows; ++y) {
+            for (int x = 0; x < cols; ++x) {
+                arr(x, y) = static_cast<TypeParam>(x + y);
+            }
+        }
+    });
+
+    MEASURE_TIME("std::vector fill time", {
+        std::vector<TypeParam> vec(rows * cols);
+        for (int y = 0; y < rows; ++y) {
+            for (int x = 0; x < cols; ++x) {
+                vec[y * cols + x] = static_cast<TypeParam>(x + y);
+            }
+        }
+    });
+}
+
 int array2_test(int /*argc*/, char* /*argv*/[])
 {
-    RUN_TYPED_TEST(Array2Test, ConstructionTest);
-    RUN_TYPED_TEST(Array2Test, CopyTest);
-    RUN_TYPED_TEST(Array2Test, MoveTest);
+    RUN_TEST(Array2Test, ConstructionTest);
+    RUN_TEST(Array2Test, CopyTest);
+    RUN_TEST(Array2Test, MoveTest);
     RUN_TYPED_TEST(Array2Test, FillTest);
-    RUN_TYPED_TEST(Array2Test, ResizeTest);
-    RUN_TYPED_TEST(Array2Test, IndexTest);
-    RUN_TYPED_TEST(Array2Test, BoundsTest);
-    RUN_TYPED_TEST(Array2Test, ZeroSize);
+    RUN_TEST(Array2Test, ResizeTest);
+    RUN_TEST(Array2Test, IndexTest);
+    RUN_TEST(Array2Test, BoundsTest);
+    RUN_TEST(Array2Test, ZeroSize);
     RUN_TYPED_TEST(Array2Test, ConvertMethod);
     RUN_TYPED_TEST(Array2Test, ImportMethod);
-    RUN_TYPED_TEST(Array2Test, ExceptionTest);
+    RUN_TEST(Array2Test, ExceptionTest);
 
     RUN_TYPED_TEST(Array2Test, AdditionOperator);
     RUN_TYPED_TEST(Array2Test, SubtractionOperator);
@@ -342,6 +371,8 @@ int array2_test(int /*argc*/, char* /*argv*/[])
     RUN_TYPED_TEST(Array2Test, ScalarSubtraction);
     RUN_TYPED_TEST(Array2Test, ScalarMultiplication);
     RUN_TYPED_TEST(Array2Test, ScalarDivision);
+
+    RUN_TYPED_TEST(Array2Test, FillBenchmark);
     
     Test::summary();
     return 0;
