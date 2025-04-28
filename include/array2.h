@@ -716,7 +716,7 @@ Array2<T> operator+(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z += y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
@@ -724,7 +724,7 @@ Array2<T> operator-(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z -= y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
@@ -732,7 +732,7 @@ Array2<T> operator*(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z *= y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
