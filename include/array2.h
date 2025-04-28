@@ -291,12 +291,16 @@ T* Array2<T>::operator[](int row)
 template <typename T>
 T& Array2<T>::operator()(std::size_t col, std::size_t row)
 {
+    if (col >= m_xsize) throw std::out_of_range("X index out of bounds");
+    if (row >= m_ysize) throw std::out_of_range("Y index out of bounds");
     return this->data().get()[row * stride() + col];
 }
 
 template <typename T>
 const T& Array2<T>::operator()(std::size_t col, std::size_t row) const
 {
+    if (col >= m_xsize) throw std::out_of_range("X index out of bounds");
+    if (row >= m_ysize) throw std::out_of_range("Y index out of bounds");
     return this->data().get()[row * stride() + col];
 }
 
@@ -622,7 +626,11 @@ void Array2<T>::import(const Array2<U>& src)
     m_xsize = src.xsize();
     m_ysize = src.ysize();
     if (this->size() != src.size()) {
-        assert(this->resize(src.size()));
+        try {
+            Array_base<T>::resize(src.size());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Array2 assignment failed: ") + e.what());
+        }
     }
     std::transform(src.begin(), src.end(), this->begin(), []() {});
 }
