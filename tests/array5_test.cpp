@@ -27,14 +27,32 @@ int array5_test(int /*argc*/, char* /*argv*/[])
             for (size_t j = 0; j < a.ysize(); ++j)
                 assert(a(i, j) == static_cast<int>(i * 10 + j));
 
-        // Test at()
+        // Test operator(int,int)
         assert(a(1, 2) == 12);
-
-//         Array2<int> b(); // empty
-//         b = a;
-//         assert(b.xsize() == 3);
-//         assert(b.ysize() == 4);
-//         assert(b.size() == 12);
+        a(1,2) = 13;
+        assert(a(1, 2) == 13);
+        
+        // Test assignment
+        Array2<int> b; // empty
+        b.print();
+        b = a;
+        b.print();
+        b.set_at(a.data(),a.size());
+        Array2<int> c(5,4); // differently sized array
+        // assignment to array which carries a reference...should throw
+        try {
+            b = c;
+            // should never arrive here
+            assert(false);
+        } catch(const std::exception& e) {
+            c = a;
+        }
+        assert(c.xsize() == 3);
+        assert(c.ysize() == 4);
+        assert(c.size() == 12);
+        assert(c(1, 2) == 13);
+        c(1,2) = 12;
+        assert(c(1, 2) == 12);
 
         std::cout << "array5_test passed.\n";
         return 0;
