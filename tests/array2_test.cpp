@@ -129,8 +129,6 @@ TEST(Array2Test, ExceptionTest)
 
 TYPED_TEST(Array2Test, AdditionOperator)
 {
-//     using Fixture = Array2Test<TypeParam>;
-
     TEST_CASE("Array2 Addition Operator");
 
     Array2<TypeParam> a = {

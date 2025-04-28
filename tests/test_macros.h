@@ -147,12 +147,6 @@ struct type_list {};
     void FixtureName##_##TestName::operator()() const
 
 
-// Internal helper: apply a test to all types
-// template <typename... Types, typename TestFunc>
-// void run_typed_test(TestFunc test_func, type_list<Types...>) {
-//     (test_func.template operator()<Types>(), ...);
-// }
-
 template <typename... Types, typename TestFunc>
 void run_typed_test(TestFunc test_func, type_list<Types...>) {
     ((
