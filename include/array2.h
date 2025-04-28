@@ -632,7 +632,7 @@ void Array2<T>::import(const Array2<U>& src)
             throw std::runtime_error(std::string("Array2 assignment failed: ") + e.what());
         }
     }
-    std::transform(src.begin(), src.end(), this->begin(), []() {});
+    std::transform(src.begin(), src.end(), this->begin(), [](const U& x) { return static_cast<T>(x);});
 }
 
 // non-static conversion
