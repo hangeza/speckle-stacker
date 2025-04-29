@@ -3,9 +3,26 @@
 #include <cmath>
 #include <complex>
 #include <constants.h>
+#include <version> // For feature-test macros, if available
 
 #include "global.h"
-// #include "smip_export.h"
+
+// Only define std::unreachable if not already available
+// it should be part of std lib from C++23 (202202L)
+// see https://en.cppreference.com/w/cpp/utility/unreachable
+#if !defined(__cpp_lib_unreachable) //|| __cpp_lib_unreachable < 202202L
+namespace std {
+    [[noreturn]] inline void unreachable()
+    {
+        // Compiler-specific unreachable markers
+    #if defined(_MSC_VER) && !defined(__clang__) // MSVC
+        __assume(false);
+    #else // GCC, Clang
+        __builtin_unreachable();
+    #endif
+    }
+}
+#endif
 
 namespace smip {
 

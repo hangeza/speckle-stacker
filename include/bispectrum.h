@@ -4,6 +4,7 @@
 #include <cassert>
 #include <complex>
 #include <cstdlib>
+#include <cstddef>
 #include <errno.h>
 #include <fstream>
 #include <iostream>
@@ -12,10 +13,12 @@
 #include <string>
 #include <valarray>
 #include <vector>
+#include <optional>
+#include <algorithm>
 
 #include "array2.h"
-
-// #include "smip_export.h"
+#include "types.h"
+#include "utility.h"
 
 namespace smip {
 
@@ -25,9 +28,13 @@ namespace smip {
 template <typename T>
 class Bispectrum : public Array_base<T> {
 public:
-    typedef DimVector<std::size_t, 4> extents;
-    typedef DimVector<int, 4> s_indices;
-    typedef DimVector<std::size_t, 4> u_indices;
+    using extents = DimVector<std::size_t, 4>;
+    using s_indices = DimVector<int, 4>;
+    using u_indices = DimVector<std::size_t, 4>;
+    using Array_base<T>::operator+=;
+    using Array_base<T>::operator-=;
+    using Array_base<T>::operator*=;
+    using Array_base<T>::operator/=;
 
     struct ElementOutOfBounds : std::runtime_error {
         using std::runtime_error::runtime_error;
@@ -37,14 +44,14 @@ public:
     /*! Creates Bispectrum with sizes [<i>i,j,k,l</i>] */
     Bispectrum(const extents& dimsizes);
     Bispectrum(const Bispectrum& other);
-    //Bispectrum(Bispectrum&& other);
+    Bispectrum(Bispectrum&& other) noexcept = default;
+    Bispectrum& operator=(Bispectrum&& other) noexcept = default;
 
-    /*! default destructor */
-    ~Bispectrum() { }
+    ~Bispectrum() = default;
 
     /*! Prints many information about the actual instance to stdout
     */
-    void print();
+    void print() const;
     /*! Write data to binary file <i>filename</i> */
     void write_to_file(const std::string& filename) const;
     /*! Read data from binary file <i>filename</i> \n
@@ -52,7 +59,10 @@ public:
     */
     void read_from_file(const std::string& filename);
     /*! returns element with indices [<i>i,j,k,l</i>] */
-    T get_element(s_indices indices) const;
+    [[nodiscard]] T get_element(s_indices indices) const;
+    T operator()(s_indices indices) const { return get_element(indices); }
+    //T& operator()(s_indices indices);
+    void get_elements(const std::vector<s_indices>& idx_list, std::vector<T>& results) const;
     /*! write element \e value to position with indices [<i>i,j,k,l</i>] */
     void put_element(s_indices indices, const T& value);
     /*! overloaded = operator */
@@ -66,38 +76,60 @@ public:
     /*! overloaded /= operator */
     Bispectrum& operator/=(const Bispectrum& x);
     /*! overloaded += operator */
-    Bispectrum& operator+=(const T& c);
-    /*! overloaded -= operator */
-    Bispectrum& operator-=(const T& c);
-    /*! overloaded *= operator */
-    Bispectrum& operator*=(const T& c);
-    /*! overloaded /= operator */
-    Bispectrum& operator/=(const T& c);
+//     Bispectrum& operator+=(const T& c);
+//     /*! overloaded -= operator */
+//     Bispectrum& operator-=(const T& c);
+//     /*! overloaded *= operator */
+//     Bispectrum& operator*=(const T& c);
+//     /*! overloaded /= operator */
+//     Bispectrum& operator/=(const T& c);
     /*! calculate indices [<i>i,j,k,l</i>] to given address offset \e addr 
     */
-    s_indices calc_indices(std::size_t addr) const;
+    [[nodiscard]] s_indices calc_indices(std::size_t addr) const;
     template <typename U>
     void accumulate_from_fft(const Array2<U>& fft);
 
-public:
-    std::size_t size() const { return base_size(); };
-    extents sizes() const;
-    extents base_sizes() const;
-    std::size_t base_size() const { return { base_sizes()[0] * base_sizes()[1] * base_sizes()[2] * base_sizes()[3] }; }
-    std::size_t totalsize() const { return { sizes().product() }; }
-    s_indices min_indices() const;
-    s_indices max_indices() const;
+    [[nodiscard]] std::size_t size() const { return base_size(); }
+    [[nodiscard]] extents sizes() const noexcept;
+    [[nodiscard]] extents base_sizes() const noexcept;
+    [[nodiscard]] std::size_t base_size() const { return base_sizes().product(); }
+    [[nodiscard]] std::size_t totalsize() const { return sizes().product(); }
+    [[nodiscard]] s_indices min_indices() const;
+    [[nodiscard]] s_indices max_indices() const;
 
-    /*! returns address offset of element with indices [<i>i,j,k,l</i>] */
-    std::size_t calc_offset(s_indices indices) const;
 
 private:
+    enum class SymmetryCase { T1, T3, T6, T7, T9, T12 };
+    
     extents m_dimsizes { 0, 0, 0, 0 };
+    [[nodiscard]] static constexpr SymmetryCase classify_indices(const s_indices& indices) noexcept;
+    [[nodiscard]] s_indices canonicalize_indices(s_indices indices, bool& conjugate) const noexcept;
+
+    T& data_at(std::size_t offset) noexcept;
+    const T& data_at(std::size_t offset) const noexcept;
+    /*! returns address offset of element with indices [<i>i,j,k,l</i>] */
+    [[nodiscard]] std::size_t calc_offset(s_indices indices) const;
+
+    [[nodiscard]] std::string build_error_message(const std::string& prefix, const s_indices& indices) const;
+    [[nodiscard]] std::string to_string(const s_indices& indices) const;
+    mutable std::optional<s_indices> cached_min_indices_;
+    mutable std::optional<s_indices> cached_max_indices_;
+
 };
 
 // *************************************************
 // Member definitions / implementation part
 // *************************************************
+
+template <typename T>
+constexpr typename Bispectrum<T>::SymmetryCase Bispectrum<T>::classify_indices(const s_indices& indices) noexcept
+{
+    if (indices[0] <= 0 && indices[2] <= 0) return SymmetryCase::T1;
+    if (indices[0] > 0 && indices[2] > 0) return SymmetryCase::T7;
+    if (indices[0] > 0 && indices[2] <= 0) return (indices[0] + indices[2] > 0) ? SymmetryCase::T6 : SymmetryCase::T9;
+    if (indices[0] <= 0 && indices[2] > 0) return (indices[0] + indices[2] > 0) ? SymmetryCase::T3 : SymmetryCase::T12;
+    std::unreachable(); // unreachable since all combinations are covered
+}
 
 template <typename T>
 Bispectrum<T>::Bispectrum()
@@ -110,7 +142,10 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>::extents& dimsizes)
     : m_dimsizes { dimsizes }
 {
     this->resize(base_size());
-    std::fill(Array_base<T>::begin(), Array_base<T>::end(), T {});
+    // the following lines initialize the array with default zero values depending on type
+    // both versions should be equally performant
+//     std::fill(Array_base<T>::begin(), Array_base<T>::end(), T {});
+    std::fill_n(Array_base<T>::data().get(), base_size(), T {});
 }
 
 template <typename T>
@@ -122,7 +157,7 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
 }
 
 template <typename T>
-typename Bispectrum<T>::extents Bispectrum<T>::sizes() const
+typename Bispectrum<T>::extents Bispectrum<T>::sizes() const noexcept
 {
     // true sizes of ux,uy,vx,vy dimensions
     extents vec { m_dimsizes / 2 };
@@ -132,7 +167,7 @@ typename Bispectrum<T>::extents Bispectrum<T>::sizes() const
 }
 
 template <typename T>
-typename Bispectrum<T>::extents Bispectrum<T>::base_sizes() const
+typename Bispectrum<T>::extents Bispectrum<T>::base_sizes() const noexcept
 {
     // reduced sizes of ux,uy,vx,vy dimensions
     extents vec = { this->sizes() };
@@ -189,41 +224,41 @@ Bispectrum<T>& Bispectrum<T>::operator/=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
-Bispectrum<T>& Bispectrum<T>::operator+=(const T& c)
-{
-    for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-        *it += c;
-    }
-    return *this;
-}
-
-template <typename T>
-Bispectrum<T>& Bispectrum<T>::operator-=(const T& c)
-{
-    for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-        *it -= c;
-    }
-    return *this;
-}
-
-template <typename T>
-Bispectrum<T>& Bispectrum<T>::operator*=(const T& c)
-{
-    for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-        *it *= c;
-    }
-    return *this;
-}
-
-template <typename T>
-Bispectrum<T>& Bispectrum<T>::operator/=(const T& c)
-{
-    for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-        *it /= c;
-    }
-    return *this;
-}
+// template <typename T>
+// Bispectrum<T>& Bispectrum<T>::operator+=(const T& c)
+// {
+//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
+//         *it += c;
+//     }
+//     return *this;
+// }
+// 
+// template <typename T>
+// Bispectrum<T>& Bispectrum<T>::operator-=(const T& c)
+// {
+//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
+//         *it -= c;
+//     }
+//     return *this;
+// }
+// 
+// template <typename T>
+// Bispectrum<T>& Bispectrum<T>::operator*=(const T& c)
+// {
+//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
+//         *it *= c;
+//     }
+//     return *this;
+// }
+// 
+// template <typename T>
+// Bispectrum<T>& Bispectrum<T>::operator/=(const T& c)
+// {
+//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
+//         *it /= c;
+//     }
+//     return *this;
+// }
 
 template <typename T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) const
@@ -300,7 +335,7 @@ void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
                         t *= fft.at({ k, l });
                         t *= std::conj(fft.at({ i + k, j + l }));
                         //cout<<"Indices="<<i<<";"<<j<<";"<<k<<";"<<l<<endl;
-                        Array_base<T>::data().get()[calc_offset({ i, j, k, l })] += t;
+                        this->data_at(calc_offset({ i, j, k, l })) += t;
                     }
                 }
             }
@@ -370,7 +405,7 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
 }
 
 template <typename T>
-void Bispectrum<T>::print()
+void Bispectrum<T>::print() const
 {
     std::cout << "Object: Bispectrum" << std::endl;
     std::cout << "Address: " << this << std::endl;
@@ -387,120 +422,242 @@ void Bispectrum<T>::print()
     std::cout << " (vs. full size * 16 byte cmplx double)" << std::endl;
 }
 
+// template <typename T>
+// T Bispectrum<T>::get_element(s_indices indices) const
+// {
+//     // wenn k,l ausserhalb, dann tausche i,j und k,l
+//     if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
+//         std::swap(indices[0], indices[2]);
+//         std::swap(indices[1], indices[3]);
+//     }
+//     // wenn jetzt noch ausserhalb, dann Abbruch
+//     if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
+//         throw ElementOutOfBounds("trying to access bispectrum element out of range");
+//     }
+//     bool conjug { false };
+// 
+//     s_indices uv { 0, 0, 0, 0 }; // ux,uy,vx,vy
+// 
+//     if ((indices[0] <= 0) && (indices[2] <= 0)) {
+//         // T1
+//         uv = indices;
+//     } else if ((indices[0] > 0) && (indices[2] > 0)) {
+//         // T7
+//         uv = -indices;
+//         conjug = true;
+//     } else if ((indices[0] > 0) && (indices[2] <= 0)) {
+//         uv = indices * s_indices { -1, -1, 1, 1 };
+//         if (indices[0] + indices[2] > 0) {
+//             // T6
+//             uv -= s_indices { indices[2], indices[3], 0, 0 };
+//         } else {
+//             // T9
+//             uv += s_indices { 0, 0, indices[0], indices[1] };
+//             conjug = true;
+//         }
+//     } else if ((indices[0] <= 0) && (indices[2] > 0)) {
+//         uv = indices * s_indices { 1, 1, -1, -1 };
+//         if (indices[0] + indices[2] > 0) {
+//             // T3
+//             uv -= s_indices { 0, 0, indices[0], indices[1] };
+//         } else {
+//             // T12
+//             uv += s_indices { indices[2], indices[3], 0, 0 };
+//             conjug = true;
+//         }
+//     } else {
+//         /*
+//         std::cerr<<"Bispectrum::GetElement(int,int,int,int):"<<std::endl;
+//         std::cerr<<"ups - ein Element ist durchgerutscht : ["
+//             <<uv[0]<<","<<uv[1]<<","<<uv[2]<<","<<uv[3]<<"]"<<std::endl;
+//     */
+//         throw ElementOutOfBounds("trying to access bispectrum element out of range - unaccounted index");
+//     }
+// 
+//     // wenn v ausserhalb, dann tausche u und v
+//     if ((std::abs(uv[2]) > max_indices()[2]) || (std::abs(uv[3]) > max_indices()[3])) {
+//         std::swap(uv[0], uv[2]);
+//         std::swap(uv[1], uv[3]);
+//     }
+// 
+//     std::size_t addr { calc_offset(uv) };
+// 
+//     if (addr >= base_size()) {
+//         /*
+//         std::cerr<<"error: trying to access element out of range"<<std::endl;
+//         std::cerr<<"Bispectrum::GetElement(int,int,int,int)m2"<<std::endl;
+//         std::cerr<<"addr="<<addr<<" basesize="<<base_size()<<"  Indices="<<uv[0]<<";"<<uv[1]<<";"<<uv[2]<<";"<<uv[3]<<std::endl;
+//         */
+//         throw ElementOutOfBounds("trying to access bispectrum element out of range");
+//     }
+//     if (conjug)
+//         return std::conj(Array_base<T>::data().get()[addr]);
+//     return Array_base<T>::data().get()[addr];
+// }
+
 template <typename T>
 T Bispectrum<T>::get_element(s_indices indices) const
 {
-    // wenn k,l ausserhalb, dann tausche i,j und k,l
-    if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
+    const s_indices max_idx = max_indices(); // cache once
+
+    if ((std::abs(indices[2]) > max_idx[2]) || (std::abs(indices[3]) > max_idx[3])) {
         std::swap(indices[0], indices[2]);
         std::swap(indices[1], indices[3]);
     }
-    // wenn jetzt noch ausserhalb, dann Abbruch
-    if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
-        throw ElementOutOfBounds("trying to access bispectrum element out of range");
-    }
-    bool conjug { false };
-
-    s_indices uv { 0, 0, 0, 0 }; // ux,uy,vx,vy
-
-    if ((indices[0] <= 0) && (indices[2] <= 0)) {
-        // T1
-        uv = indices;
-    } else if ((indices[0] > 0) && (indices[2] > 0)) {
-        // T7
-        uv = -indices;
-        conjug = true;
-    } else if ((indices[0] > 0) && (indices[2] <= 0)) {
-        uv = indices * s_indices { -1, -1, 1, 1 };
-        if (indices[0] + indices[2] > 0) {
-            // T6
-            uv -= s_indices { indices[2], indices[3], 0, 0 };
-        } else {
-            // T9
-            uv += s_indices { 0, 0, indices[0], indices[1] };
-            conjug = true;
-        }
-    } else if ((indices[0] <= 0) && (indices[2] > 0)) {
-        uv = indices * s_indices { 1, 1, -1, -1 };
-        if (indices[0] + indices[2] > 0) {
-            // T3
-            uv -= s_indices { 0, 0, indices[0], indices[1] };
-        } else {
-            // T12
-            uv += s_indices { indices[2], indices[3], 0, 0 };
-            conjug = true;
-        }
-    } else {
-        /*
-        std::cerr<<"Bispectrum::GetElement(int,int,int,int):"<<std::endl;
-        std::cerr<<"ups - ein Element ist durchgerutscht : ["
-            <<uv[0]<<","<<uv[1]<<","<<uv[2]<<","<<uv[3]<<"]"<<std::endl;
-    */
-        throw ElementOutOfBounds("trying to access bispectrum element out of range - unaccounted index");
+    if ((std::abs(indices[2]) > max_idx[2]) || (std::abs(indices[3]) > max_idx[3])) [[unlikely]] {
+        throw std::out_of_range(build_error_message("Bispectrum: Initial element access bounds check failed", indices));
     }
 
-    // wenn v ausserhalb, dann tausche u und v
-    if ((std::abs(uv[2]) > max_indices()[2]) || (std::abs(uv[3]) > max_indices()[3])) {
+    bool conjugate = false;
+    auto uv = canonicalize_indices(indices, conjugate);
+
+    if ((std::abs(uv[2]) > max_idx[2]) || (std::abs(uv[3]) > max_idx[3])) {
         std::swap(uv[0], uv[2]);
         std::swap(uv[1], uv[3]);
     }
 
-    std::size_t addr { calc_offset(uv) };
+    std::size_t addr = calc_offset(uv);
 
-    if (addr >= base_size()) {
-        /*
-        std::cerr<<"error: trying to access element out of range"<<std::endl;
-        std::cerr<<"Bispectrum::GetElement(int,int,int,int)m2"<<std::endl;
-        std::cerr<<"addr="<<addr<<" basesize="<<base_size()<<"  Indices="<<uv[0]<<";"<<uv[1]<<";"<<uv[2]<<";"<<uv[3]<<std::endl;
-        */
-        throw ElementOutOfBounds("trying to access bispectrum element out of range");
+    if (addr >= this->base_size()) [[unlikely]] {
+        throw std::out_of_range(build_error_message("Bispectrum: element address out of bounds.", indices));
     }
-    if (conjug)
-        return std::conj(Array_base<T>::data().get()[addr]);
-    return Array_base<T>::data().get()[addr];
+
+    if (conjugate) [[likely]]
+        return std::conj(data_at(addr));
+    return data_at(addr);
+}
+
+template <typename T>
+void Bispectrum<T>::get_elements(const std::vector<s_indices>& idx_list, std::vector<T>& results) const
+{
+    results.clear();
+    results.reserve(idx_list.size());
+
+    for (const auto& idx : idx_list) {
+        results.push_back(get_element(idx));
+    }
 }
 
 template <typename T>
 void Bispectrum<T>::put_element(s_indices indices, const T& value)
 {
-    std::size_t addr { calc_offset(indices) };
-    if (addr >= base_size()) {
+    std::size_t addr = this->calc_offset(indices);
+    if (addr >= this->base_size()) [[unlikely]] {
         /*
         cerr<<"error: trying to access element out of range"<<endl;
         cerr<<"Bispectrum::PutElement(int,int,int,int)"<<endl;
         cerr<<"size="<<_size<<"  Indices="<<i<<";"<<j<<";"<<k<<";"<<l<<endl;
         */
-        throw ElementOutOfBounds("trying to access bispectrum element out of range");
+        throw std::out_of_range(build_error_message("Bispectrum: put_element address out of bounds.", indices));
+        //throw ElementOutOfBounds("trying to access bispectrum element out of range");
     }
-    Array_base<T>::data().get()[addr] = value;
+//     Array_base<T>::data().get()[addr] = value;
+    data_at(addr) = value;
 }
 
 template <typename T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
 {
-    s_indices mins {};
-    //     std::cout << "s_indices Bispectrum<T>::min_indices() const : \n";
-    //     std::cout << " mins = " << mins << " (size="<< mins.size()<<"\n";
-    extents sizes = this->sizes();
-    //     std::cout << " sizes = " << sizes << " (size="<< sizes.size()<<"\n";
-    // Use std::transform to convert from unsigned long to int
-    std::transform(std::begin(sizes), std::end(sizes), std::begin(mins),
-        [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
-    return mins;
+    if (!cached_min_indices_) {
+        cached_min_indices_.emplace();
+        extents sizes = this->sizes();
+        std::transform(std::begin(sizes), std::end(sizes),
+                       std::begin(*cached_min_indices_),
+                       [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
+    }
+    return *cached_min_indices_;
 }
 
 template <typename T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
 {
-    s_indices maxes {};
-    extents sizes = this->sizes();
-    // following cast operation is equivalent to
-    // maxes = sizes
-    std::transform(std::begin(sizes), std::end(sizes), std::begin(maxes),
-        [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
-    maxes += min_indices();
-    maxes -= 1;
-    return maxes;
+    if (!cached_max_indices_) {
+        cached_max_indices_.emplace();
+        extents sizes = this->sizes();
+        std::transform(std::begin(sizes), std::end(sizes),
+                       std::begin(*cached_max_indices_),
+                       [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
+        *cached_max_indices_ += min_indices();
+        *cached_max_indices_ -= 1;
+    }
+    return *cached_max_indices_;
+}
+// -------------------- helpers ------------------------
+
+template <typename T>
+T& Bispectrum<T>::data_at(std::size_t offset) noexcept
+{
+    assert(offset < this->base_size());
+    return Array_base<T>::data()[offset];
+}
+
+template <typename T>
+const T& Bispectrum<T>::data_at(std::size_t offset) const noexcept
+{
+    assert(offset < this->base_size());
+    return Array_base<T>::data()[offset];
+}
+
+template <typename T>
+typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) const noexcept
+{
+    conjugate = false;
+    auto scase = classify_indices(indices);
+
+    switch (scase) {
+        case SymmetryCase::T1: return indices;
+        case SymmetryCase::T7:
+            conjugate = true;
+            return -indices;
+        case SymmetryCase::T6: {
+            s_indices uv = indices * s_indices{ -1, -1, 1, 1 };
+            uv -= s_indices{ indices[2], indices[3], 0, 0 };
+            return uv;
+        }
+        case SymmetryCase::T9: {
+            s_indices uv = indices * s_indices{ -1, -1, 1, 1 };
+            uv += s_indices{ 0, 0, indices[0], indices[1] };
+            conjugate = true;
+            return uv;
+        }
+        case SymmetryCase::T3: {
+            s_indices uv = indices * s_indices{ 1, 1, -1, -1 };
+            uv -= s_indices{ 0, 0, indices[0], indices[1] };
+            return uv;
+        }
+        case SymmetryCase::T12: {
+            s_indices uv = indices * s_indices{ 1, 1, -1, -1 };
+            uv += s_indices{ indices[2], indices[3], 0, 0 };
+            conjugate = true;
+            return uv;
+        }
+    }
+    std::unreachable();
+}
+
+template <typename T>
+std::string Bispectrum<T>::build_error_message(const std::string& prefix, const s_indices& indices) const
+{
+    std::ostringstream oss;
+    oss << prefix << ": indices = ["
+        << indices[0] << ", " << indices[1] << ", "
+        << indices[2] << ", " << indices[3] << "]";
+    return oss.str();
+}
+
+// Optional: helper to_string for s_indices if needed
+template <typename T>
+std::string Bispectrum<T>::to_string(const s_indices& indices) const
+{
+    std::ostringstream oss;
+    oss << "[";
+    for (size_t i = 0; i < indices.size(); ++i) {
+        oss << indices[i];
+        if (i + 1 < indices.size())
+            oss << ", ";
+    }
+    oss << "]";
+    return oss.str();
 }
 
 } // namespace smip
