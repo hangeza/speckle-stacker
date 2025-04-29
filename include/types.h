@@ -22,6 +22,9 @@ concept concept_valarray_of_arithmetic = (std::is_same_v<T, std::valarray<typena
 template <typename T>
 concept concept_complex = std::is_same_v<T, std::complex<typename std::decay_t<T>::value_type>>;
 
+template <typename T>
+concept concept_arithmetic_or_valarray_or_complex = concept_arithmetic<T> || concept_valarray_of_arithmetic<T> || concept_complex<T>;
+
 namespace smip {
 
 typedef std::complex<double> complex_t;

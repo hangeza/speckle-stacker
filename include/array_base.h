@@ -49,7 +49,20 @@ public:
     template <concept_arithmetic U>
     Array_base<T>& operator=(const Array_base<U>& other);
     Array_base<T>& operator=(Array_base<T>&& other);
-
+    
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator+=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator-=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator*=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator/=(const U& val);
+    
     // Begin and end iterators
     iterator begin() { return iterator(m_data.get()); }
     iterator end() { return iterator(m_data.get() + m_size); }
@@ -277,6 +290,53 @@ Array_base<T>& Array_base<T>::operator=(const Array_base<U>& other)
     m_data.reset(temp.release());
     std::transform(other.begin(), other.end(), this->begin(),
         [](const U& x) { return static_cast<T>(x); });
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator+=(const U& val)
+{
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it += val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator-=(const U& val)
+{
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it -= val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator*=(const U& val)
+{
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it *= val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator/=(const U& val)
+{
+    if (val == U{}) {
+        throw std::runtime_error("Array_base<T>::operator/=(T) : division by zero");
+    }
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it /= val;
+    }
     return *this;
 }
 
