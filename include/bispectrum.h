@@ -75,51 +75,70 @@ public:
     Bispectrum& operator*=(const Bispectrum& x);
     /*! overloaded /= operator */
     Bispectrum& operator/=(const Bispectrum& x);
-    /*! overloaded += operator */
-//     Bispectrum& operator+=(const T& c);
-//     /*! overloaded -= operator */
-//     Bispectrum& operator-=(const T& c);
-//     /*! overloaded *= operator */
-//     Bispectrum& operator*=(const T& c);
-//     /*! overloaded /= operator */
-//     Bispectrum& operator/=(const T& c);
     /*! calculate indices [<i>i,j,k,l</i>] to given address offset \e addr 
     */
     [[nodiscard]] s_indices calc_indices(std::size_t addr) const;
     template <typename U>
     void accumulate_from_fft(const Array2<U>& fft);
 
-    [[nodiscard]] std::size_t size() const { return base_size(); }
-    [[nodiscard]] extents sizes() const noexcept;
-    [[nodiscard]] extents base_sizes() const noexcept;
-    [[nodiscard]] std::size_t base_size() const { return base_sizes().product(); }
-    [[nodiscard]] std::size_t totalsize() const { return sizes().product(); }
-    [[nodiscard]] s_indices min_indices() const;
-    [[nodiscard]] s_indices max_indices() const;
+    [[nodiscard]] std::size_t size() const noexcept { return m_descriptor.base_size; }
+    [[nodiscard]] extents sizes() const noexcept { return m_descriptor.sizes; }
+    [[nodiscard]] extents base_sizes() const noexcept { return m_descriptor.base_sizes; }
+    [[nodiscard]] std::size_t base_size() const noexcept { return m_descriptor.base_size; }
+    [[nodiscard]] std::size_t totalsize() const noexcept { return m_descriptor.totalsize; }
+    [[nodiscard]] s_indices min_indices() const noexcept { return m_descriptor.min_indices; }
+    [[nodiscard]] s_indices max_indices() const noexcept { return m_descriptor.max_indices; }
 
 
 private:
     enum class SymmetryCase { T1, T3, T6, T7, T9, T12 };
     
     extents m_dimsizes { 0, 0, 0, 0 };
+    struct array_descriptor_t {
+        extents sizes {};
+        extents base_sizes {};
+        std::size_t base_size {};
+        std::size_t totalsize {};
+        s_indices min_indices {};
+        s_indices max_indices {};
+    } m_descriptor;
+    [[nodiscard]] static constexpr extents sizes(extents dimsizes) noexcept;
+    [[nodiscard]] static constexpr extents base_sizes(extents dimsizes) noexcept;
     [[nodiscard]] static constexpr SymmetryCase classify_indices(const s_indices& indices) noexcept;
-    [[nodiscard]] s_indices canonicalize_indices(s_indices indices, bool& conjugate) const noexcept;
-
+    [[nodiscard]] static constexpr s_indices canonicalize_indices(s_indices indices, bool& conjugate) noexcept;
+    [[nodiscard]] static constexpr std::size_t calc_offset(array_descriptor_t descriptor, s_indices indices) noexcept;
     T& data_at(std::size_t offset) noexcept;
     const T& data_at(std::size_t offset) const noexcept;
     /*! returns address offset of element with indices [<i>i,j,k,l</i>] */
-    [[nodiscard]] std::size_t calc_offset(s_indices indices) const;
+    [[nodiscard]] std::size_t calc_offset(s_indices indices) const noexcept;
 
     [[nodiscard]] std::string build_error_message(const std::string& prefix, const s_indices& indices) const;
     [[nodiscard]] std::string to_string(const s_indices& indices) const;
-    mutable std::optional<s_indices> cached_min_indices_;
-    mutable std::optional<s_indices> cached_max_indices_;
-
+    static constexpr array_descriptor_t compute_descriptor(extents dimsizes);
 };
 
 // *************************************************
 // Member definitions / implementation part
 // *************************************************
+
+template <typename T>
+constexpr typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(extents dimsizes)
+{
+    Bispectrum<T>::array_descriptor_t descriptor;
+    descriptor.sizes = Bispectrum<T>::sizes(dimsizes);
+    descriptor.base_sizes = Bispectrum<T>::base_sizes(dimsizes);
+    descriptor.base_size = descriptor.base_sizes.product();
+    descriptor.totalsize = descriptor.sizes.product();
+    std::transform(std::begin(descriptor.sizes), std::end(descriptor.sizes),
+                       std::begin(descriptor.min_indices),
+                       [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
+    std::transform(std::begin(descriptor.sizes), std::end(descriptor.sizes),
+                       std::begin(descriptor.max_indices),
+                       [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
+    descriptor.max_indices += descriptor.min_indices;
+    descriptor.max_indices -= 1;
+    return descriptor;
+}
 
 template <typename T>
 constexpr typename Bispectrum<T>::SymmetryCase Bispectrum<T>::classify_indices(const s_indices& indices) noexcept
@@ -139,7 +158,7 @@ Bispectrum<T>::Bispectrum()
 
 template <typename T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>::extents& dimsizes)
-    : m_dimsizes { dimsizes }
+    : m_dimsizes { dimsizes }, m_descriptor{ compute_descriptor(dimsizes) }
 {
     this->resize(base_size());
     // the following lines initialize the array with default zero values depending on type
@@ -152,26 +171,27 @@ template <typename T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
     : Array_base<T>(other.base_size())
     , m_dimsizes { other.m_dimsizes }
+    , m_descriptor{ compute_descriptor(other.m_dimsizes) }
 {
     std::copy(other.begin(), other.end(), Array_base<T>::begin());
 }
 
 template <typename T>
-typename Bispectrum<T>::extents Bispectrum<T>::sizes() const noexcept
+constexpr typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes) noexcept
 {
     // true sizes of ux,uy,vx,vy dimensions
-    extents vec { m_dimsizes / 2 };
+    extents vec { dimsizes / 2 };
     vec *= 2;
     vec += 1UL;
     return vec;
 }
 
 template <typename T>
-typename Bispectrum<T>::extents Bispectrum<T>::base_sizes() const noexcept
+constexpr typename Bispectrum<T>::extents Bispectrum<T>::base_sizes(extents dimsizes) noexcept
 {
     // reduced sizes of ux,uy,vx,vy dimensions
-    extents vec = { this->sizes() };
-    vec -= sizes() * extents { 1, 0, 1, 0 } / 2;
+    extents vec = { Bispectrum<T>::sizes(dimsizes) };
+    vec -= Bispectrum<T>::sizes(dimsizes) * extents { 1, 0, 1, 0 } / 2;
     return vec;
 }
 
@@ -179,6 +199,7 @@ template <typename T>
 Bispectrum<T>& Bispectrum<T>::operator=(const Bispectrum<T>& x)
 {
     m_dimsizes = x.m_dimsizes;
+    m_descriptor = compute_descriptor(m_dimsizes);
     this->resize(base_size());
     std::copy(x.begin(), x.end(), Array_base<T>::begin());
     return *this;
@@ -187,7 +208,9 @@ Bispectrum<T>& Bispectrum<T>::operator=(const Bispectrum<T>& x)
 template <typename T>
 Bispectrum<T>& Bispectrum<T>::operator+=(const Bispectrum<T>& x)
 {
-    assert(x.NrElements() == this->NrElements());
+    if (m_dimsizes != x.m_dimsizes) {
+        throw std::invalid_argument("Bispectrum::operator+=(const Bispectrum) : operand dimension size mismatch");
+    }
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::plus<T>());
@@ -197,7 +220,9 @@ Bispectrum<T>& Bispectrum<T>::operator+=(const Bispectrum<T>& x)
 template <typename T>
 Bispectrum<T>& Bispectrum<T>::operator-=(const Bispectrum<T>& x)
 {
-    assert(x.NrElements() == this->NrElements());
+    if (m_dimsizes != x.m_dimsizes) {
+        throw std::invalid_argument("Bispectrum::operator+=(const Bispectrum) : operand dimension size mismatch");
+    }
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::minus<T>());
@@ -207,7 +232,9 @@ Bispectrum<T>& Bispectrum<T>::operator-=(const Bispectrum<T>& x)
 template <typename T>
 Bispectrum<T>& Bispectrum<T>::operator*=(const Bispectrum<T>& x)
 {
-    assert(x.NrElements() == this->NrElements());
+    if (m_dimsizes != x.m_dimsizes) {
+        throw std::invalid_argument("Bispectrum::operator+=(const Bispectrum) : operand dimension size mismatch");
+    }
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::multiplies<T>());
@@ -283,24 +310,33 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) 
 }
 
 template <typename T>
-std::size_t Bispectrum<T>::calc_offset(s_indices indices) const
+std::size_t Bispectrum<T>::calc_offset(s_indices indices) const noexcept
+{
+    return calc_offset(m_descriptor, indices);
+}
+
+template <typename T>
+constexpr std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descriptor, s_indices indices) noexcept
 {
     indices *= { -1, 1, -1, 1 };
-
-    indices += {
-        (indices[0] < 0) ? static_cast<int>(sizes()[0]) : 0,
-        (indices[1] < 0) ? static_cast<int>(sizes()[1]) : 0,
-        (indices[2] < 0) ? static_cast<int>(sizes()[2]) : 0,
-        (indices[3] < 0) ? static_cast<int>(sizes()[3]) : 0
-    };
-    // ToDo: hier noch Abfrage, ob [i,j,k,l] wirklich sinnvoll
+    // add dimension size to the index in case the index is negative
+    std::transform(
+        std::begin(indices),
+        std::end(indices),
+        std::begin(descriptor.sizes),
+        std::begin(indices),
+        [](auto a, auto b) {
+            return a < 0 ? a + b : a;
+        }
+    );
+    
     std::size_t addr { static_cast<std::size_t>(indices[0]) };
 
-    addr *= base_sizes()[1];
+    addr *= descriptor.base_sizes[1];
     addr += indices[1];
-    addr *= base_sizes()[2];
+    addr *= descriptor.base_sizes[2];
     addr += indices[2];
-    addr *= base_sizes()[3];
+    addr *= descriptor.base_sizes[3];
     addr += indices[3];
     //std::cout<<"Indices="<<ii<<";"<<jj<<";"<<kk<<";"<<ll<<endl;
     return addr;
@@ -394,8 +430,9 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
         fclose(stream);
         return;
     }
-    assert(Array_base<T>::resize(size) == base_size());
+    Array_base<T>::resize(size);
     m_dimsizes = dims;
+    m_descriptor = compute_descriptor(m_dimsizes);
     if (fread(Array_base<T>::data(), sizeof(T), size, stream) != size) {
         std::cerr << "Bispectrum<T>::read_from_file(const std::string&): error reading data chunck from file " << filename << std::endl;
         fclose(stream);
@@ -508,8 +545,8 @@ T Bispectrum<T>::get_element(s_indices indices) const
         throw std::out_of_range(build_error_message("Bispectrum: Initial element access bounds check failed", indices));
     }
 
-    bool conjugate = false;
-    auto uv = canonicalize_indices(indices, conjugate);
+    bool conjugate { false };
+    auto uv = Bispectrum<T>::canonicalize_indices(indices, conjugate);
 
     if ((std::abs(uv[2]) > max_idx[2]) || (std::abs(uv[3]) > max_idx[3])) {
         std::swap(uv[0], uv[2]);
@@ -555,33 +592,6 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
     data_at(addr) = value;
 }
 
-template <typename T>
-typename Bispectrum<T>::s_indices Bispectrum<T>::min_indices() const
-{
-    if (!cached_min_indices_) {
-        cached_min_indices_.emplace();
-        extents sizes = this->sizes();
-        std::transform(std::begin(sizes), std::end(sizes),
-                       std::begin(*cached_min_indices_),
-                       [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
-    }
-    return *cached_min_indices_;
-}
-
-template <typename T>
-typename Bispectrum<T>::s_indices Bispectrum<T>::max_indices() const
-{
-    if (!cached_max_indices_) {
-        cached_max_indices_.emplace();
-        extents sizes = this->sizes();
-        std::transform(std::begin(sizes), std::end(sizes),
-                       std::begin(*cached_max_indices_),
-                       [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
-        *cached_max_indices_ += min_indices();
-        *cached_max_indices_ -= 1;
-    }
-    return *cached_max_indices_;
-}
 // -------------------- helpers ------------------------
 
 template <typename T>
@@ -599,7 +609,7 @@ const T& Bispectrum<T>::data_at(std::size_t offset) const noexcept
 }
 
 template <typename T>
-typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) const noexcept
+constexpr typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) noexcept
 {
     conjugate = false;
     auto scase = classify_indices(indices);
