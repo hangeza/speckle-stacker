@@ -200,7 +200,7 @@ requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<t
     if constexpr (concept_arithmetic<T>) {
         return (m_current == other.m_current);
     } else if constexpr (concept_valarray_of_arithmetic<T>) {
-        return (m_current == other.m_current).min();
+        return (std::operator==(m_current, other.m_current)).min();
     }
     throw std::invalid_argument("using Range<T>::iterator::operator==() with invalid template type");
 }
@@ -213,7 +213,7 @@ requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<t
     if constexpr (concept_arithmetic<T>) {
         return (m_current != other.m_current);
     } else if constexpr (concept_valarray_of_arithmetic<T>) {
-        return !(m_current == other.m_current).min();
+        return !(this->operator==(other));
     }
     throw std::invalid_argument("using Range<T>::iterator::operator!=() with invalid template type");
 }

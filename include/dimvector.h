@@ -35,14 +35,19 @@ public:
     using std::valarray<T>::operator*=;
     using std::valarray<T>::operator/=;
     using std::valarray<T>::operator[];
+//     using std::valarray<T>::operator==;
+//     using std::valarray<T>::operator!=;
     using std::valarray<T>::size;
     using std::valarray<T>::sum;
+    using std::valarray<T>::min;
 
     DimVector();
     DimVector(const DimVector<T, NrDims>& x);
     DimVector(std::initializer_list<T> l);
 
     DimVector& operator=(const DimVector<T, NrDims>& x);
+    bool operator==(const DimVector<T, NrDims>& other) const;
+    bool operator!=(const DimVector<T, NrDims>& other) const;
 
     [[nodiscard]] DimVector<T, NrDims + 1> operator,(T in);
     [[nodiscard]] DimVector<T, NrDims + 1> appended_back(T new_dimsize);
@@ -173,6 +178,18 @@ template <concept_arithmetic T, std::size_t NrDims>
 void DimVector<T, NrDims>::fill(T value)
 {
     *this = value;
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+bool DimVector<T, NrDims>::operator==(const DimVector<T, NrDims>& other) const
+{
+    return (*this == other).min();
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+bool DimVector<T, NrDims>::operator!=(const DimVector<T, NrDims>& other) const
+{
+    return !(this->operator==(other));
 }
 
 // *************************************************
