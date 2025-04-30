@@ -244,48 +244,14 @@ Bispectrum<T>& Bispectrum<T>::operator*=(const Bispectrum<T>& x)
 template <typename T>
 Bispectrum<T>& Bispectrum<T>::operator/=(const Bispectrum<T>& x)
 {
-    assert(x.NrElements() == this->NrElements());
+    if (m_dimsizes != x.m_dimsizes) {
+        throw std::invalid_argument("Bispectrum::operator+=(const Bispectrum) : operand dimension size mismatch");
+    }
     std::transform(this->begin(), this->end(),
         x.begin(), this->begin(),
         std::divides<T>());
     return *this;
 }
-
-// template <typename T>
-// Bispectrum<T>& Bispectrum<T>::operator+=(const T& c)
-// {
-//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-//         *it += c;
-//     }
-//     return *this;
-// }
-// 
-// template <typename T>
-// Bispectrum<T>& Bispectrum<T>::operator-=(const T& c)
-// {
-//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-//         *it -= c;
-//     }
-//     return *this;
-// }
-// 
-// template <typename T>
-// Bispectrum<T>& Bispectrum<T>::operator*=(const T& c)
-// {
-//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-//         *it *= c;
-//     }
-//     return *this;
-// }
-// 
-// template <typename T>
-// Bispectrum<T>& Bispectrum<T>::operator/=(const T& c)
-// {
-//     for (auto it { Array_base<T>::begin() }; it != Array_base<T>::end(); ++it) {
-//         *it /= c;
-//     }
-//     return *this;
-// }
 
 template <typename T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) const
@@ -459,79 +425,6 @@ void Bispectrum<T>::print() const
     std::cout << " (vs. full size * 16 byte cmplx double)" << std::endl;
 }
 
-// template <typename T>
-// T Bispectrum<T>::get_element(s_indices indices) const
-// {
-//     // wenn k,l ausserhalb, dann tausche i,j und k,l
-//     if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
-//         std::swap(indices[0], indices[2]);
-//         std::swap(indices[1], indices[3]);
-//     }
-//     // wenn jetzt noch ausserhalb, dann Abbruch
-//     if ((std::abs(indices[2]) > max_indices()[2]) || (std::abs(indices[3]) > max_indices()[3])) {
-//         throw ElementOutOfBounds("trying to access bispectrum element out of range");
-//     }
-//     bool conjug { false };
-// 
-//     s_indices uv { 0, 0, 0, 0 }; // ux,uy,vx,vy
-// 
-//     if ((indices[0] <= 0) && (indices[2] <= 0)) {
-//         // T1
-//         uv = indices;
-//     } else if ((indices[0] > 0) && (indices[2] > 0)) {
-//         // T7
-//         uv = -indices;
-//         conjug = true;
-//     } else if ((indices[0] > 0) && (indices[2] <= 0)) {
-//         uv = indices * s_indices { -1, -1, 1, 1 };
-//         if (indices[0] + indices[2] > 0) {
-//             // T6
-//             uv -= s_indices { indices[2], indices[3], 0, 0 };
-//         } else {
-//             // T9
-//             uv += s_indices { 0, 0, indices[0], indices[1] };
-//             conjug = true;
-//         }
-//     } else if ((indices[0] <= 0) && (indices[2] > 0)) {
-//         uv = indices * s_indices { 1, 1, -1, -1 };
-//         if (indices[0] + indices[2] > 0) {
-//             // T3
-//             uv -= s_indices { 0, 0, indices[0], indices[1] };
-//         } else {
-//             // T12
-//             uv += s_indices { indices[2], indices[3], 0, 0 };
-//             conjug = true;
-//         }
-//     } else {
-//         /*
-//         std::cerr<<"Bispectrum::GetElement(int,int,int,int):"<<std::endl;
-//         std::cerr<<"ups - ein Element ist durchgerutscht : ["
-//             <<uv[0]<<","<<uv[1]<<","<<uv[2]<<","<<uv[3]<<"]"<<std::endl;
-//     */
-//         throw ElementOutOfBounds("trying to access bispectrum element out of range - unaccounted index");
-//     }
-// 
-//     // wenn v ausserhalb, dann tausche u und v
-//     if ((std::abs(uv[2]) > max_indices()[2]) || (std::abs(uv[3]) > max_indices()[3])) {
-//         std::swap(uv[0], uv[2]);
-//         std::swap(uv[1], uv[3]);
-//     }
-// 
-//     std::size_t addr { calc_offset(uv) };
-// 
-//     if (addr >= base_size()) {
-//         /*
-//         std::cerr<<"error: trying to access element out of range"<<std::endl;
-//         std::cerr<<"Bispectrum::GetElement(int,int,int,int)m2"<<std::endl;
-//         std::cerr<<"addr="<<addr<<" basesize="<<base_size()<<"  Indices="<<uv[0]<<";"<<uv[1]<<";"<<uv[2]<<";"<<uv[3]<<std::endl;
-//         */
-//         throw ElementOutOfBounds("trying to access bispectrum element out of range");
-//     }
-//     if (conjug)
-//         return std::conj(Array_base<T>::data().get()[addr]);
-//     return Array_base<T>::data().get()[addr];
-// }
-
 template <typename T>
 T Bispectrum<T>::get_element(s_indices indices) const
 {
@@ -580,11 +473,6 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
 {
     std::size_t addr = this->calc_offset(indices);
     if (addr >= this->base_size()) [[unlikely]] {
-        /*
-        cerr<<"error: trying to access element out of range"<<endl;
-        cerr<<"Bispectrum::PutElement(int,int,int,int)"<<endl;
-        cerr<<"size="<<_size<<"  Indices="<<i<<";"<<j<<";"<<k<<";"<<l<<endl;
-        */
         throw std::out_of_range(build_error_message("Bispectrum: put_element address out of bounds.", indices));
         //throw ElementOutOfBounds("trying to access bispectrum element out of range");
     }
