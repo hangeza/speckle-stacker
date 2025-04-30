@@ -65,6 +65,13 @@ public:
     * @return product of all array elements
     */
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
+
+    /**
+    * @brief conversion to DimVector of other arithmetic type
+    * @return DimVector of same rank but with its elements converted to type U
+    */
+    template <concept_arithmetic U>
+    operator DimVector<U, NrDims>() const;
 };
 
 /**
@@ -190,6 +197,15 @@ template <concept_arithmetic T, std::size_t NrDims>
 bool DimVector<T, NrDims>::operator!=(const DimVector<T, NrDims>& other) const
 {
     return !(this->operator==(other));
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+template <concept_arithmetic U>
+DimVector<T, NrDims>::operator DimVector<U, NrDims>() const
+{
+    DimVector<U, NrDims> resultvec {};
+    std::transform(std::begin(*this), std::end(*this), std::begin(resultvec), [](const T& x){ return static_cast<U>(x);});
+    return resultvec;
 }
 
 // *************************************************
