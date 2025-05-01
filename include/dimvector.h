@@ -190,7 +190,8 @@ void DimVector<T, NrDims>::fill(T value)
 template <concept_arithmetic T, std::size_t NrDims>
 bool DimVector<T, NrDims>::operator==(const DimVector<T, NrDims>& other) const
 {
-    return (*this == other).min();
+//     return (*this == other).min();
+    return (dynamic_cast<const std::valarray<T>&>(*this) == dynamic_cast<const std::valarray<T>&>(other)).min();
 }
 
 template <concept_arithmetic T, std::size_t NrDims>
