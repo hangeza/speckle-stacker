@@ -1,5 +1,5 @@
 # Speckle Stacker
-Speckle Masking Image Processing (SMIP) library and command line application (speckle stacker) for image processing of astronomical image series (videos) using the speckle masking technique calculating the original source distribution undisturbed by atmospheric turbulence.
+Speckle Masking Image Processing (SMIP) library and command line interface (CLI) application named speckle stacker for image processing of astronomical image series (videos) using the speckle masking technique calculating the original source distribution undisturbed by atmospheric turbulence.
 
 Example of what SMIP can do:
 
@@ -10,11 +10,11 @@ Example of what SMIP can do:
 
 ## Build from source
 ### Dependencies
-The SMIP library and the executable cli rely on OpenCV and FFTW3. Both must be available at compile time. For building CMake is required as well as the build-tools. 
+The SMIP library and the executable cli rely on OpenCV and FFTW3. Both must be available at compile time. For building, CMake is required as well as the usual build tools. 
 The CMake control file checks for availability of OpenCV and FFTW3 as well as for a sufficiently recent version of the compiler (min. gcc-10 or clang-12).
 Install the required packages before build under linux with:
 
-`sudo apt install libopencv-dev fftw3-dev cmake
+`sudo apt install libopencv-dev fftw3-dev cmake`
 
 Under Windows the mingw64 environment is required for successful build. Install libopencv-dev through e.g. Chocolatey. The FFTW3 binaries can be installed following the instructions from https://fftw.org/install/windows.html.
 
