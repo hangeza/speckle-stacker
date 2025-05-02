@@ -78,6 +78,7 @@ public:
     /*! calculate indices [<i>i,j,k,l</i>] to given address offset \e addr 
     */
     [[nodiscard]] s_indices calc_indices(std::size_t addr) const;
+    [[nodiscard]] std::size_t calc_offset(s_indices indices) const noexcept;
     template <typename U>
     void accumulate_from_fft(const Array2<U>& fft);
 
@@ -110,7 +111,6 @@ private:
     T& data_at(std::size_t offset) noexcept;
     const T& data_at(std::size_t offset) const noexcept;
     /*! returns address offset of element with indices [<i>i,j,k,l</i>] */
-    [[nodiscard]] std::size_t calc_offset(s_indices indices) const noexcept;
 
     [[nodiscard]] std::string build_error_message(const std::string& prefix, const s_indices& indices) const;
     [[nodiscard]] std::string to_string(const s_indices& indices) const;
