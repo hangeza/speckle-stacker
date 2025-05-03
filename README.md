@@ -6,7 +6,7 @@ Example of what SMIP can do:
 | ![Video sequence of HU940](/data/hu940ani/hu940ani.gif) | *Video sequence of binary star WDS 19055+3352 (HU 940)<br/> disturbed by atmospheric turbulence<br/> (source: http://www.astrosurf.com/hfosaf/uk/speckle10.htm)<br/> mag:9.2/9.8, sep = 0.32 arcs, texp: 7ms (40 frames)* |
 |--|--|
 | ![Sum image of HU940 over 40 frames](/data/hu940ani/sum_image_falsecolor.png) | *Naive picture sum over 40 frames of the sequence<br/>(false color)* |
-| ![Speckle reco image of HU940 from 40 frames](/data/hu940ani/reco_image_falsecolor.png) | *Speckle reconstructed image<br/>(false color)* | 
+| ![Speckle reco image of HU940 from 40 frames](/data/hu940ani/reco_image_falsecolor.png) | *Speckle reconstructed image (false color)<br/> with the two clearly separated components* | 
 
 ## Build from source
 ### Dependencies
