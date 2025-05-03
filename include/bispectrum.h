@@ -115,7 +115,7 @@ private:
 
     [[nodiscard]] std::string build_error_message(const std::string& prefix, const s_indices& indices) const;
     [[nodiscard]] std::string to_string(const s_indices& indices) const;
-    static constexpr array_descriptor_t compute_descriptor(extents dimsizes);
+    static array_descriptor_t compute_descriptor(extents dimsizes);
 };
 
 // *************************************************
@@ -129,7 +129,7 @@ Range<DimVector<int, 4>> Bispectrum<T>::range() const
 }
 
 template <typename T>
-constexpr typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(extents dimsizes)
+typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(extents dimsizes)
 {
     Bispectrum<T>::array_descriptor_t descriptor;
     descriptor.sizes = Bispectrum<T>::sizes(dimsizes);
