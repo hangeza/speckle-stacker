@@ -404,6 +404,7 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
     success = success && fread(&dims[2], sizeof(dims[2]), 1, stream);
     success = success && fread(&dims[3], sizeof(dims[3]), 1, stream);
     if (!success) throw std::runtime_error("error reading bispectrum metadata from file " + filename);
+
     Array_base<T>::resize(size);
     m_dimsizes = dims;
     m_descriptor = compute_descriptor(m_dimsizes);

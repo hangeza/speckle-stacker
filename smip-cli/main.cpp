@@ -40,12 +40,6 @@ using namespace smip;
 void Usage(const char* progname)
 {
     using namespace std;
-//     cout << "Speckle Masking Image Processing v"
-//          << Version::major << "."
-//          << Version::minor << "."
-//          << Version::patch << endl;
-//     cout << "(c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)" << endl;
-    cout << endl;
     cout << "   Usage :  " << std::string(progname) << " [nrpbcvh?] <source root>" << endl;
     cout << "    available options:" << endl;
     cout << "     -n   --nrframes    <pics>    :   process at most number of <pics> frames" << endl;
@@ -80,13 +74,13 @@ int main(int argc, char* argv[])
         [](int c) { exit(c); },
         std::cerr);
 
-    log::info() << "Speckle Masking Image Processing v"
+    log::info() << "Speckle Masking Image Processing CLI v"
         << Version::major << "."
         << Version::minor << "."
         << Version::patch;
     log::info() << "(c) GPL v2.0 2002-2012, 2025 HG Zaunick (hg.zaunick@gmx.de)";
 
-    std::size_t max_frames { 10000 };
+    std::size_t max_frames { 10'000 };
     std::size_t ref_frame { 0 };
     std::size_t bispectrum_depth { 20 };
     std::size_t reco_radius = bispectrum_depth * 2;
@@ -244,7 +238,6 @@ int main(int argc, char* argv[])
     log::info() << "opening video file " << filename;
     if (!fe.is_valid()) {
         log::critical(-1) << "file open error: " << fe.filename();
-        //         exit(-1);
     }
     const std::size_t nframes { std::min(fe.nframes(), max_frames) };
     log::info() << "opened video file: " << fe.nframes() << " frames";
