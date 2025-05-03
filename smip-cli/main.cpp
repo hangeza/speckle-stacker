@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
             _a = _b = -1;
             char _c;
             istr >> _a >> _c >> _b;
-            if (_a < 0 || _b <= 0)
+            if (_a < 0 || _b < 0)
                 throw std::range_error("invalid crop box pos arguments");
             crop_rect += { static_cast<std::size_t>(_a), static_cast<std::size_t>(_b) };
             log::debug() << "crop box offset (l:t): " << crop_rect.topleft;
