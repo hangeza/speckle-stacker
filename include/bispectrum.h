@@ -104,8 +104,8 @@ private:
         s_indices min_indices {};
         s_indices max_indices {};
     } m_descriptor;
-    [[nodiscard]] static constexpr extents sizes(extents dimsizes) noexcept;
-    [[nodiscard]] static constexpr extents base_sizes(extents dimsizes) noexcept;
+    [[nodiscard]] static extents sizes(extents dimsizes) noexcept;
+    [[nodiscard]] static extents base_sizes(extents dimsizes) noexcept;
     [[nodiscard]] static constexpr SymmetryCase classify_indices(const s_indices& indices) noexcept;
     [[nodiscard]] static constexpr s_indices canonicalize_indices(s_indices indices, bool& conjugate) noexcept;
     [[nodiscard]] static constexpr std::size_t calc_offset(array_descriptor_t descriptor, s_indices indices) noexcept;
@@ -184,7 +184,7 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
 }
 
 template <typename T>
-constexpr typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes) noexcept
+typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes) noexcept
 {
     // true sizes of ux,uy,vx,vy dimensions
     extents vec { dimsizes / 2 };
@@ -194,7 +194,7 @@ constexpr typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes)
 }
 
 template <typename T>
-constexpr typename Bispectrum<T>::extents Bispectrum<T>::base_sizes(extents dimsizes) noexcept
+typename Bispectrum<T>::extents Bispectrum<T>::base_sizes(extents dimsizes) noexcept
 {
     // reduced sizes of ux,uy,vx,vy dimensions
     extents vec = { Bispectrum<T>::sizes(dimsizes) };
