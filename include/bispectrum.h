@@ -371,20 +371,16 @@ void Bispectrum<T>::write_to_file(const std::string& filename) const
     errno = 0;
     stream = fopen(filename.c_str(), "wb");
     if (stream == NULL) {
-        fprintf(stderr, "Couldn't write file %s; %s\n",
-            filename.c_str(), strerror(errno));
-        exit(EXIT_FAILURE);
-        return;
+        throw std::runtime_error("unable to open file " + filename + " for writing");
     }
     std::size_t size { base_size() };
-    //dimvector<T,4> sizes { base_size() };
 
     fwrite(&size, sizeof(size), 1, stream);
     fwrite(&m_dimsizes[0], sizeof(m_dimsizes[0]), 1, stream);
     fwrite(&m_dimsizes[1], sizeof(m_dimsizes[1]), 1, stream);
     fwrite(&m_dimsizes[2], sizeof(m_dimsizes[2]), 1, stream);
-    fwrite(&m_dimsizes[3], sizeof(m_dimsizes[4]), 1, stream);
-    fwrite(Array_base<T>::data().get(), sizeof(T), base_size(), stream);
+    fwrite(&m_dimsizes[3], sizeof(m_dimsizes[3]), 1, stream);
+    fwrite(Array_base<T>::data().get(), sizeof(T), size, stream);
     fclose(stream);
 }
 
@@ -396,31 +392,24 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
     errno = 0;
     stream = fopen(filename.c_str(), "rb");
     if (stream == NULL) {
-        fprintf(stderr, "Couldn't open file %s; %s\n",
-            filename.c_str(), strerror(errno));
-        exit(EXIT_FAILURE);
-        return;
+        throw std::runtime_error("unable to open file " + filename);
     }
     std::size_t size {};
     extents dims {};
 
-    fread(&size, sizeof(size), 1, stream);
-    fread(&dims[0], sizeof(dims[0]), 1, stream);
-    fread(&dims[1], sizeof(dims[1]), 1, stream);
-    fread(&dims[2], sizeof(dims[2]), 1, stream);
-    fread(&dims[3], sizeof(dims[3]), 1, stream);
-    if (size != dims[0] * dims[1] * dims[2] * dims[3]) {
-        std::cerr << "Bispectrum<T>::read_from_file(const std::string&): error reading metadata from file " << filename << std::endl;
-        fclose(stream);
-        return;
-    }
+    bool success { true };
+    success = success && fread(&size, sizeof(size), 1, stream);
+    success = success && fread(&dims[0], sizeof(dims[0]), 1, stream);
+    success = success && fread(&dims[1], sizeof(dims[1]), 1, stream);
+    success = success && fread(&dims[2], sizeof(dims[2]), 1, stream);
+    success = success && fread(&dims[3], sizeof(dims[3]), 1, stream);
+    if (!success) throw std::runtime_error("error reading bispectrum metadata from file " + filename);
     Array_base<T>::resize(size);
     m_dimsizes = dims;
     m_descriptor = compute_descriptor(m_dimsizes);
-    if (fread(Array_base<T>::data(), sizeof(T), size, stream) != size) {
-        std::cerr << "Bispectrum<T>::read_from_file(const std::string&): error reading data chunck from file " << filename << std::endl;
+    if (fread(Array_base<T>::data().get(), sizeof(T), size, stream) != size) {
         fclose(stream);
-        return;
+        throw std::runtime_error("error reading data block from file " + filename);
     }
     fclose(stream);
 }
