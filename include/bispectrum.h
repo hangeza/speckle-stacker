@@ -107,8 +107,8 @@ private:
     [[nodiscard]] static extents sizes(extents dimsizes) noexcept;
     [[nodiscard]] static extents base_sizes(extents dimsizes) noexcept;
     [[nodiscard]] static constexpr SymmetryCase classify_indices(const s_indices& indices) noexcept;
-    [[nodiscard]] static constexpr s_indices canonicalize_indices(s_indices indices, bool& conjugate) noexcept;
-    [[nodiscard]] static constexpr std::size_t calc_offset(array_descriptor_t descriptor, s_indices indices) noexcept;
+    [[nodiscard]] static s_indices canonicalize_indices(s_indices indices, bool& conjugate) noexcept;
+    [[nodiscard]] static std::size_t calc_offset(array_descriptor_t descriptor, s_indices indices) noexcept;
     T& data_at(std::size_t offset) noexcept;
     const T& data_at(std::size_t offset) const noexcept;
     /*! returns address offset of element with indices [<i>i,j,k,l</i>] */
@@ -299,7 +299,7 @@ std::size_t Bispectrum<T>::calc_offset(s_indices indices) const noexcept
 }
 
 template <typename T>
-constexpr std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descriptor, s_indices indices) noexcept
+std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descriptor, s_indices indices) noexcept
 {
     indices *= { -1, 1, -1, 1 };
     // add dimension size to the index in case the index is negative
@@ -505,7 +505,7 @@ const T& Bispectrum<T>::data_at(std::size_t offset) const noexcept
 }
 
 template <typename T>
-constexpr typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) noexcept
+typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) noexcept
 {
     conjugate = false;
     auto scase = classify_indices(indices);
