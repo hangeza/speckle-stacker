@@ -267,18 +267,28 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) 
     std::size_t temp { base_size() / base_sizes()[0] };
     std::size_t rest { addr };
     s_indices indices { 0, 0, 0, 0 };
-    indices[0] = -static_cast<int>(rest / temp);
-    temp *= -indices[0];
+    u_indices absolute_indices { 0, 0, 0, 0 };
+    absolute_indices[0] = rest / temp;
+    indices[0] = static_cast<int>(absolute_indices[0]);
+    temp *= absolute_indices[0];
     rest = rest - temp;
     temp = base_sizes()[2] * base_sizes()[3];
-    indices[1] = static_cast<int>(rest / temp);
-    temp *= indices[1];
+    absolute_indices[1] = rest / temp;
+    indices[1] = static_cast<int>(absolute_indices[1]);
+    temp *= absolute_indices[1];
     rest = rest - temp;
     temp = base_sizes()[3];
-    indices[2] = -static_cast<int>(rest / temp);
-    temp *= -indices[2];
+    absolute_indices[2] = rest / temp;
+    indices[2] = static_cast<int>(absolute_indices[2]);
+    temp *= absolute_indices[2];
     rest = rest - temp;
-    indices[3] = rest;
+    indices[3] = static_cast<int>(rest);
+    absolute_indices[3] = rest;
+    
+    std::transform(std::begin(indices), std::end(indices), std::begin(m_descriptor.sizes), std::begin(indices),
+    [](int a, std::size_t b) { return a > static_cast<int>(b)/2 ? a - b : a; });
+
+    indices *= { -1, 1, -1, 1};
     return indices;
 }
 
@@ -293,6 +303,7 @@ constexpr std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor
 {
     indices *= { -1, 1, -1, 1 };
     // add dimension size to the index in case the index is negative
+    /// @todo check if indices are in range()
     std::transform(
         std::begin(indices),
         std::end(indices),
@@ -437,11 +448,11 @@ T Bispectrum<T>::get_element(s_indices indices) const
 {
     const s_indices max_idx = max_indices(); // cache once
 
-    if ((std::abs(indices[2]) > max_idx[2]) || (std::abs(indices[3]) > max_idx[3])) {
+    if ((std::abs(indices[2]) > max_idx[2]) || (std::abs(indices[3]) > max_idx[3])) [[unlikely]] {
         std::swap(indices[0], indices[2]);
         std::swap(indices[1], indices[3]);
     }
-    if ((std::abs(indices[2]) > max_idx[2]) || (std::abs(indices[3]) > max_idx[3])) [[unlikely]] {
+    if (!(this->range().contains(indices))) {
         throw std::out_of_range(build_error_message("Bispectrum: Initial element access bounds check failed", indices));
     }
 
