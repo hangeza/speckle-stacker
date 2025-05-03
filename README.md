@@ -19,10 +19,18 @@ Install the required packages before build under linux with:
 Under Windows the mingw64 environment is required for successful build. Install libopencv-dev through e.g. Chocolatey. The FFTW3 binaries can be installed following the instructions from https://fftw.org/install/windows.html.
 
 ### Building
-Now, build and install the project:
+Now, build the project:
 - checkout the main branch of this git repository: `git clone https://github.com/hangeza/speckle-stacker.git`
 - in the project dir `mkdir build && cd build`
 - `cmake ../`
 - `make`
 
 After successful build the library should be found in subfolder output/lib and the cli executable as well as the unit test executable under bin/.
+
+## Using the CLI program
+The example above was reconstructed using the SMIP CLI with the following options:
+
+`bin/smip-cli -v -n 1000 -b32 -p 64 -c b ../data/hu940ani/hu940ani.gif`
+(assuming execution from build folder)
+
+This generates a couple of png images in the same folder containing the sum image, power spectrum, phase map, phase consistency map and the reconstructed image in greyscale and false color (both 16 bit per channel) representation. A more appropriate storage in hdf5 or fits format will be implemented in the future.
