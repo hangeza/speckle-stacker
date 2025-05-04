@@ -666,7 +666,7 @@ template <typename T>
 template <concept_arithmetic U>
 Array2<T> Array2<T>::convert(const Array2<U>& src)
 {
-    return std::move(Array2<T>(src));
+    return Array2<T>(src);
 }
 
 template <typename T>
