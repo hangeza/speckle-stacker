@@ -9,12 +9,8 @@ configure_file("${PROJECT_CONFIG_DIR}/testconfig.h.in" "${PROJECT_TEST_SRC_DIR}/
 
 # Define tests
 set(TestsToRun
-    #array1_test.cpp
     array2_test.cpp
     bispectrum_test.cpp
-    #array3_test.cpp
-    #array4_test.cpp
-    #array5_test.cpp
     range_test.cpp
     correl_test.cpp
     opencv_test.cpp
