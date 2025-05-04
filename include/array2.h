@@ -179,9 +179,9 @@ Array2<T>::Array2(const Array2<T>& src)
 template <typename T>
 template <concept_arithmetic U>
 Array2<T>::Array2(const Array2<U>& src)
-    : Array_base<T>(src.m_xsize * src.m_ysize)
-    , m_xsize(src.m_xsize)
-    , m_ysize(src.m_ysize)
+    : Array_base<T>(src.xsize() * src.ysize())
+    , m_xsize(src.xsize())
+    , m_ysize(src.ysize())
 {
     std::transform(src.begin(), src.end(), this->begin(),
         [](const U& x) { return static_cast<T>(x); });
@@ -258,7 +258,7 @@ Array2<T>::Array2(std::initializer_list<std::initializer_list<T>> l)
     }
     const std::size_t cols_ { l.begin()->size() };
     if (this->size() != cols_ * rows_)
-        assert(this->resize(cols_ * rows_));
+        this->resize(cols_ * rows_);
 
     int row_num { 0 };
     for (const auto& row : l) // copy what is there in each row of l
@@ -291,12 +291,16 @@ T* Array2<T>::operator[](int row)
 template <typename T>
 T& Array2<T>::operator()(std::size_t col, std::size_t row)
 {
+    if (col >= m_xsize) throw std::out_of_range("X index out of bounds");
+    if (row >= m_ysize) throw std::out_of_range("Y index out of bounds");
     return this->data().get()[row * stride() + col];
 }
 
 template <typename T>
 const T& Array2<T>::operator()(std::size_t col, std::size_t row) const
 {
+    if (col >= m_xsize) throw std::out_of_range("X index out of bounds");
+    if (row >= m_ysize) throw std::out_of_range("Y index out of bounds");
     return this->data().get()[row * stride() + col];
 }
 
@@ -339,8 +343,13 @@ Array2<T>& Array2<T>::operator=(const Array2<T>& src)
     m_xsize = src.m_xsize;
     m_ysize = src.m_ysize;
     if (this->size() != src.size()) {
-        assert(this->resize(src.size()));
+        try {
+            Array_base<T>::resize(src.size());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Array2 assignment failed: ") + e.what());
+        }
     }
+    assert(this->size() > 0);
     std::copy(src.begin(), src.end(), this->begin());
     return *this;
 }
@@ -614,12 +623,16 @@ template <typename T>
 template <concept_arithmetic U>
 void Array2<T>::import(const Array2<U>& src)
 {
-    m_xsize = src.m_xsize;
-    m_ysize = src.m_ysize;
+    m_xsize = src.xsize();
+    m_ysize = src.ysize();
     if (this->size() != src.size()) {
-        assert(this->resize(src.size()));
+        try {
+            Array_base<T>::resize(src.size());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Array2 assignment failed: ") + e.what());
+        }
     }
-    std::transform(src.begin(), src.end(), this->begin(), []() {});
+    std::transform(src.begin(), src.end(), this->begin(), [](const U& x) { return static_cast<T>(x);});
 }
 
 // non-static conversion
@@ -630,7 +643,11 @@ void Array2<T>::import(const Array2<U>& src, std::function<T(const U&)> conversi
     m_xsize = src.xsize();
     m_ysize = src.ysize();
     if (this->size() != src.size()) {
-        assert(this->resize(src.size()));
+        try {
+            Array_base<T>::resize(src.size());
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Array2 assignment failed: ") + e.what());
+        }
     }
     std::transform(src.begin(), src.end(), this->begin(), conversion);
 }
@@ -699,7 +716,7 @@ Array2<T> operator+(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z += y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
@@ -707,7 +724,7 @@ Array2<T> operator-(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z -= y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
@@ -715,7 +732,7 @@ Array2<T> operator*(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z *= y;
-    return std::move(z);
+    return z;
 }
 
 template <typename T>
@@ -723,7 +740,39 @@ Array2<T> operator/(const Array2<T>& x, const Array2<T>& y)
 {
     Array2<T> z { x };
     z /= y;
-    return std::move(z);
+    return z;
+}
+
+template <typename T>
+Array2<T> operator+(const Array2<T>& x, const T& y)
+{
+    Array2<T> z { x };
+    z += y;
+    return z;
+}
+
+template <typename T>
+Array2<T> operator-(const Array2<T>& x, const T& y)
+{
+    Array2<T> z { x };
+    z -= y;
+    return z;
+}
+
+template <typename T>
+Array2<T> operator*(const Array2<T>& x, const T& y)
+{
+    Array2<T> z { x };
+    z *= y;
+    return z;
+}
+
+template <typename T>
+Array2<T> operator/(const Array2<T>& x, const T& y)
+{
+    Array2<T> z { x };
+    z /= y;
+    return z;
 }
 
 } // namespace smip

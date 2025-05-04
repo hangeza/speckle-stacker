@@ -35,14 +35,19 @@ public:
     using std::valarray<T>::operator*=;
     using std::valarray<T>::operator/=;
     using std::valarray<T>::operator[];
+//     using std::valarray<T>::operator==;
+//     using std::valarray<T>::operator!=;
     using std::valarray<T>::size;
     using std::valarray<T>::sum;
+    using std::valarray<T>::min;
 
     DimVector();
     DimVector(const DimVector<T, NrDims>& x);
     DimVector(std::initializer_list<T> l);
 
     DimVector& operator=(const DimVector<T, NrDims>& x);
+    bool operator==(const DimVector<T, NrDims>& other) const;
+    bool operator!=(const DimVector<T, NrDims>& other) const;
 
     [[nodiscard]] DimVector<T, NrDims + 1> operator,(T in);
     [[nodiscard]] DimVector<T, NrDims + 1> appended_back(T new_dimsize);
@@ -60,6 +65,13 @@ public:
     * @return product of all array elements
     */
     inline T product() const { return std::accumulate(std::begin(*this), std::end(*this), T { 1 }, std::multiplies<T>()); }
+
+    /**
+    * @brief conversion to DimVector of other arithmetic type
+    * @return DimVector of same rank but with its elements converted to type U
+    */
+    template <concept_arithmetic U>
+    operator DimVector<U, NrDims>() const;
 };
 
 /**
@@ -173,6 +185,28 @@ template <concept_arithmetic T, std::size_t NrDims>
 void DimVector<T, NrDims>::fill(T value)
 {
     *this = value;
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+bool DimVector<T, NrDims>::operator==(const DimVector<T, NrDims>& other) const
+{
+//     return (*this == other).min();
+    return (dynamic_cast<const std::valarray<T>&>(*this) == dynamic_cast<const std::valarray<T>&>(other)).min();
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+bool DimVector<T, NrDims>::operator!=(const DimVector<T, NrDims>& other) const
+{
+    return !(this->operator==(other));
+}
+
+template <concept_arithmetic T, std::size_t NrDims>
+template <concept_arithmetic U>
+DimVector<T, NrDims>::operator DimVector<U, NrDims>() const
+{
+    DimVector<U, NrDims> resultvec {};
+    std::transform(std::begin(*this), std::end(*this), std::begin(resultvec), [](const T& x){ return static_cast<U>(x);});
+    return resultvec;
 }
 
 // *************************************************

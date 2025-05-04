@@ -49,7 +49,20 @@ public:
     template <concept_arithmetic U>
     Array_base<T>& operator=(const Array_base<U>& other);
     Array_base<T>& operator=(Array_base<T>&& other);
-
+    
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator+=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator-=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator*=(const U& val);
+    template <typename U = T>
+    requires concept_arithmetic_or_valarray_or_complex<U>
+    Array_base<U>& operator/=(const U& val);
+    
     // Begin and end iterators
     iterator begin() { return iterator(m_data.get()); }
     iterator end() { return iterator(m_data.get() + m_size); }
@@ -79,7 +92,7 @@ public:
     std::size_t size() const { return m_size; }
     std::size_t typesize() const { return sizeof(T); }
     void set_at(std::shared_ptr<T[]> data, std::size_t a_size);
-    bool resize(std::size_t new_size);
+    void resize(std::size_t new_size);
 
     // Iterator types
     class iterator {
@@ -281,22 +294,82 @@ Array_base<T>& Array_base<T>::operator=(const Array_base<U>& other)
 }
 
 template <typename T>
-void Array_base<T>::set_at(std::shared_ptr<T[]> data, size_t a_size)
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator+=(const U& val)
 {
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it += val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator-=(const U& val)
+{
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it -= val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator*=(const U& val)
+{
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it *= val;
+    }
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+requires concept_arithmetic_or_valarray_or_complex<U>
+Array_base<U>& Array_base<T>::operator/=(const U& val)
+{
+    if (val == U{}) {
+        throw std::runtime_error("Array_base<T>::operator/=(T) : division by zero");
+    }
+    for (auto it { this->begin() }; it != this->end(); ++it) {
+         *it /= val;
+    }
+    return *this;
+}
+
+template <typename T>
+void Array_base<T>::set_at(std::shared_ptr<T[]> data, std::size_t a_size)
+{
+    if (!data && a_size != 0) {
+        throw std::invalid_argument("set_at: non-zero size with null data pointer.");
+    }
     m_size = a_size;
-    m_data = data;
+    m_data = std::move(data);
     m_is_reference = true;
 }
 
 template <typename T>
-bool Array_base<T>::resize(std::size_t new_size)
+void Array_base<T>::resize(std::size_t new_size)
 {
-    if (m_is_reference)
-        return false;
+    if (m_is_reference) {
+        throw std::logic_error("Cannot resize a reference-backed Array_base.");
+    }
+
+    // If the size doesn't change, do nothing
+    if (new_size == m_size) return;
+
+    if (new_size == 0) {
+        m_data.reset();
+        m_size = 0;
+        return;
+    }
+
     auto temp = std::make_unique<T[]>(new_size);
     m_data.reset(temp.release());
     m_size = new_size;
-    return (m_data != nullptr);
 }
 
 } // namespace smip
