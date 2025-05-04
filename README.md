@@ -1,6 +1,6 @@
 # Speckle Stacker
 
-**Speckle Stacker** is a C++ application and SMIP (Speckle Masking Image Processing) library designed to reconstruct high-resolution astronomical images from short-exposure video frames. By employing speckle masking techniques, the software mitigates the blurring effects of atmospheric turbulence, enabling clearer observations of celestial objects.
+**Speckle Stacker** is a C++ application and SMIP (Speckle Masking Image Processing) library designed to reconstruct high-resolution astronomical images from short-exposure video frames. By employing speckle masking techniques, the software mitigates the blurring effects of atmospheric turbulence, enabling astronomical imaging close to the diffraction limit of the optical instrument.
 
 ---
 
@@ -15,12 +15,11 @@ This project targets astronomers, astrophotographers, and image processing enthu
 ### What is Speckle Imaging?
 
 Speckle imaging is a high-resolution astronomical technique that involves capturing numerous short-exposure images to "freeze" atmospheric distortions. These images are then processed to reconstruct a clearer representation of the observed object.  
-[More on Speckle Imaging](https://en.wikipedia.org/wiki/Speckle_imaging)
 
 ### Speckle Masking Technique
 
 Speckle masking is a form of speckle interferometry that utilizes the bispectrum (or closure phases) of short-exposure images. By analyzing the statistical properties of speckle patterns, it reconstructs high-resolution images, overcoming limitations imposed by atmospheric turbulence.  
-[More on Speckle Masking](https://en.wikipedia.org/wiki/Speckle_imaging)
+[More on Speckle Imaging and Speckle Masking](https://en.wikipedia.org/wiki/Speckle_imaging)
 
 ---
 
@@ -36,7 +35,7 @@ Speckle masking is a form of speckle interferometry that utilizes the bispectrum
 ## 🚀 Features
 
 - **Bispectrum Analysis**: Implements bispectral analysis for image reconstruction.
-- **Phase Retrieval**: Uses closure phase algorithms to resolve image structure.
+- **Phase Retrieval**: Uses closure phase algorithms to recover object phases from bispectrum.
 - **CLI Tool & Library**: Offers both an end-user interface and reusable code modules.
 - **Cross-platform Build Support**: Works under Linux and Windows (MinGW).
 - **Image Output**: Generates multiple diagnostic and reconstruction visualizations.
@@ -48,9 +47,9 @@ Speckle masking is a form of speckle interferometry that utilizes the bispectrum
 ### Dependencies
 
 - OpenCV (>= 4.x)
-- FFTW3
+- FFTW3 (tested with 3.3.5)
 - CMake (>= 3.10)
-- C++17-compatible compiler (GCC ≥ 10 or Clang ≥ 12)
+- C++20-compatible compiler (GCC ≥ 10 or Clang ≥ 12)
 
 #### Linux Installation
 
@@ -61,7 +60,7 @@ sudo apt install libopencv-dev fftw3-dev cmake
 #### Windows Installation (MinGW64)
 
 - Install `libopencv-dev` (e.g. via [Chocolatey](https://chocolatey.org/))
-- Install FFTW3 following instructions from: https://fftw.org/install/windows.html
+- Install FFTW3 library following instructions from: https://fftw.org/install/windows.html
 
 ### Build Instructions
 
@@ -74,7 +73,7 @@ make
 ```
 
 - The CLI executable will be located in `build/bin/smip-cli`
-- Libraries will be under `build/output/lib`
+- Library will be under `build/output/lib`
 
 ---
 
@@ -104,16 +103,15 @@ Future versions will support exporting to HDF5 and FITS.
 
 ## 🧠 Planned Enhancements
 
-- GUI front-end
-- GPU acceleration (CUDA/OpenCL)
 - FITS & HDF5 export formats
+- GPU acceleration (CUDA/OpenCL)
 - Adaptive frame selection (lucky imaging mode)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! To propose changes:
+Contributions are highly welcome! To propose changes:
 
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feature-xyz`
@@ -134,3 +132,4 @@ See the [LICENSE](LICENSE) file for details.
 - [Speckle Imaging - Wikipedia](https://en.wikipedia.org/wiki/Speckle_imaging)
 - [Lucky Imaging - Wikipedia](https://en.wikipedia.org/wiki/Lucky_imaging)
 - [Speckle Interferometry of Binary Stars (AMOS 2021)](https://amostech.com/TechnicalPapers/2021/Poster/Tavenner.pdf)
+- [G. Weigelt - Modified astronomical speckle interferometry “speckle masking”](https://doi.org/10.1016/0030-4018(77)90077-3)
