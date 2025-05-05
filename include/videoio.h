@@ -76,12 +76,12 @@ Array2<T> Mat2Array(cv::Mat& mat, color_channel_t color)
     const std::size_t channels { bytesperpixel / bytesperchannel };
     long channel = std::roundl(std::log2(static_cast<int>(color)));
     channel = std::clamp(channel, 0L, static_cast<long>(channels)-1L);
-    std::cout << "Mat2Array(cv::Mat&, color_channel_t): \n";
-    std::cout << " mat.type=" << mat.type() << " color=" << static_cast<int>(color) << " channel=" << channel << " channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
+/*    std::cout << "Mat2Array(cv::Mat&, color_channel_t): \n";
+    std::cout << " mat.type=" << mat.type() << " color=" << static_cast<int>(color) << " channel=" << channel << " channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" <<     bytesperchannel << "\n";
+*/
 
     Array2<T> arr(cols, rows);
     if (color == color_channel_t::black) return arr;
-    //std::size_t ch = std::min(static_cast<std::size_t>(channel), channels);
 
     for (int i = 0; i < rows; i++) {
         if (bytesperchannel == 1) {
