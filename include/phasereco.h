@@ -1,9 +1,9 @@
 #pragma once
 
 #include "array2.h"
-#include "phasemap.h"
-#include "global.h"
 #include "constants.h"
+#include "global.h"
+#include "phasemap.h"
 
 namespace smip {
 

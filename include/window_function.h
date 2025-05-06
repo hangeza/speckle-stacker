@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdexcept>
 #include "constants.h"
+#include <stdexcept>
 
 namespace smip {
 

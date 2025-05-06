@@ -2,8 +2,8 @@
 
 #include "global.h"
 #include "types.h"
-#include <numbers>
 #include <limits>
+#include <numbers>
 
 namespace smip {
 
