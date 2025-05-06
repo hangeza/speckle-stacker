@@ -292,8 +292,15 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) 
     indices[3] = static_cast<int>(rest);
     absolute_indices[3] = rest;
     
-    std::transform(std::begin(indices), std::end(indices), std::begin(m_descriptor.sizes), std::begin(indices),
-    [](int a, std::size_t b) { return a > static_cast<int>(b)/2 ? a - b : a; });
+    std::transform(
+        std::begin(indices),
+        std::end(indices),
+        std::begin(m_descriptor.sizes),
+        std::begin(indices),
+        [](int a, std::size_t b) {
+            return a > static_cast<int>(b)/2 ? a - b : a;
+        }
+    );
 
     indices *= { -1, 1, -1, 1};
     return indices;
