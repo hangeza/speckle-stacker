@@ -30,7 +30,9 @@ namespace smip {
 struct PhaseMapElement;
 
 template <concept_arithmetic T>
-T complex_phase(const std::complex<T>& a) { return (std::arg(a) + M_PI) / (M_PI * 2); }
+T complex_phase(const std::complex<T>& a) { 
+    return (std::arg(a) + constants::pi<T>) / constants::c_2pi<T>;
+}
 template <concept_arithmetic T>
 T complex_abs(const std::complex<T>& z) { return std::abs(z); }
 double SMIP_PUBLIC get_phase_consistency(const PhaseMapElement& pme);

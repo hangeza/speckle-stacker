@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include "constants.h"
 
 namespace smip {
 
@@ -70,8 +71,7 @@ GeneralHamming<T>::GeneralHamming(std::size_t a_xsize, std::size_t a_ysize, doub
     : WindowFunction<T>(a_xsize, a_ysize, window_aperture)
     , m_alpha(a_alpha)
 {
-    static constexpr double twopi { M_PI * 2 };
-    const double trigarg { twopi / window_aperture };
+    const double trigarg { constants::c_2pi<double> / window_aperture };
     const double c1 { m_alpha };
     const double c2 { 1. - m_alpha };
     for (int i { this->min_sindices()[0] }; i <= this->max_sindices()[0]; ++i) {

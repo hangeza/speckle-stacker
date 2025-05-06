@@ -2,8 +2,8 @@
 
 #include "array2.h"
 #include "phasemap.h"
-
 #include "global.h"
+#include "constants.h"
 
 namespace smip {
 
@@ -79,7 +79,6 @@ void calc_phase(const Bispectrum<U>& bispec,
     PhaseMap& pm,
     DimVector<int, 2> w)
 {
-    constexpr double c_epsilon { 1e-25 };
     const Range<DimVector<int, 2>> bispec_u_range { bispec.min_indices()[std::slice(0, 2, 1)], bispec.max_indices()[std::slice(0, 2, 1)] };
     const Range<DimVector<int, 2>> bispec_v_range { bispec.min_indices()[std::slice(2, 2, 1)], bispec.max_indices()[std::slice(2, 2, 1)] };
 
@@ -99,7 +98,7 @@ void calc_phase(const Bispectrum<U>& bispec,
             T ph { phases.at(u) };
             // std::cout<<"phase["<<ux<<","<<uy<<"]="<<ph<<"\n";
             ph *= phases.at(v);
-            if (std::abs(temp) > c_epsilon) {
+            if (std::abs(temp) > constants::c_epsilon<double>) {
                 temp /= abs(temp);
                 temp = std::conj(temp);
                 ph *= temp;
@@ -116,7 +115,7 @@ void calc_phase(const Bispectrum<U>& bispec,
         //         std::cout<<"wx="<<wx<<" wy="<<wy<<" multipl="<<phaselist.size()<<" mean phase="<<mean_phase<<" consis="<<std::abs(mean_phase)<<std::endl;
         const double abs_phase { std::abs(mean_phase) };
         pm.at(w).consistency = abs_phase;
-        if (abs_phase > c_epsilon) {
+        if (abs_phase > constants::c_epsilon<double>) {
             phases.at(w) = mean_phase / abs_phase;
         } else {
             phases.at(w) = T { 0 };
