@@ -14,7 +14,7 @@
 namespace smip {
 
 template <typename T>
-requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T>
+requires concept_arithmetic<T> || concept_valarray_of_arithmetic<T> || concept_complex<T>
 constexpr T sqr(T x)
 {
     //static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
