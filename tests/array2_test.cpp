@@ -1,4 +1,6 @@
 #include <complex>
+#include <ranges>
+#include "math_functions.h"
 #include "array2.h"
 #include "test_macros.h"
 #include "types.h"
@@ -28,6 +30,7 @@ TEST(Array2Test, ConstructionTest) {
     Array2<TypeParam> arr(3, 2);
     TEST_EQUAL(arr.xsize(), 3);
     TEST_EQUAL(arr.ysize(), 2);
+    TEST_EQUAL(arr.size(), 6);
     TEST_EQUAL(arr(0, 0), TypeParam{}); // Default initialized
 }
 
@@ -320,6 +323,46 @@ TEST(Array2Test, ZeroSize)
     TEST_THROW(arr(0, 0), std::out_of_range);
 }
 
+TEST(Array2Test, ShiftTest)
+{
+    TEST_CASE("Array2 Shift Test");
+    Array2<int> arr { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+    arr.print();
+    std::cout << "arr:\n"
+              << arr;
+    auto shifted_arr { arr.shifted({ -1, 1 }) };
+    std::cout << "shifted arr:\n"
+              << shifted_arr;
+    auto row { shifted_arr.get_row(1) };
+    std::cout << "row[1]=" << row << "\n";
+    TEST_EQUAL(row, std::vector<int>({ 2, 3, 0 }));
+    auto col { shifted_arr.get_col(1) };
+    std::cout << "col[1]=" << col << "\n";
+    TEST_EQUAL(col, std::vector<int>({ 0, 3, 6 }));
+}
+
+TEST(Array2Test, RangeTest)
+{
+    TEST_CASE("Array2 Range Test");
+    Array_base<int> arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    Array2<int> arr2 { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+    arr2.print();
+    std::cout << "arr2:\n"
+              << arr2 << "\n";
+    TEST_CHECK(std::ranges::range<Array_base<int>>);
+    TEST_CHECK(std::ranges::range<Array2<int>>);
+    // Use ranges
+    auto ref_view = std::ranges::ref_view(arr);
+    for (auto val : std::views::all(arr) | std::views::transform(smip::sqr<int>)) {
+        std::cout << val << " ";
+    }
+    std::cout << '\n';
+    for (auto val : std::views::all(arr2) | std::views::transform(smip::sqr<int>)) {
+        std::cout << val << " ";
+    }
+    std::cout << '\n';
+}
+
 TYPED_TEST(Array2Test, FillBenchmark)
 {
     TEST_CASE("Array2 Fill Benchmark");
@@ -369,6 +412,8 @@ int array2_test(int /*argc*/, char* /*argv*/[])
     RUN_TYPED_TEST(Array2Test, ScalarSubtraction);
     RUN_TYPED_TEST(Array2Test, ScalarMultiplication);
     RUN_TYPED_TEST(Array2Test, ScalarDivision);
+    RUN_TEST(Array2Test, ShiftTest);
+    RUN_TEST(Array2Test, RangeTest);
 
     RUN_TYPED_TEST(Array2Test, FillBenchmark);
     

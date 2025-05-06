@@ -39,7 +39,7 @@ Mat& FrameExtractor::extract_next_frame()
     //try
     {
         m_cap >> m_frame; // get the next frame from video
-        std::cout << "FrameExtractor::extract_next_frame(): frame=" << m_frameindex << " : " << m_frame.rows << "x" << m_frame.cols << " type=" << m_frame.type() << " elemSize=" << m_frame.elemSize() << " elemSize1=" << m_frame.elemSize1() << std::endl;
+        std::cout << "FrameExtractor::extract_next_frame(): frame=" << m_frameindex << " : " << m_frame.cols << "x" << m_frame.rows << " type=" << m_frame.type() << " elemSize=" << m_frame.elemSize() << " elemSize1=" << m_frame.elemSize1() << std::endl;
         m_frameindex++;
     }
     /*

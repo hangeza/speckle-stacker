@@ -55,7 +55,7 @@ private:
 
 void SMIP_PUBLIC save_frame(const cv::Mat& frame, const std::string& outfilename);
 template <typename T>
-Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel = color_channel_t::red);
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t color = color_channel_t::red);
 template <typename T, typename U>
 cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter = std::fabs<U>,
@@ -67,26 +67,27 @@ cv::Mat Array2Mat(const Array2<T>& arr,
 //********************
 
 template <typename T>
-Array2<T> Mat2Array(cv::Mat& mat, color_channel_t channel)
+Array2<T> Mat2Array(cv::Mat& mat, color_channel_t color)
 {
     int cols = mat.cols, rows = mat.rows;
     assert(mat.type() == 16 || mat.type() == 0);
     const std::size_t bytesperpixel { mat.elemSize() };
     const std::size_t bytesperchannel { mat.elemSize1() };
     const std::size_t channels { bytesperpixel / bytesperchannel };
-    Array2<T> arr(rows, cols);
-    if (mat.isContinuous()) {
-        cols *= rows;
-        rows = 1;
-    }
+    long channel = std::roundl(std::log2(static_cast<int>(color)));
+    channel = std::clamp(channel, 0L, static_cast<long>(channels)-1L);
+/*    std::cout << "Mat2Array(cv::Mat&, color_channel_t): \n";
+    std::cout << " mat.type=" << mat.type() << " color=" << static_cast<int>(color) << " channel=" << channel << " channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" <<     bytesperchannel << "\n";
+*/
 
-    std::size_t ch = std::min(static_cast<std::size_t>(channel), channels);
+    Array2<T> arr(cols, rows);
+    if (color == color_channel_t::black) return arr;
 
     for (int i = 0; i < rows; i++) {
         if (bytesperchannel == 1) {
             const std::uint8_t* Mi = mat.ptr<std::uint8_t>(i);
             for (int j = 0; j < cols; j++) {
-                arr.data().get()[i * cols + j] = static_cast<double>(Mi[j * channels + ch]);
+                arr(j,i) = static_cast<double>(Mi[j * channels + channel]);
             }
         }
     }
@@ -110,13 +111,9 @@ cv::Mat Array2Mat(const Array2<T>& arr,
     const std::size_t bytesperpixel { mat.elemSize() };
     const std::size_t bytesperchannel { mat.elemSize1() };
     const std::size_t channels { bytesperpixel / bytesperchannel };
-    /*
-    if(mat.isContinuous()) {
-        cols *= rows;
-        rows = 1;
-    }
-    */
-    //    std::cout << "save image: channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
+/*    std::cout << "Array2Mat(const Array2<T>&, std::function<U(const T&)>, int, bool): \n";
+    std::cout << " channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
+*/
     for (int i = 0; i < rows; i++) {
         if (bytesperchannel == 1) {
             std::uint8_t* Mi = mat.ptr<std::uint8_t>(i);

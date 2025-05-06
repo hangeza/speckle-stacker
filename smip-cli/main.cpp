@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     std::size_t ref_frame { 0 };
     std::size_t bispectrum_depth { 20 };
     std::size_t reco_radius = bispectrum_depth * 2;
-    std::uint8_t color_channel { color_channel_t::white };
+    color_channel_t color_channel { color_channel_t::white };
     Rect<std::size_t> crop_rect {};
     int swSpeckleMasking { 1 };
     int swCalcSum { 1 };
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
     log::notice() << "using " << nframes << "/" << fe.nframes() << " frames";
     log::info() << "creating sum, power spectra and accumulating bispectrum of all frames";
     log::info() << "reading first (reference) frame";
-    indata = Mat2Array<complex_t>(fe.extract_next_frame());
+    indata = Mat2Array<complex_t>(fe.extract_next_frame(), color_channel);
     log::debug() << "frame data:";
     if (log::system::level() >= log::Level::Debug)
         indata.print();
@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
         // the following two lines circumvent the move operation
         // which would alter indata's storage address
         indata = complex_t {};
-        indata += Mat2Array<complex_t>(fe.extract_next_frame());
+        indata += Mat2Array<complex_t>(fe.extract_next_frame(), color_channel);
         //std::cout << "indata address: " << std::hex << indata.data() << std::dec << "\n";
         // calculate shift of frame wrt ref frame through cross correlation
         auto xyshift = cross_correl(Array2<double>::convert<std::complex<double>>(indata, complex_abs<double>));
