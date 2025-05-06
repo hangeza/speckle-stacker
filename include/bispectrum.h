@@ -342,6 +342,29 @@ template <typename T>
 template <typename U>
 void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
 {
+    /** The following code block represents a modern C++ range-based loop
+     * over the possible range of indices of the 4d bispectrum
+     * calculating the triple correlation u * v * conj(u+v).
+     * However, it is significantly slower compared to the nested for-loops
+     * below. Therefore the other code block is utilized for this function
+     */
+//     for (auto indices : this->true_range()) {
+//         const typename Array2<T>::s_indices u = indices[std::slice(0,2,1)];
+//         const typename Array2<T>::s_indices v = indices[std::slice(2,2,1)];
+//         const typename Array2<T>::s_indices u_plus_v = u + v;
+//         if ( fft.range().contains(u_plus_v) ) {
+//             T t = fft.at(u);
+//             t *= fft.at(v);
+//             t *= std::conj(fft.at(u_plus_v));
+//             this->data_at(calc_offset(indices)) += t;
+//         }
+//     }
+
+    /** The following code block consists of 4d nested for-loops
+     * calculating the triple correlation u * v * conj(u+v).
+     * It does not conform to modern C++ coding practice
+     * but is way faster than the range-based loop
+     */
     const int min1 = std::max(fft.min_sindices()[0], min_indices()[0]);
     const int min2 = std::max(fft.min_sindices()[1], min_indices()[1]);
     const int min3 = std::max(fft.min_sindices()[0], min_indices()[2]);
