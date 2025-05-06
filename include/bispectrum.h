@@ -91,6 +91,7 @@ public:
     [[nodiscard]] s_indices max_indices() const noexcept { return m_descriptor.max_indices; }
 
     Range<DimVector<int, 4>> range() const;
+    Range<DimVector<int, 4>> true_range() const;
 
 private:
     enum class SymmetryCase { T1, T3, T6, T7, T9, T12 };
@@ -126,6 +127,12 @@ template <typename T>
 Range<DimVector<int, 4>> Bispectrum<T>::range() const
 {
     return Range<DimVector<int, 4>>(min_indices(), max_indices());
+}
+
+template <typename T>
+Range<DimVector<int, 4>> Bispectrum<T>::true_range() const
+{
+    return Range<DimVector<int, 4>>(min_indices(), max_indices() * s_indices{ 0, 1, 0, 1 });
 }
 
 template <typename T>
