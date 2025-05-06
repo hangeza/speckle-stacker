@@ -60,7 +60,6 @@ Array2<T> reconstruct_phases(const Bispectrum<U>& bispec,
     while (r <= reco_radius) {
         NextRecoIndex(r, phi, pm_indices[0], pm_indices[1]);
         if (pm.range().contains(pm_indices)) {
-            //      if ((abs(complex_t(i,j))<=min(bispec->size1,bispec->size2)/2))
             if (!pm.at(pm_indices).flag) {
                 calc_phase(bispec, phases, pm, pm_indices);
                 //std::cout<<"calc_phase: i="<<i<<" j="<<j<<"\n";
