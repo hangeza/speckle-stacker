@@ -1,4 +1,5 @@
 #pragma once
+
 #include "constants.h"
 #include "dimvector.h"
 #include "types.h"
@@ -9,8 +10,6 @@
 #include <type_traits>
 #include <valarray>
 #include <vector>
-
-// #include "smip_export.h"
 
 namespace smip {
 

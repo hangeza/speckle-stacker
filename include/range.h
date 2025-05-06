@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cmath>
 #include <limits>
 #include <ranges>
@@ -8,8 +9,6 @@
 #include <valarray>
 
 #include "types.h"
-
-// #include "smip_export.h"
 
 namespace smip {
 
@@ -51,7 +50,7 @@ public:
     * @brief iterator class for Range
     */
     template <typename U = T>
-    requires std::integral<U> || (concept_valarray_of_arithmetic<U> && std::integral<typename std::decay_t<U>::value_type>) class iterator {
+    requires std::integral<U> ||(concept_valarray_of_arithmetic<U>&& std::integral<typename std::decay_t<U>::value_type>)class iterator {
     private:
         T m_current, m_low, m_high;
 

@@ -1,9 +1,9 @@
-#include <complex>
-#include <ranges>
-#include "math_functions.h"
 #include "array2.h"
+#include "math_functions.h"
 #include "test_macros.h"
 #include "types.h"
+#include <complex>
+#include <ranges>
 
 using namespace smip;
 
@@ -21,31 +21,33 @@ using TestTypes = type_list<int, std::size_t, float, double, std::complex<float>
 // Register the fixture with the types
 TYPED_TEST_SUITE(Array2Test, TestTypes);
 
-
-TEST(Array2Test, ConstructionTest) {
+TEST(Array2Test, ConstructionTest)
+{
     using TypeParam = int;
-    
+
     TEST_CASE("Array2 Construction");
 
     Array2<TypeParam> arr(3, 2);
     TEST_EQUAL(arr.xsize(), 3);
     TEST_EQUAL(arr.ysize(), 2);
     TEST_EQUAL(arr.size(), 6);
-    TEST_EQUAL(arr(0, 0), TypeParam{}); // Default initialized
+    TEST_EQUAL(arr(0, 0), TypeParam {}); // Default initialized
 }
 
-TEST(Array2Test, BoundsTest) {
+TEST(Array2Test, BoundsTest)
+{
     TEST_CASE("Array2 Bounds Checking");
 
     Array2<int> arr(2, 2);
     arr(1, 1) = 5;
-    TEST_EQUAL(arr(1, 1),  5);
+    TEST_EQUAL(arr(1, 1), 5);
 
     TEST_THROW(arr(2, 0), std::out_of_range); // x out of bounds
     TEST_THROW(arr(0, 2), std::out_of_range); // y out of bounds
 }
 
-TEST(Array2Test, CopyTest) {
+TEST(Array2Test, CopyTest)
+{
     TEST_CASE("Array2 Copy Semantics");
 
     Array2<int> arr1(2, 2);
@@ -62,7 +64,8 @@ TEST(Array2Test, CopyTest) {
     TEST_EQUAL(arr3(1, 1), 20);
 }
 
-TEST(Array2Test, MoveTest) {
+TEST(Array2Test, MoveTest)
+{
     TEST_CASE("Array2 Move Semantics");
 
     Array2<int> arr1(2, 2);
@@ -92,22 +95,22 @@ TEST(Array2Test, ResizeTest)
     TEST_EQUAL(arr(0, 0), 99);
     TEST_EQUAL(arr(1, 1), 99);
     arr = Array2<int>(3, 3);
-    TEST_EQUAL(arr(2, 2), int{}); // New cells default-initialized
+    TEST_EQUAL(arr(2, 2), int {}); // New cells default-initialized
 }
 
 TYPED_TEST(Array2Test, FillTest)
 {
     TEST_CASE("Array2 Fill");
     Array2<TypeParam> arr(2, 2);
-    arr = TypeParam{99};
-    TEST_EQUAL_OR_NEAR(arr(0, 0), TypeParam{99});
-    TEST_EQUAL_OR_NEAR(arr(1, 1), TypeParam{99});
+    arr = TypeParam { 99 };
+    TEST_EQUAL_OR_NEAR(arr(0, 0), TypeParam { 99 });
+    TEST_EQUAL_OR_NEAR(arr(1, 1), TypeParam { 99 });
 }
 
 TEST(Array2Test, IndexTest)
 {
     TEST_CASE("Array2 Index Operator");
-    
+
     Array2<int> arr(3, 3);
     arr(0, 0) = 1;
     arr(1, 1) = 2;
@@ -124,10 +127,10 @@ TEST(Array2Test, ExceptionTest)
     Array2<int> a(5, 5);
     TEST_THROW(a(100, 100), std::out_of_range);
     Array2<int> b; // empty
-    b.set_at(a.data(),a.size());
-    Array2<int> c(5,4); // differently sized array
+    b.set_at(a.data(), a.size());
+    Array2<int> c(5, 4); // differently sized array
     // assignment to array which carries a reference...should throw
-    TEST_THROW(b=c, std::runtime_error);
+    TEST_THROW(b = c, std::runtime_error);
 }
 
 TYPED_TEST(Array2Test, AdditionOperator)
@@ -135,12 +138,12 @@ TYPED_TEST(Array2Test, AdditionOperator)
     TEST_CASE("Array2 Addition Operator");
 
     Array2<TypeParam> a = {
-        {1, 2},
-        {3, 4}
+        { 1, 2 },
+        { 3, 4 }
     };
     Array2<TypeParam> b = {
-        {5, 6},
-        {7, 8}
+        { 5, 6 },
+        { 7, 8 }
     };
     auto c = a + b;
 
@@ -157,12 +160,12 @@ TYPED_TEST(Array2Test, SubtractionOperator)
     TEST_CASE("Array2 Subtraction Operator");
 
     Array2<TypeParam> a = {
-        {5, 6},
-        {7, 8}
+        { 5, 6 },
+        { 7, 8 }
     };
     Array2<TypeParam> b = {
-        {1, 2},
-        {3, 4}
+        { 1, 2 },
+        { 3, 4 }
     };
     auto c = a - b;
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(4));
@@ -176,12 +179,12 @@ TYPED_TEST(Array2Test, MultiplicationOperator)
     TEST_CASE("Array2 Multiplication Operator");
 
     Array2<TypeParam> a = {
-        {1, 2},
-        {3, 4}
+        { 1, 2 },
+        { 3, 4 }
     };
     Array2<TypeParam> b = {
-        {2, 2},
-        {2, 2}
+        { 2, 2 },
+        { 2, 2 }
     };
     auto c = a * b;
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(2));
@@ -194,12 +197,12 @@ TYPED_TEST(Array2Test, DivisionOperator)
 {
     TEST_CASE("Array2 Division Operator");
     Array2<TypeParam> a = {
-        {4, 6},
-        {8, 10}
+        { 4, 6 },
+        { 8, 10 }
     };
     Array2<TypeParam> b = {
-        {2, 3},
-        {4, 5}
+        { 2, 3 },
+        { 4, 5 }
     };
     auto c = a / b;
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(2));
@@ -212,8 +215,8 @@ TYPED_TEST(Array2Test, ScalarMultiplication)
 {
     TEST_CASE("Array2 Scalar Multiplication");
     Array2<TypeParam> a = {
-        {1, 2},
-        {3, 4}
+        { 1, 2 },
+        { 3, 4 }
     };
     auto c = a * TypeParam(3);
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(3));
@@ -226,8 +229,8 @@ TYPED_TEST(Array2Test, ScalarDivision)
 {
     TEST_CASE("Array2 Scalar Division");
     Array2<TypeParam> a = {
-        {2, 4},
-        {6, 8}
+        { 2, 4 },
+        { 6, 8 }
     };
     auto c = a / TypeParam(2);
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(1));
@@ -240,8 +243,8 @@ TYPED_TEST(Array2Test, ScalarAddition)
 {
     TEST_CASE("Array2 Scalar Addition");
     Array2<TypeParam> a = {
-        {1, 2},
-        {3, 4}
+        { 1, 2 },
+        { 3, 4 }
     };
     auto c = a + TypeParam(5);
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(6));
@@ -252,10 +255,10 @@ TYPED_TEST(Array2Test, ScalarAddition)
 
 TYPED_TEST(Array2Test, ScalarSubtraction)
 {
-        TEST_CASE("Array2 Scalar Subtraction");
-        Array2<TypeParam> a = {
-        {10, 9},
-        {8, 7}
+    TEST_CASE("Array2 Scalar Subtraction");
+    Array2<TypeParam> a = {
+        { 10, 9 },
+        { 8, 7 }
     };
     auto c = a - TypeParam(5);
     TEST_EQUAL_OR_NEAR(c(0, 0), TypeParam(5));
@@ -270,8 +273,8 @@ TYPED_TEST(Array2Test, ConvertMethod)
         // This block is only compiled if TypeParam is arithmetic!
         TEST_CASE("Array2 Convert");
         Array2<TypeParam> a = {
-            {1, 2},
-            {3, 4}
+            { 1, 2 },
+            { 3, 4 }
         };
         auto b = Array2<float>::convert<TypeParam>(a);
         TEST_EQUAL(b.ncols(), 2);
@@ -371,7 +374,7 @@ TYPED_TEST(Array2Test, FillBenchmark)
     constexpr int cols = 2000;
 
     std::cout << "\n=== Performance Benchmark: Array2 vs std::vector ===\n";
-        MEASURE_TIME("Array2 fill time", {
+    MEASURE_TIME("Array2 fill time", {
         Array2<TypeParam> arr(rows, cols);
         for (int y = 0; y < rows; ++y) {
             for (int x = 0; x < cols; ++x) {
@@ -416,7 +419,7 @@ int array2_test(int /*argc*/, char* /*argv*/[])
     RUN_TEST(Array2Test, RangeTest);
 
     RUN_TYPED_TEST(Array2Test, FillBenchmark);
-    
+
     Test::summary();
     return 0;
 }

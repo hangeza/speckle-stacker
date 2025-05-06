@@ -2,13 +2,14 @@
 #include "phasemap.h"
 
 #ifdef _WIN32
-extern "C" void __attribute__((dllexport)) __attribute__((visibility("default"))) test_export() {}
+extern "C" void __attribute__((dllexport)) __attribute__((visibility("default"))) test_export() { }
 #endif
 
 namespace smip {
 
 #ifdef _WIN32
-void force_link() {
+void force_link()
+{
     test_export();
 }
 #endif

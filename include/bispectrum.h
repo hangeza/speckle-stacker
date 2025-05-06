@@ -1,20 +1,20 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <complex>
-#include <cstdlib>
 #include <cstddef>
+#include <cstdlib>
 #include <errno.h>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
 #include <valarray>
 #include <vector>
-#include <optional>
-#include <algorithm>
 
 #include "array2.h"
 #include "types.h"
@@ -94,8 +94,13 @@ public:
     Range<DimVector<int, 4>> true_range() const;
 
 private:
-    enum class SymmetryCase { T1, T3, T6, T7, T9, T12 };
-    
+    enum class SymmetryCase { T1,
+        T3,
+        T6,
+        T7,
+        T9,
+        T12 };
+
     extents m_dimsizes { 0, 0, 0, 0 };
     struct array_descriptor_t {
         extents sizes {};
@@ -132,7 +137,7 @@ Range<DimVector<int, 4>> Bispectrum<T>::range() const
 template <typename T>
 Range<DimVector<int, 4>> Bispectrum<T>::true_range() const
 {
-    return Range<DimVector<int, 4>>(min_indices(), max_indices() * s_indices{ 0, 1, 0, 1 });
+    return Range<DimVector<int, 4>>(min_indices(), max_indices() * s_indices { 0, 1, 0, 1 });
 }
 
 template <typename T>
@@ -144,11 +149,11 @@ typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(ext
     descriptor.base_size = descriptor.base_sizes.product();
     descriptor.totalsize = descriptor.sizes.product();
     std::transform(std::begin(descriptor.sizes), std::end(descriptor.sizes),
-                       std::begin(descriptor.min_indices),
-                       [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
+        std::begin(descriptor.min_indices),
+        [](extents::value_type x) { return -static_cast<s_indices::value_type>(x) / 2; });
     std::transform(std::begin(descriptor.sizes), std::end(descriptor.sizes),
-                       std::begin(descriptor.max_indices),
-                       [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
+        std::begin(descriptor.max_indices),
+        [](extents::value_type x) { return static_cast<s_indices::value_type>(x); });
     descriptor.max_indices += descriptor.min_indices;
     descriptor.max_indices -= 1;
     return descriptor;
@@ -157,10 +162,14 @@ typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(ext
 template <typename T>
 constexpr typename Bispectrum<T>::SymmetryCase Bispectrum<T>::classify_indices(const s_indices& indices) noexcept
 {
-    if (indices[0] <= 0 && indices[2] <= 0) return SymmetryCase::T1;
-    if (indices[0] > 0 && indices[2] > 0) return SymmetryCase::T7;
-    if (indices[0] > 0 && indices[2] <= 0) return (indices[0] + indices[2] > 0) ? SymmetryCase::T6 : SymmetryCase::T9;
-    if (indices[0] <= 0 && indices[2] > 0) return (indices[0] + indices[2] > 0) ? SymmetryCase::T3 : SymmetryCase::T12;
+    if (indices[0] <= 0 && indices[2] <= 0)
+        return SymmetryCase::T1;
+    if (indices[0] > 0 && indices[2] > 0)
+        return SymmetryCase::T7;
+    if (indices[0] > 0 && indices[2] <= 0)
+        return (indices[0] + indices[2] > 0) ? SymmetryCase::T6 : SymmetryCase::T9;
+    if (indices[0] <= 0 && indices[2] > 0)
+        return (indices[0] + indices[2] > 0) ? SymmetryCase::T3 : SymmetryCase::T12;
     std::unreachable(); // unreachable since all combinations are covered
 }
 
@@ -172,12 +181,13 @@ Bispectrum<T>::Bispectrum()
 
 template <typename T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>::extents& dimsizes)
-    : m_dimsizes { dimsizes }, m_descriptor{ compute_descriptor(dimsizes) }
+    : m_dimsizes { dimsizes }
+    , m_descriptor { compute_descriptor(dimsizes) }
 {
     this->resize(base_size());
     // the following lines initialize the array with default zero values depending on type
     // both versions should be equally performant
-//     std::fill(Array_base<T>::begin(), Array_base<T>::end(), T {});
+    //     std::fill(Array_base<T>::begin(), Array_base<T>::end(), T {});
     std::fill_n(Array_base<T>::data().get(), base_size(), T {});
 }
 
@@ -185,7 +195,7 @@ template <typename T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
     : Array_base<T>(other.base_size())
     , m_dimsizes { other.m_dimsizes }
-    , m_descriptor{ compute_descriptor(other.m_dimsizes) }
+    , m_descriptor { compute_descriptor(other.m_dimsizes) }
 {
     std::copy(other.begin(), other.end(), Array_base<T>::begin());
 }
@@ -291,18 +301,17 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) 
     rest = rest - temp;
     indices[3] = static_cast<int>(rest);
     absolute_indices[3] = rest;
-    
+
     std::transform(
         std::begin(indices),
         std::end(indices),
         std::begin(m_descriptor.sizes),
         std::begin(indices),
         [](int a, std::size_t b) {
-            return a > static_cast<int>(b)/2 ? a - b : a;
-        }
-    );
+            return a > static_cast<int>(b) / 2 ? a - b : a;
+        });
 
-    indices *= { -1, 1, -1, 1};
+    indices *= { -1, 1, -1, 1 };
     return indices;
 }
 
@@ -325,9 +334,8 @@ std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descrip
         std::begin(indices),
         [](auto a, auto b) {
             return a < 0 ? a + b : a;
-        }
-    );
-    
+        });
+
     std::size_t addr { static_cast<std::size_t>(indices[0]) };
 
     addr *= descriptor.base_sizes[1];
@@ -355,17 +363,17 @@ void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
      * However, it is significantly slower compared to the nested for-loops
      * below. Therefore the other code block is utilized for this function
      */
-//     for (auto indices : this->true_range()) {
-//         const typename Array2<T>::s_indices u = indices[std::slice(0,2,1)];
-//         const typename Array2<T>::s_indices v = indices[std::slice(2,2,1)];
-//         const typename Array2<T>::s_indices u_plus_v = u + v;
-//         if ( fft.range().contains(u_plus_v) ) {
-//             T t = fft.at(u);
-//             t *= fft.at(v);
-//             t *= std::conj(fft.at(u_plus_v));
-//             this->data_at(calc_offset(indices)) += t;
-//         }
-//     }
+    //     for (auto indices : this->true_range()) {
+    //         const typename Array2<T>::s_indices u = indices[std::slice(0,2,1)];
+    //         const typename Array2<T>::s_indices v = indices[std::slice(2,2,1)];
+    //         const typename Array2<T>::s_indices u_plus_v = u + v;
+    //         if ( fft.range().contains(u_plus_v) ) {
+    //             T t = fft.at(u);
+    //             t *= fft.at(v);
+    //             t *= std::conj(fft.at(u_plus_v));
+    //             this->data_at(calc_offset(indices)) += t;
+    //         }
+    //     }
 
     /** The following code block consists of 4d nested for-loops
      * calculating the triple correlation u * v * conj(u+v).
@@ -440,7 +448,8 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
     success = success && fread(&dims[1], sizeof(dims[1]), 1, stream);
     success = success && fread(&dims[2], sizeof(dims[2]), 1, stream);
     success = success && fread(&dims[3], sizeof(dims[3]), 1, stream);
-    if (!success) throw std::runtime_error("error reading bispectrum metadata from file " + filename);
+    if (!success)
+        throw std::runtime_error("error reading bispectrum metadata from file " + filename);
 
     Array_base<T>::resize(size);
     m_dimsizes = dims;
@@ -521,7 +530,7 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
         throw std::out_of_range(build_error_message("Bispectrum: put_element address out of bounds.", indices));
         //throw ElementOutOfBounds("trying to access bispectrum element out of range");
     }
-//     Array_base<T>::data().get()[addr] = value;
+    //     Array_base<T>::data().get()[addr] = value;
     data_at(addr) = value;
 }
 
@@ -548,32 +557,33 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices 
     auto scase = classify_indices(indices);
 
     switch (scase) {
-        case SymmetryCase::T1: return indices;
-        case SymmetryCase::T7:
-            conjugate = true;
-            return -indices;
-        case SymmetryCase::T6: {
-            s_indices uv = indices * s_indices{ -1, -1, 1, 1 };
-            uv -= s_indices{ indices[2], indices[3], 0, 0 };
-            return uv;
-        }
-        case SymmetryCase::T9: {
-            s_indices uv = indices * s_indices{ -1, -1, 1, 1 };
-            uv += s_indices{ 0, 0, indices[0], indices[1] };
-            conjugate = true;
-            return uv;
-        }
-        case SymmetryCase::T3: {
-            s_indices uv = indices * s_indices{ 1, 1, -1, -1 };
-            uv -= s_indices{ 0, 0, indices[0], indices[1] };
-            return uv;
-        }
-        case SymmetryCase::T12: {
-            s_indices uv = indices * s_indices{ 1, 1, -1, -1 };
-            uv += s_indices{ indices[2], indices[3], 0, 0 };
-            conjugate = true;
-            return uv;
-        }
+    case SymmetryCase::T1:
+        return indices;
+    case SymmetryCase::T7:
+        conjugate = true;
+        return -indices;
+    case SymmetryCase::T6: {
+        s_indices uv = indices * s_indices { -1, -1, 1, 1 };
+        uv -= s_indices { indices[2], indices[3], 0, 0 };
+        return uv;
+    }
+    case SymmetryCase::T9: {
+        s_indices uv = indices * s_indices { -1, -1, 1, 1 };
+        uv += s_indices { 0, 0, indices[0], indices[1] };
+        conjugate = true;
+        return uv;
+    }
+    case SymmetryCase::T3: {
+        s_indices uv = indices * s_indices { 1, 1, -1, -1 };
+        uv -= s_indices { 0, 0, indices[0], indices[1] };
+        return uv;
+    }
+    case SymmetryCase::T12: {
+        s_indices uv = indices * s_indices { 1, 1, -1, -1 };
+        uv += s_indices { indices[2], indices[3], 0, 0 };
+        conjugate = true;
+        return uv;
+    }
     }
     std::unreachable();
 }

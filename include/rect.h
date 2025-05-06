@@ -1,11 +1,10 @@
 #pragma once
-#include "types.h"
+
 #include "point.h"
+#include "types.h"
 #include <cmath>
 #include <limits>
 #include <type_traits>
-
-// #include "smip_export.h"
 
 namespace smip {
 
@@ -54,7 +53,8 @@ struct Rect {
 //********************
 template <typename T>
 requires concept_arithmetic<T>
-Rect(Point<T> a, Point<T> b) -> Rect<T>;
+Rect(Point<T> a, Point<T> b)
+->Rect<T>;
 
 //********************
 // implementation part
@@ -135,7 +135,8 @@ void Rect<T>::set_size(const Point<T>& sizes)
 // but often is, to modify the private members)
 template <typename T>
 requires concept_arithmetic<T>
-Rect<T>& Rect<T>::operator+=(const Point<T>& other)
+    Rect<T>
+&Rect<T>::operator+=(const Point<T>& other)
 {
     topleft += other;
     bottomright += other;
@@ -144,7 +145,8 @@ Rect<T>& Rect<T>::operator+=(const Point<T>& other)
 
 template <typename T>
 requires concept_arithmetic<T>
-Rect<T>& Rect<T>::operator-=(const Point<T>& other)
+    Rect<T>
+&Rect<T>::operator-=(const Point<T>& other)
 {
     topleft -= other;
     bottomright -= other;
@@ -153,7 +155,7 @@ Rect<T>& Rect<T>::operator-=(const Point<T>& other)
 
 template <typename T>
 requires concept_arithmetic<T>
-std::ostream& operator<<(std::ostream& os, const Rect<T>& obj)
+    std::ostream& operator<<(std::ostream& os, const Rect<T>& obj)
 {
     // write obj to stream
     os << "( " << obj.topleft << " " << obj.bottomright << " )";

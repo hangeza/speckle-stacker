@@ -11,8 +11,6 @@
 #include <stdexcept>
 #include <valarray>
 
-//#include "smip_export.h"
-
 namespace smip {
 
 /**
@@ -35,8 +33,8 @@ public:
     using std::valarray<T>::operator*=;
     using std::valarray<T>::operator/=;
     using std::valarray<T>::operator[];
-//     using std::valarray<T>::operator==;
-//     using std::valarray<T>::operator!=;
+    //     using std::valarray<T>::operator==;
+    //     using std::valarray<T>::operator!=;
     using std::valarray<T>::size;
     using std::valarray<T>::sum;
     using std::valarray<T>::min;
@@ -190,7 +188,7 @@ void DimVector<T, NrDims>::fill(T value)
 template <concept_arithmetic T, std::size_t NrDims>
 bool DimVector<T, NrDims>::operator==(const DimVector<T, NrDims>& other) const
 {
-//     return (*this == other).min();
+    //     return (*this == other).min();
     return (dynamic_cast<const std::valarray<T>&>(*this) == dynamic_cast<const std::valarray<T>&>(other)).min();
 }
 
@@ -205,7 +203,7 @@ template <concept_arithmetic U>
 DimVector<T, NrDims>::operator DimVector<U, NrDims>() const
 {
     DimVector<U, NrDims> resultvec {};
-    std::transform(std::begin(*this), std::end(*this), std::begin(resultvec), [](const T& x){ return static_cast<U>(x);});
+    std::transform(std::begin(*this), std::end(*this), std::begin(resultvec), [](const T& x) { return static_cast<U>(x); });
     return resultvec;
 }
 
