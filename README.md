@@ -6,7 +6,7 @@
 
 ## 📖 Project Overview
 
-This project targets astronomers, astrophotographers, and image processing enthusiasts aiming to enhance ground-based telescope imagery. It processes input video data, applies bispectrum analysis, and produces a stacked image with improved resolution and contrast.
+This project targets astronomers, astrophotographers, and image processing enthusiasts aiming to enhance ground-based telescope imagery. It processes input video data, applies fft, bispectrum accumulation, phase revovery, windowing and fft back transform resulting in a reconstructed deblurred object image close to the diffraction limit of the telescope without atmospheric distortions, depending on the quality and amount of video frames.
 
 ---
 
@@ -14,7 +14,7 @@ This project targets astronomers, astrophotographers, and image processing enthu
 
 ### What is Speckle Imaging?
 
-Speckle imaging is a high-resolution astronomical technique that involves capturing numerous short-exposure images to "freeze" atmospheric distortions. These images are then processed to reconstruct a clearer representation of the observed object.  
+Speckle imaging is a high-resolution astronomical technique that involves capturing numerous short-exposure images to "freeze" atmospheric distortions. These images are then processed to reconstruct a deblurred representation of the observed object.  
 
 ### Speckle Masking Technique
 
@@ -35,7 +35,9 @@ Speckle masking is a form of speckle interferometry that utilizes the bispectrum
 ## 🚀 Features
 
 - **Bispectrum Analysis**: Implements bispectral analysis for image reconstruction.
-- **Phase Retrieval**: Uses closure phase algorithms to recover object phases from bispectrum.
+- **Phase Retrieval**: Uses closure phase algorithm to recover object phases from bispectrum.
+- **Cross Correlation**: Provides functions to calculate cross and auto correlations of arrays.
+- **Shift and Add (SAA)**: Provides processing of picture sums and shifted picture sums based on cross correlation.
 - **CLI Tool & Library**: Offers both an end-user interface and reusable code modules.
 - **Cross-platform Build Support**: Works under Linux and Windows (MinGW).
 - **Image Output**: Generates multiple diagnostic and reconstruction visualizations.
@@ -84,7 +86,7 @@ The CLI processes videos or GIFs to reconstruct high-resolution images using spe
 ### Reproduce the Example Above
 
 ```bash
-bin/smip-cli -v -n 1000 -b32 -p 64 -c b ../data/hu940ani/hu940ani.gif
+bin/smip-cli -v -b 32 -p 64 -c r ../data/hu940ani/hu940ani.gif
 ```
 
 *(Assuming execution from `build` folder)*
@@ -95,17 +97,19 @@ bin/smip-cli -v -n 1000 -b32 -p 64 -c b ../data/hu940ani/hu940ani.gif
 - Power spectrum
 - Phase map
 - Phase consistency map
-- Reconstructed images (grayscale & false color, 16-bit)
+- Reconstructed image (grayscale & false color, 16-bit)
 
-Future versions will support exporting to HDF5 and FITS.
+Future versions will support exporting to HDF5 and FITS file formats.
 
 ---
 
 ## 🧠 Planned Enhancements
 
 - FITS & HDF5 export formats
+- OpenMP utilization
 - GPU acceleration (CUDA/OpenCL)
-- Adaptive frame selection (lucky imaging mode)
+- Image analysis algorithms (noise, SNR, entropy etc.)
+- Adaptive frame selection (lucky imaging mode based on image analysis)
 
 ---
 
