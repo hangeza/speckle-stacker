@@ -366,11 +366,11 @@ void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
     //     for (auto indices : this->true_range()) {
     //         const typename Array2<T>::s_indices u = indices[std::slice(0,2,1)];
     //         const typename Array2<T>::s_indices v = indices[std::slice(2,2,1)];
-    //         const typename Array2<T>::s_indices u_plus_v = u + v;
-    //         if ( fft.range().contains(u_plus_v) ) {
+    //         const typename Array2<T>::s_indices w = u + v;
+    //         if ( fft.range().contains(w) ) {
     //             T t = fft.at(u);
     //             t *= fft.at(v);
-    //             t *= std::conj(fft.at(u_plus_v));
+    //             t *= std::conj(fft.at(w));
     //             this->data_at(calc_offset(indices)) += t;
     //         }
     //     }
