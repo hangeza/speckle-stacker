@@ -7,7 +7,7 @@
 
 namespace smip {
 
-template <typename T>
+template <concept_complex T>
 class Bispectrum;
 template <typename T>
 class Array2;

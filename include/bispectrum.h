@@ -25,7 +25,7 @@ namespace smip {
 //! 4-dim Container for handling a complex Bispectrum
 /*! ...
  */
-template <typename T>
+template <concept_complex T>
 class Bispectrum : public Array_base<T> {
 public:
     using extents = DimVector<std::size_t, 4>;
