@@ -79,7 +79,7 @@ public:
     */
     [[nodiscard]] s_indices calc_indices(std::size_t addr) const;
     [[nodiscard]] std::size_t calc_offset(s_indices indices) const noexcept;
-    template <typename U>
+    template <concept_complex U>
     void accumulate_from_fft(const Array2<U>& fft);
 
     [[nodiscard]] std::size_t size() const noexcept { return m_descriptor.base_size; }
@@ -128,19 +128,19 @@ private:
 // Member definitions / implementation part
 // *************************************************
 
-template <typename T>
+template <concept_complex T>
 Range<DimVector<int, 4>> Bispectrum<T>::range() const
 {
     return Range<DimVector<int, 4>>(min_indices(), max_indices());
 }
 
-template <typename T>
+template <concept_complex T>
 Range<DimVector<int, 4>> Bispectrum<T>::true_range() const
 {
     return Range<DimVector<int, 4>>(min_indices(), max_indices() * s_indices { 0, 1, 0, 1 });
 }
 
-template <typename T>
+template <concept_complex T>
 typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(extents dimsizes)
 {
     Bispectrum<T>::array_descriptor_t descriptor;
@@ -159,7 +159,7 @@ typename Bispectrum<T>::array_descriptor_t Bispectrum<T>::compute_descriptor(ext
     return descriptor;
 }
 
-template <typename T>
+template <concept_complex T>
 constexpr typename Bispectrum<T>::SymmetryCase Bispectrum<T>::classify_indices(const s_indices& indices) noexcept
 {
     if (indices[0] <= 0 && indices[2] <= 0)
@@ -173,13 +173,13 @@ constexpr typename Bispectrum<T>::SymmetryCase Bispectrum<T>::classify_indices(c
     std::unreachable(); // unreachable since all combinations are covered
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>::Bispectrum()
     : Array_base<T> {}
 {
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>::extents& dimsizes)
     : m_dimsizes { dimsizes }
     , m_descriptor { compute_descriptor(dimsizes) }
@@ -191,7 +191,7 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>::extents& dimsizes)
     std::fill_n(Array_base<T>::data().get(), base_size(), T {});
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
     : Array_base<T>(other.base_size())
     , m_dimsizes { other.m_dimsizes }
@@ -200,7 +200,7 @@ Bispectrum<T>::Bispectrum(const Bispectrum<T>& other)
     std::copy(other.begin(), other.end(), Array_base<T>::begin());
 }
 
-template <typename T>
+template <concept_complex T>
 typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes) noexcept
 {
     // true sizes of ux,uy,vx,vy dimensions
@@ -210,7 +210,7 @@ typename Bispectrum<T>::extents Bispectrum<T>::sizes(extents dimsizes) noexcept
     return vec;
 }
 
-template <typename T>
+template <concept_complex T>
 typename Bispectrum<T>::extents Bispectrum<T>::base_sizes(extents dimsizes) noexcept
 {
     // reduced sizes of ux,uy,vx,vy dimensions
@@ -219,7 +219,7 @@ typename Bispectrum<T>::extents Bispectrum<T>::base_sizes(extents dimsizes) noex
     return vec;
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>& Bispectrum<T>::operator=(const Bispectrum<T>& x)
 {
     m_dimsizes = x.m_dimsizes;
@@ -229,7 +229,7 @@ Bispectrum<T>& Bispectrum<T>::operator=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>& Bispectrum<T>::operator+=(const Bispectrum<T>& x)
 {
     if (m_dimsizes != x.m_dimsizes) {
@@ -241,7 +241,7 @@ Bispectrum<T>& Bispectrum<T>::operator+=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>& Bispectrum<T>::operator-=(const Bispectrum<T>& x)
 {
     if (m_dimsizes != x.m_dimsizes) {
@@ -253,7 +253,7 @@ Bispectrum<T>& Bispectrum<T>::operator-=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>& Bispectrum<T>::operator*=(const Bispectrum<T>& x)
 {
     if (m_dimsizes != x.m_dimsizes) {
@@ -265,7 +265,7 @@ Bispectrum<T>& Bispectrum<T>::operator*=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
+template <concept_complex T>
 Bispectrum<T>& Bispectrum<T>::operator/=(const Bispectrum<T>& x)
 {
     if (m_dimsizes != x.m_dimsizes) {
@@ -277,7 +277,7 @@ Bispectrum<T>& Bispectrum<T>::operator/=(const Bispectrum<T>& x)
     return *this;
 }
 
-template <typename T>
+template <concept_complex T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) const
 {
     assert(addr < base_size());
@@ -315,13 +315,13 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::calc_indices(std::size_t addr) 
     return indices;
 }
 
-template <typename T>
+template <concept_complex T>
 std::size_t Bispectrum<T>::calc_offset(s_indices indices) const noexcept
 {
     return calc_offset(m_descriptor, indices);
 }
 
-template <typename T>
+template <concept_complex T>
 std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descriptor, s_indices indices) noexcept
 {
     indices *= { -1, 1, -1, 1 };
@@ -353,8 +353,8 @@ std::size_t Bispectrum<T>::calc_offset(Bispectrum<T>::array_descriptor_t descrip
 #pragma GCC optimize("unroll-loops")
 #endif
 #endif
-template <typename T>
-template <typename U>
+template <concept_complex T>
+template <concept_complex U>
 void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
 {
     /** The following code block represents a modern C++ range-based loop
@@ -408,7 +408,7 @@ void Bispectrum<T>::accumulate_from_fft(const Array2<U>& fft)
     }
 }
 
-template <typename T>
+template <concept_complex T>
 void Bispectrum<T>::write_to_file(const std::string& filename) const
 {
     FILE* stream;
@@ -429,7 +429,7 @@ void Bispectrum<T>::write_to_file(const std::string& filename) const
     fclose(stream);
 }
 
-template <typename T>
+template <concept_complex T>
 void Bispectrum<T>::read_from_file(const std::string& filename)
 {
     FILE* stream;
@@ -461,7 +461,7 @@ void Bispectrum<T>::read_from_file(const std::string& filename)
     fclose(stream);
 }
 
-template <typename T>
+template <concept_complex T>
 void Bispectrum<T>::print() const
 {
     std::cout << "Object: Bispectrum" << std::endl;
@@ -479,7 +479,7 @@ void Bispectrum<T>::print() const
     std::cout << " (vs. full size * 16 byte cmplx double)" << std::endl;
 }
 
-template <typename T>
+template <concept_complex T>
 T Bispectrum<T>::get_element(s_indices indices) const
 {
     const s_indices max_idx = max_indices(); // cache once
@@ -511,7 +511,7 @@ T Bispectrum<T>::get_element(s_indices indices) const
     return data_at(addr);
 }
 
-template <typename T>
+template <concept_complex T>
 void Bispectrum<T>::get_elements(const std::vector<s_indices>& idx_list, std::vector<T>& results) const
 {
     results.clear();
@@ -522,7 +522,7 @@ void Bispectrum<T>::get_elements(const std::vector<s_indices>& idx_list, std::ve
     }
 }
 
-template <typename T>
+template <concept_complex T>
 void Bispectrum<T>::put_element(s_indices indices, const T& value)
 {
     std::size_t addr = this->calc_offset(indices);
@@ -536,21 +536,21 @@ void Bispectrum<T>::put_element(s_indices indices, const T& value)
 
 // -------------------- helpers ------------------------
 
-template <typename T>
+template <concept_complex T>
 T& Bispectrum<T>::data_at(std::size_t offset) noexcept
 {
     assert(offset < this->base_size());
     return Array_base<T>::data()[offset];
 }
 
-template <typename T>
+template <concept_complex T>
 const T& Bispectrum<T>::data_at(std::size_t offset) const noexcept
 {
     assert(offset < this->base_size());
     return Array_base<T>::data()[offset];
 }
 
-template <typename T>
+template <concept_complex T>
 typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices indices, bool& conjugate) noexcept
 {
     conjugate = false;
@@ -588,7 +588,7 @@ typename Bispectrum<T>::s_indices Bispectrum<T>::canonicalize_indices(s_indices 
     std::unreachable();
 }
 
-template <typename T>
+template <concept_complex T>
 std::string Bispectrum<T>::build_error_message(const std::string& prefix, const s_indices& indices) const
 {
     std::ostringstream oss;
@@ -599,7 +599,7 @@ std::string Bispectrum<T>::build_error_message(const std::string& prefix, const 
 }
 
 // Optional: helper to_string for s_indices if needed
-template <typename T>
+template <concept_complex T>
 std::string Bispectrum<T>::to_string(const s_indices& indices) const
 {
     std::ostringstream oss;
