@@ -1,7 +1,5 @@
 # Speckle Stacker
 
-[![Multi-Platform](https://github.com/hangeza/speckle-stacker/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/hangeza/speckle-stacker/actions)
-
 **Speckle Stacker** is a C++ application and SMIP (Speckle Masking Image Processing) library designed to reconstruct high-resolution astronomical images from short-exposure video frames. By employing speckle masking techniques, the software mitigates the blurring effects of atmospheric turbulence, enabling astronomical imaging close to the diffraction limit of the optical instrument.
 
 ---
