@@ -54,6 +54,6 @@ int correl_test(int /*argc*/, char* /*argv*/[])
     );
     std:: cout << "sum of squares = " << sum_squares << " s.o.sq per elem = " << sum_squares/gaus.size() << "\n";
     
-    smip::save_frame(Array2Mat<double, double>(shiftsum, std::fabs<double>, CV_16UC3, false), "shiftsum_test.png");
+    smip::save_frame(Array2Mat<double, double, CV_16UC3>(shiftsum, std::fabs<double>, false), "shiftsum_test.png");
     return 0;
 }

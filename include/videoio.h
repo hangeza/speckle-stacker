@@ -32,6 +32,9 @@ struct RGB {
 template <concept_arithmetic T>
 RGB<T> mapToColor(double value);
 
+template <int CV_TYPE>
+struct CvTypeInfo;
+
 class SMIP_PUBLIC FrameExtractor {
 public:
     FrameExtractor() = delete;
@@ -52,12 +55,13 @@ private:
 };
 
 void SMIP_PUBLIC save_frame(const cv::Mat& frame, const std::string& outfilename);
+
 template <typename T>
 Array2<T> Mat2Array(cv::Mat& mat, color_channel_t color = color_channel_t::red);
-template <typename T, typename U>
+
+template <typename T, typename U, int CV_TYPE = CV_8U>
 cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter = std::fabs<U>,
-    int cv_datatype = CV_8U,
     bool signed_symmetry = true);
 
 //********************
@@ -93,80 +97,87 @@ Array2<T> Mat2Array(cv::Mat& mat, color_channel_t color)
     return arr;
 }
 
-template <typename T, typename U>
+template <typename T, typename U, int CV_TYPE>
 cv::Mat Array2Mat(const Array2<T>& arr,
     std::function<U(const T&)> converter,
-    int cv_datatype,
     bool signed_symmetry)
 {
     int cols = arr.ncols(), rows = arr.nrows();
-    assert(cv_datatype == CV_8UC1
-        || cv_datatype == CV_8UC2
-        || cv_datatype == CV_8UC3
-        || cv_datatype == CV_16UC1
-        || cv_datatype == CV_16UC2
-        || cv_datatype == CV_16UC3);
-    cv::Mat mat(rows, cols, cv_datatype);
-    const std::size_t bytesperpixel { mat.elemSize() };
-    const std::size_t bytesperchannel { mat.elemSize1() };
-    const std::size_t channels { bytesperpixel / bytesperchannel };
+    constexpr int channels = CvTypeInfo<CV_TYPE>::channels;
+    constexpr int bytesperchannel = CvTypeInfo<CV_TYPE>::bytes_per_channel;
+    constexpr int bytesperpixel = CvTypeInfo<CV_TYPE>::bytes_per_pixel;
+    constexpr int depth = CV_TYPE & CV_MAT_DEPTH_MASK;
+
+    using channel_value_t =
+        std::conditional_t<depth == CV_8U,  std::uint8_t,
+        std::conditional_t<depth == CV_8S,  std::int8_t,
+        std::conditional_t<depth == CV_16U, std::uint16_t,
+        std::conditional_t<depth == CV_16S, std::int16_t,
+        std::conditional_t<depth == CV_32S, std::int32_t,
+        std::conditional_t<depth == CV_32F, float,
+        std::conditional_t<depth == CV_64F, double,
+        void>>>>>>>;
+
+    static_assert(!std::is_same_v<channel_value_t, void>, "Unsupported CV depth");
+
+    std::cout << "Channels: " << channels << "\n";
+    std::cout << "Bytes per channel: " << bytesperchannel << "\n";
+    std::cout << "Bytes per pixel: " << bytesperpixel << "\n";
+    
+    cv::Mat mat(rows, cols, CV_TYPE);
+//     const std::size_t bytesperpixel { mat.elemSize() };
+//     const std::size_t bytesperchannel { mat.elemSize1() };
+//     const std::size_t channels { bytesperpixel / bytesperchannel };
     /*    std::cout << "Array2Mat(const Array2<T>&, std::function<U(const T&)>, int, bool): \n";
     std::cout << " channels=" << channels << " bytesperpixel=" << bytesperpixel << " bytesperchannel=" << bytesperchannel << "\n";
 */
     for (int i = 0; i < rows; i++) {
-        if (bytesperchannel == 1) {
-            std::uint8_t* Mi = mat.ptr<std::uint8_t>(i);
-            for (int j = 0; j < cols; j++) {
-                T value;
-                if (signed_symmetry) {
-                    int ii = i + arr.min_sindices()[1];
-                    int jj = j + arr.min_sindices()[0];
-                    value = { arr.at({ jj, ii }) };
-                } else {
-                    value = arr.at({ j, i });
-                }
-                auto x = converter(value);
-                if (channels == 1) {
-                    Mi[j * channels] = static_cast<std::uint8_t>(x * std::numeric_limits<std::uint8_t>::max());
-                } else if (channels == 3) {
-                    auto colors { mapToColor<std::uint8_t>(x) };
-                    Mi[j * channels] = colors.b;
-                    Mi[j * channels + 1] = colors.g;
-                    Mi[j * channels + 2] = colors.r;
-                } else {
-                    for (std::size_t ch = 0; ch < channels; ch++) {
-                        Mi[j * channels + ch] = static_cast<std::uint8_t>(x * std::numeric_limits<std::uint8_t>::max());
-                    }
-                }
+        channel_value_t* Mi = mat.ptr<channel_value_t>(i);
+        for (int j = 0; j < cols; j++) {
+            T value;
+            if (signed_symmetry) {
+                int ii = i + arr.min_sindices()[1];
+                int jj = j + arr.min_sindices()[0];
+                value = { arr.at({ jj, ii }) };
+            } else {
+                value = arr.at({ j, i });
             }
-        } else if (bytesperchannel == 2) {
-            std::uint16_t* Mi = mat.ptr<std::uint16_t>(i);
-            for (int j = 0; j < cols; j++) {
-                T value;
-                if (signed_symmetry) {
-                    int ii = i + arr.min_sindices()[1];
-                    int jj = j + arr.min_sindices()[0];
-                    value = { arr.at({ jj, ii }) };
-                } else
-                    value = arr.at({ j, i });
-                auto x = converter(value);
-                if (channels == 1) {
-                    Mi[j * channels] = static_cast<std::uint16_t>(x * std::numeric_limits<std::uint16_t>::max());
-                } else if (channels == 3) {
-                    auto colors { mapToColor<std::uint16_t>(x) };
-                    Mi[j * channels] = colors.b;
-                    Mi[j * channels + 1] = colors.g;
-                    Mi[j * channels + 2] = colors.r;
-                } else {
-                    for (std::size_t ch = 0; ch < channels; ch++) {
-                        Mi[j * channels + ch] = static_cast<std::uint16_t>(x * std::numeric_limits<std::uint16_t>::max());
-                    }
+            auto x = converter(value);
+            if constexpr (channels == 1) {
+                Mi[j * channels] = static_cast<channel_value_t>(x * std::numeric_limits<channel_value_t>::max());
+            } else if constexpr (channels == 3) {
+                auto colors { mapToColor<channel_value_t>(x) };
+                Mi[j * channels] = colors.b;
+                Mi[j * channels + 1] = colors.g;
+                Mi[j * channels + 2] = colors.r;
+            } else {
+                for (std::size_t ch = 0; ch < channels; ch++) {
+                    Mi[j * channels + ch] = static_cast<channel_value_t>(x * std::numeric_limits<channel_value_t>::max());
                 }
             }
         }
     }
     return mat;
 }
+
+template <int CV_TYPE>
+struct CvTypeInfo {
+    static constexpr int depth = CV_TYPE & CV_MAT_DEPTH_MASK;
+    static constexpr int channels = 1 + (CV_TYPE >> CV_CN_SHIFT);
+    static constexpr int bytes_per_channel = []() constexpr {
+        switch (depth) {
+            case CV_8U:
+            case CV_8S: return 1;
+            case CV_16U:
+            case CV_16S: return 2;
+            case CV_32S:
+            case CV_32F: return 4;
+            case CV_64F: return 8;
+            default: return 0; // error or unsupported
+        }
+    }();
+    static constexpr int bytes_per_pixel = bytes_per_channel * channels;
+};
 
 // Function to map a double (range [0.0, 1.0]) to RGB values
 // modified based on proposal from ChatGPT

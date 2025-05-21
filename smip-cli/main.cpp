@@ -377,26 +377,26 @@ int main(int argc, char* argv[])
 
     sumarray /= 255.;
 
-    save_frame(Array2Mat<double, double>(sumarray, std::fabs<double>, CV_16UC3, false), "sum_image_falsecolor.png");
-    save_frame(Array2Mat<double, double>(sumarray, std::fabs<double>, CV_16U, false), "sum_image.png");
-    save_frame(Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_16UC3), "phases_falsecolor.png");
-    save_frame(Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_16U), "phases.png");
-    save_frame(Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_16UC3), "phasecons.png");
-    save_frame(Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_16UC3), "powerspec_falsecolor.png");
-    save_frame(Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_16U), "powerspec.png");
-    save_frame(Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_16UC3), "reco_image_falsecolor.png");
-    save_frame(Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_16U), "reco_image.png");
+    save_frame(Array2Mat<double, double, CV_16UC3>(sumarray, std::fabs<double>, false), "sum_image_falsecolor.png");
+    save_frame(Array2Mat<double, double, CV_16U>(sumarray, std::fabs<double>, false), "sum_image.png");
+    save_frame(Array2Mat<complex_t, double, CV_16UC3>(phases, complex_phase<double>), "phases_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double, CV_16U>(phases, complex_phase<double>), "phases.png");
+    save_frame(Array2Mat<PhaseMapElement, double, CV_16UC3>(pm, get_phase_consistency), "phasecons.png");
+    save_frame(Array2Mat<complex_t, double, CV_16UC3>(powerspec, complex_abs<double>), "powerspec_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double, CV_16U>(powerspec, complex_abs<double>), "powerspec.png");
+    save_frame(Array2Mat<complex_t, double, CV_16UC3>(result_image, complex_abs<double>), "reco_image_falsecolor.png");
+    save_frame(Array2Mat<complex_t, double, CV_16U>(result_image, complex_abs<double>), "reco_image.png");
     if (log::system::level() >= log::Level::Debug) {
         cv::namedWindow("Display Sum Image", cv::WINDOW_AUTOSIZE);
         cv::namedWindow("Display FFT Image", cv::WINDOW_AUTOSIZE);
         cv::namedWindow("Display Phases Image", cv::WINDOW_AUTOSIZE);
         cv::namedWindow("Display PhaseCons Image", cv::WINDOW_AUTOSIZE);
         cv::namedWindow("Display Reco Image", cv::WINDOW_AUTOSIZE);
-        cv::imshow("Display Sum Image", Array2Mat<double, double>(sumarray, std::fabs<double>, CV_8UC3, false));
-        cv::imshow("Display FFT Image", Array2Mat<complex_t, double>(powerspec, complex_abs<double>, CV_8UC3));
-        cv::imshow("Display Phases Image", Array2Mat<complex_t, double>(phases, complex_phase<double>, CV_8UC3));
-        cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double>(pm, get_phase_consistency, CV_8UC3));
-        cv::imshow("Display Reco Image", Array2Mat<complex_t, double>(result_image, complex_abs<double>, CV_8UC3));
+        cv::imshow("Display Sum Image", Array2Mat<double, double, CV_16UC3>(sumarray, std::fabs<double>, false));
+        cv::imshow("Display FFT Image", Array2Mat<complex_t, double, CV_16UC3>(powerspec, complex_abs<double>));
+        cv::imshow("Display Phases Image", Array2Mat<complex_t, double, CV_16UC3>(phases, complex_phase<double>));
+        cv::imshow("Display PhaseCons Image", Array2Mat<PhaseMapElement, double, CV_16UC3>(pm, get_phase_consistency));
+        cv::imshow("Display Reco Image", Array2Mat<complex_t, double, CV_16UC3>(result_image, complex_abs<double>));
         cv::waitKey(0);
     }
 }
