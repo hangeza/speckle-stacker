@@ -9,8 +9,6 @@
 #include <stdexcept>
 #include <type_traits>
 
-// #include "smip_export.h"
-
 namespace smip {
 
 template <typename T>
@@ -81,7 +79,8 @@ private:
 
 template <typename T>
 requires std::floating_point<T>
-CrossCorrelation(const Array2<T>& ref) -> CrossCorrelation<T>;
+CrossCorrelation(const Array2<T>& ref)
+->CrossCorrelation<T>;
 
 //********************
 // implementation part

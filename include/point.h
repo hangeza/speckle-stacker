@@ -1,8 +1,7 @@
 #pragma once
-#include <cmath>
-#include "types.h"
 
-// #include "smip_export.h"
+#include "types.h"
+#include <cmath>
 
 namespace smip {
 
@@ -39,7 +38,8 @@ struct Point {
 //********************
 template <typename T>
 requires concept_arithmetic<T>
-Point(T a, T b) -> Point<T>;
+Point(T a, T b)
+->Point<T>;
 
 //********************
 // implementation part
@@ -49,7 +49,8 @@ Point(T a, T b) -> Point<T>;
 // but often is, to modify the private members)
 template <typename T>
 requires concept_arithmetic<T>
-Point<T>& Point<T>::operator+=(const Point<T>& other)
+    Point<T>
+&Point<T>::operator+=(const Point<T>& other)
 {
     x += other.x;
     y += other.y;
@@ -58,7 +59,8 @@ Point<T>& Point<T>::operator+=(const Point<T>& other)
 
 template <typename T>
 requires concept_arithmetic<T>
-Point<T>& Point<T>::operator-=(const Point<T>& other)
+    Point<T>
+&Point<T>::operator-=(const Point<T>& other)
 {
     x -= other.x;
     y -= other.y;
@@ -67,7 +69,7 @@ Point<T>& Point<T>::operator-=(const Point<T>& other)
 
 template <typename T>
 requires concept_arithmetic<T>
-std::ostream& operator<<(std::ostream& os, const Point<T>& obj)
+    std::ostream& operator<<(std::ostream& os, const Point<T>& obj)
 {
     // write obj to stream
     os << "(" << obj.x << "," << obj.y << ")";

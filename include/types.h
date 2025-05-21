@@ -1,4 +1,5 @@
 #pragma once
+
 #include <complex>
 #include <concepts>
 #include <type_traits>
@@ -25,9 +26,10 @@ concept concept_complex = std::is_same_v<T, std::complex<typename std::decay_t<T
 template <typename T>
 concept concept_arithmetic_or_valarray_or_complex = concept_arithmetic<T> || concept_valarray_of_arithmetic<T> || concept_complex<T>;
 
-namespace smip {
+namespace smip
+{
 
-typedef std::complex<double> complex_t;
-typedef std::complex<float> bispec_complex_t;
+    typedef std::complex<double> complex_t;
+    typedef std::complex<float> bispec_complex_t;
 
 } // namespace smip
